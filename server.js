@@ -364,5 +364,4 @@ function createQuote() {
 }
 
 function createInvoice() {
-    alert("Fonction Facture PDF à connecter");
-}
+    alert("Fonction Facture PDF à connecter");}
