@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ARASHI BTP</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</head>
+
+<body>
+
+<header>
+    <h1>🏗️ ARASHI BTP</h1>
+    <p>Construction • Immobilier • Topographie • Lotissement</p>
+</header>
+
+<nav class="dashboard-menu">
+    <a href="#dashboard">📊 Dashboard</a>
+    <a href="#projets">🏗️ Projets</a>
+    <a href="#parcelles">📍 Parcelles</a>
+    <a href="#topographie">📐 Topographie</a>
+    <a href="#chantiers">🚧 Chantiers</a>
+    <a href="#immobilier">🏠 Immobilier</a>
+    <a href="#facturation">💰 Facturation</a>
+    <a href="#photos">📷 Photos</a>
+</nav>
+
+<section class="auth">
+    <h2>Connexion / Inscription</h2>
+
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Mot de passe">
+
+    <button onclick="register()">S'inscrire</button>
+    <button onclick="login()">Se connecter</button>
+
+    <p id="userStatus">Non connecté</p>
+</section>
+
+<section class="hero">
+    <h2>Plateforme ARASHI BTP</h2>
+
+    <p>
+        Gestion de projets, topographie,
+        immobilier, lotissement et paiements Pi.
+    </p>
+
+    <button id="contactBtn">📞 Contact</button>
+    <button id="piLogin">π Connexion Pi</button>
+</section>
+
+<section id="dashboard" class="dashboard">
+
+    <div class="card">
+        <h3>🏗️ Projets</h3>
+        <p id="totalProjects">0</p>
+    </div>
+
+    <div class="card">
+        <h3>👥 Clients</h3>
+        <p id="totalClients">0</p>
+    </div>
+
+    <div class="card">
+        <h3>📍 Parcelles</h3>
+        <p id="totalParcels">0</p>
+    </div>
+
+    <div class="card">
+        <h3>💰 Revenus</h3>
+        <p id="totalRevenue">0 FCFA</p>
+    </div>
+
+</section>
+
+<section id="projets">
+
+    <h2>🏗️ Gestion des Projets</h2>
+
+    <input id="projectName" placeholder="Nom du projet">
+    <input id="projectClient" placeholder="Nom du client">
+    <input id="projectBudget" placeholder="Budget FCFA">
+
+    <button onclick="addProject()">
+        Ajouter Projet
+    </button>
+
+    <div id="projectList"></div>
+
+</section>
+
+<section id="parcelles">
+
+    <h2>📍 Gestion des Parcelles</h2>
+
+    <input id="parcelNumber"
+           placeholder="Numéro parcelle">
+
+    <input id="parcelArea"
+           placeholder="Superficie m²">
+
+    <input id="parcelOwner"
+           placeholder="Propriétaire">
+
+    <button onclick="addParcel()">
+        Ajouter Parcelle
+    </button>
+
+    <div id="parcelList"></div>
+
+</section>
+
+<section id="topographie">
+
+    <h2>📐 Topographie</h2>
+
+    <input type="file"
+           accept=".csv,.txt,.xlsx">
+
+    <p>
+        Importer les coordonnées
+        topographiques.
+    </p>
+
+</section>
+
+<section id="chantiers">
+
+    <h2>🚧 Suivi des Chantiers</h2>
+
+    <input id="siteName"
+           placeholder="Nom chantier">
+
+    <input id="siteProgress"
+           type="number"
+           placeholder="% avancement">
+
+    <button onclick="addSite()">
+        Ajouter Chantier
+    </button>
+
+    <div id="siteList"></div>
+
+</section>
+
+<section id="immobilier">
+
+    <h2>🏠 Immobilier</h2>
+
+    <input id="propertyName"
+           placeholder="Nom propriété">
+
+    <input id="propertyPrice"
+           placeholder="Prix en Pi">
+
+    <button onclick="addProperty()">
+        Ajouter Bien
+    </button>
+
+    <div id="propertyList"></div>
+
+</section>
+
+<section id="facturation">
+
+    <h2>💰 Facturation</h2>
+
+    <button onclick="createQuote()">
+        📄 Créer Devis
+    </button>
+
+    <button onclick="createInvoice()">
+        🧾 Créer Facture
+    </button>
+
+</section>
+
+<section id="photos">
+
+    <h2>📷 Photos Chantier</h2>
+
+    <input
+        type="file"
+        id="photosInput"
+        multiple
+        accept="image/*">
+
+</section>
+
+<section class="calculator">
+
+    <h2>🧮 Calculateur Construction</h2>
+
+    <input id="surface"
+           placeholder="Surface m²">
+
+    <input id="prix"
+           placeholder="Prix au m²">
+
+    <button id="calculate">
+        Calculer
+    </button>
+
+    <h3 id="result">0 FCFA</h3>
+
+</section>
+
+<section>
+
+    <h2>π Paiement Pi Network</h2>
+
+    <button onclick="buy('Service ARASHI',1)">
+        Payer 1 Pi
+    </button>
+
+</section>
+
+<footer>
+    <p>
+        © 2026 ARASHI BTP - Tous droits réservés
+    </p>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
