@@ -1,239 +1,128 @@
-/* =========================
-   ARASHI BTP STYLE
-========================= */
-
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
 }
 
 body{
-    background:#eef3f8;
-    color:#333;
-    line-height:1.6;
+background:#f5f7fa;
+color:#333;
 }
-
-/* HEADER */
 
 header{
-    background:linear-gradient(135deg,#0a3d62,#3c6382);
-    color:white;
-    text-align:center;
-    padding:30px;
-    box-shadow:0 3px 10px rgba(0,0,0,0.15);
+background:#0a3d62;
+color:white;
+text-align:center;
+padding:25px;
 }
-
-header h1{
-    font-size:30px;
-    margin-bottom:10px;
-}
-
-/* MENU */
 
 .dashboard-menu{
-    background:#0a3d62;
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:10px;
-    padding:15px;
+background:#0a3d62;
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:10px;
+padding:15px;
 }
 
 .dashboard-menu a{
-    color:white;
-    text-decoration:none;
-    background:#3c6382;
-    padding:10px 15px;
-    border-radius:8px;
-    transition:.3s;
-    font-weight:bold;
+color:white;
+text-decoration:none;
+background:#3c6382;
+padding:10px 15px;
+border-radius:8px;
 }
 
 .dashboard-menu a:hover{
-    background:#60a3bc;
+background:#60a3bc;
 }
-
-/* HERO */
-
-.hero{
-    background:linear-gradient(135deg,#0a3d62,#3c6382);
-    color:white;
-    text-align:center;
-    padding:30px;
-    margin:20px;
-    border-radius:15px;
-}
-
-.hero button{
-    margin-top:10px;
-}
-
-/* SECTIONS */
 
 section{
-    background:white;
-    margin:20px;
-    padding:20px;
-    border-radius:15px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
+background:white;
+margin:20px;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.1);
 }
 
-section h2{
-    color:#0a3d62;
-    margin-bottom:15px;
+.hero{
+background:linear-gradient(135deg,#0a3d62,#3c6382);
+color:white;
+text-align:center;
 }
-
-/* INPUTS */
 
 input{
-    width:100%;
-    padding:12px;
-    margin:8px 0;
-    border:1px solid #ccc;
-    border-radius:8px;
-    outline:none;
+width:100%;
+padding:12px;
+margin:8px 0;
+border:1px solid #ccc;
+border-radius:8px;
 }
-
-input:focus{
-    border-color:#0a3d62;
-}
-
-/* BUTTONS */
 
 button{
-    width:100%;
-    padding:12px;
-    margin-top:10px;
-    border:none;
-    border-radius:8px;
-    background:#0a3d62;
-    color:white;
-    cursor:pointer;
-    transition:.3s;
-    font-weight:bold;
+width:100%;
+padding:12px;
+margin-top:8px;
+border:none;
+border-radius:8px;
+background:#0a3d62;
+color:white;
+cursor:pointer;
 }
 
 button:hover{
-    background:#1e5f8a;
+background:#1e5f8a;
 }
 
-/* DASHBOARD */
-
 .dashboard{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:15px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
 }
 
 .card{
-    background:white;
-    border-top:4px solid #0a3d62;
-    border-radius:12px;
-    padding:20px;
-    text-align:center;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
+background:white;
+padding:15px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,.1);
+margin-top:10px;
 }
 
-.card h3{
-    color:#0a3d62;
-    margin-bottom:10px;
+.card img{
+width:100%;
+border-radius:10px;
+margin-top:10px;
 }
-
-.card p{
-    font-size:20px;
-    font-weight:bold;
-}
-
-/* LISTES */
-
-#projectList .card,
-#parcelList .card,
-#siteList .card,
-#propertyList .card{
-    margin-top:15px;
-}
-
-/* PROGRESS */
-
-progress{
-    width:100%;
-    height:20px;
-    margin-top:10px;
-    accent-color:#0a3d62;
-}
-
-/* RESULTAT */
-
-#result{
-    text-align:center;
-    margin-top:15px;
-    color:#0a3d62;
-    font-size:24px;
-    font-weight:bold;
-}
-
-/* AUTH */
-
-.auth{
-    border-left:5px solid #0a3d62;
-}
-
-/* FOOTER */
-
-footer{
-    background:#0a3d62;
-    color:white;
-    text-align:center;
-    padding:20px;
-    margin-top:30px;
-}
-
-/* MOBILE */
-
-@media(max-width:768px){
-
-    .dashboard-menu{
-        flex-direction:column;
-    }
-
-    .dashboard{
-        grid-template-columns:1fr;
-    }
-
-    header h1{
-        font-size:24px;
-    }                                    }
-
-/* IMMOBILIER */
-
-#immobilier {
-    background: white;
-}
-
-#propertyList .card{
-    margin-top:15px;
-}
-
-#propertyList img{
-    width:100%;
-    border-radius:10px;
-    margin-top:10px;
-}
-
-/* RETOUR */
 
 .back-btn{
-    background:#0a3d62;
-    color:white;
-    border:none;
-    padding:10px 15px;
-    border-radius:8px;
-    margin:10px;
-    cursor:pointer;
+width:auto;
+margin:10px;
+padding:10px 15px;
 }
 
-.back-btn:hover{
-    background:#3c6382;
+#result{
+text-align:center;
+font-size:22px;
+color:#0a3d62;
+margin-top:10px;
+}
+
+footer{
+background:#0a3d62;
+color:white;
+text-align:center;
+padding:15px;
+margin-top:20px;
+}
+
+progress{
+width:100%;
+height:25px;
+}
+
+@media(max-width:768px){
+.dashboard-menu{
+flex-direction:column;
+}
 }
