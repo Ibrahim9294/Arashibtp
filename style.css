@@ -126,3 +126,12 @@ height:25px;
 flex-direction:column;
 }
 }
+
+#marketList .card{
+margin-top:15px;
+}
+
+#marketList img{
+width:100%;
+border-radius:10px;
+}
