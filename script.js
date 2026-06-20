@@ -1,4 +1,4 @@
-/* ==========================
+ko/* ==========================
    ARASHI BTP - SCRIPT.JS
 ========================== */
 
@@ -355,6 +355,88 @@ function buy(name, price) {
     );
 }
 
+// RETOUR
+
+function goBack(){
+    history.back();
+}
+
+// AJOUT IMMOBILIER
+
+function addProperty(){
+
+    let name =
+    document.getElementById("propertyName").value;
+
+    let price =
+    document.getElementById("propertyPrice").value;
+
+    let file =
+    document.getElementById("propertyImage").files[0];
+
+    if(!name || !price || !file){
+        alert("Remplissez tous les champs");
+        return;
+    }
+
+    let reader = new FileReader();
+
+    reader.onload = function(){
+
+        let div = document.createElement("div");
+
+        div.className = "card";
+
+        div.innerHTML = `
+            <h3>🏠 ${name}</h3>
+
+            <img src="${reader.result}">
+
+            <p><strong>${price} Pi</strong></p>
+
+            <button onclick="buyProperty('${name}', ${price})">
+            Acheter en Pi
+            </button>
+        `;
+
+        document
+        .getElementById("propertyList")
+        .appendChild(div);
+
+    };
+
+    reader.readAsDataURL(file);
+}
+
+// ACHAT PI
+
+function buyProperty(name, price){
+
+    if(!window.Pi){
+        alert("Pi Browser requis");
+        return;
+    }
+
+    Pi.createPayment(
+        {
+            amount: parseFloat(price),
+            memo: "Achat immobilier : " + name
+        },
+
+        function(paymentId){
+            console.log(paymentId);
+        },
+
+        function(paymentId, txid){
+            alert("Paiement réussi ✅");
+        },
+
+        function(error){
+            console.log(error);
+            alert("Paiement annulé");
+        }
+    );
+}
 /* ==========================
    DEVIS & FACTURE
 ========================== */
