@@ -1,394 +1,232 @@
-/* ==========================
-   ARASHI BTP - SCRIPT.JS
-========================== */
-
-let Pi = null;
-
-/* INITIALISATION */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    if (window.Pi) {
-        Pi = window.Pi;
-        Pi.init({ version: "2.0" });
-    }
-
-    /* CONNEXION PI */
-
-    const piBtn = document.getElementById("piLogin");
-
-    if (piBtn) {
-        piBtn.onclick = () => {
-
-            if (!Pi) {
-                alert("Ouvrir dans Pi Browser");
-                return;
-            }
-
-            Pi.authenticate(
-                ["username", "payments"],
-                () => {}
-            )
-            .then(res => {
-                alert("Bienvenue " + res.user.username);
-            })
-            .catch(err => {
-                console.log(err);
-                alert("Erreur connexion Pi");
-            });
-        };
-    }
-
-    /* CONTACT */
-
-    const contactBtn =
-        document.getElementById("contactBtn");
-
-    if (contactBtn) {
-        contactBtn.onclick = () => {
-            alert(
-                "ARASHI BTP\n\n📞 +227 XX XX XX XX\n📍 Niamey, Niger"
-            );
-        };
-    }
-
-    /* CALCULATEUR */
-
-    const calc =
-        document.getElementById("calculate");
-
-    if (calc) {
-
-        calc.onclick = () => {
-
-            const s =
-                Number(
-                    document.getElementById("surface").value
-                );
-
-            const p =
-                Number(
-                    document.getElementById("prix").value
-                );
-
-            if (!s || !p) {
-                alert("Remplir tous les champs");
-                return;
-            }
-
-            const total = s * p;
-
-            document.getElementById("result").innerText =
-                total.toLocaleString() + " FCFA";
-        };
-    }
-
-});
-
-/* ==========================
-   AUTH
-========================== */
-
-function register() {
-
-    const email =
-        document.getElementById("email").value;
-
-    const password =
-        document.getElementById("password").value;
-
-    if (!email || !password) {
-        alert("Remplir tous les champs");
-        return;
-    }
-
-    localStorage.setItem(
-        "arashi_email",
-        email
-    );
-
-    localStorage.setItem(
-        "arashi_password",
-        password
-    );
-
-    alert("Inscription réussie");
-}
-
-function login() {
-
-    const email =
-        document.getElementById("email").value;
-
-    const password =
-        document.getElementById("password").value;
-
-    const savedEmail =
-        localStorage.getItem("arashi_email");
-
-    const savedPassword =
-        localStorage.getItem("arashi_password");
-
-    if (
-        email === savedEmail &&
-        password === savedPassword
-    ) {
-        document.getElementById(
-            "userStatus"
-        ).innerText =
-            "Connecté : " + email;
-
-    } else {
-        alert("Email ou mot de passe incorrect");
-    }
-}
-
-/* ==========================
-   PROJETS
-========================== */
-
-function addProject() {
-
-    const name =
-        document.getElementById("projectName").value;
-
-    const client =
-        document.getElementById("projectClient").value;
-
-    const budget =
-        document.getElementById("projectBudget").value;
-
-    if (!name || !client || !budget) {
-        alert("Remplir tous les champs");
-        return;
-    }
-
-    const card =
-        document.createElement("div");
-
-    card.className = "card";
-
-    card.innerHTML = `
-        <h3>${name}</h3>
-        <p>Client : ${client}</p>
-        <p>Budget : ${budget} FCFA</p>
-    `;
-
-    document
-        .getElementById("projectList")
-        .appendChild(card);
-}
-
-/* ==========================
-   PARCELLES
-========================== */
-
-function addParcel() {
-
-    const number =
-        document.getElementById("parcelNumber").value;
-
-    const area =
-        document.getElementById("parcelArea").value;
-
-    const owner =
-        document.getElementById("parcelOwner").value;
-
-    if (!number || !area || !owner) {
-        alert("Remplir tous les champs");
-        return;
-    }
-
-    const card =
-        document.createElement("div");
-
-    card.className = "card";
-
-    card.innerHTML = `
-        <h3>Parcelle ${number}</h3>
-        <p>${area} m²</p>
-        <p>${owner}</p>
-    `;
-
-    document
-        .getElementById("parcelList")
-        .appendChild(card);
-}
-
-/* ==========================
-   CHANTIERS
-========================== */
-
-function addSite() {
-
-    const name =
-        document.getElementById("siteName").value;
-
-    const progress =
-        document.getElementById("siteProgress").value;
-
-    if (!name || !progress) {
-        alert("Remplir tous les champs");
-        return;
-    }
-
-    const card =
-        document.createElement("div");
-
-    card.className = "card";
-
-    card.innerHTML = `
-        <h3>${name}</h3>
-        <p>${progress}% réalisé</p>
-        <progress value="${progress}" max="100"></progress>
-    `;
-
-    document
-        .getElementById("siteList")
-        .appendChild(card);}
-
-
 // RETOUR
 
 function goBack(){
-    history.back();
+history.back();
 }
 
-// AJOUT IMMOBILIER
+// AUTH
+
+function register(){
+
+let email=document.getElementById("email").value;
+let password=document.getElementById("password").value;
+
+localStorage.setItem("userEmail",email);
+localStorage.setItem("userPassword",password);
+
+alert("Inscription réussie");
+}
+
+function login(){
+
+let email=document.getElementById("email").value;
+let password=document.getElementById("password").value;
+
+if(
+email===localStorage.getItem("userEmail")
+&&
+password===localStorage.getItem("userPassword")
+){
+document.getElementById("userStatus").innerText=
+"Connecté : "+email;
+}
+else{
+alert("Identifiants incorrects");
+}
+}
+
+// CONTACT
+
+document.getElementById("contactBtn").onclick=function(){
+
+alert("ARASHI BTP\nNiamey - Niger");
+};
+
+// CALCULATEUR
+
+document.getElementById("calculate").onclick=function(){
+
+let s=parseFloat(
+document.getElementById("surface").value
+);
+
+let p=parseFloat(
+document.getElementById("prix").value
+);
+
+if(!s || !p) return;
+
+let total=s*p;
+
+document.getElementById("result").innerText=
+total.toLocaleString()+" FCFA";
+};
+
+// PROJETS
+
+function addProject(){
+
+let name=
+document.getElementById("projectName").value;
+
+let client=
+document.getElementById("projectClient").value;
+
+let budget=
+document.getElementById("projectBudget").value;
+
+let div=document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=
+"<h3>"+name+"</h3>"+
+"<p>Client : "+client+"</p>"+
+"<p>Budget : "+budget+" FCFA</p>";
+
+document.getElementById("projectList")
+.appendChild(div);
+}
+
+// PARCELLES
+
+function addParcel(){
+
+let number=
+document.getElementById("parcelNumber").value;
+
+let area=
+document.getElementById("parcelArea").value;
+
+let owner=
+document.getElementById("parcelOwner").value;
+
+let div=document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=
+"<h3>Parcelle "+number+"</h3>"+
+"<p>Superficie : "+area+" m²</p>"+
+"<p>Propriétaire : "+owner+"</p>";
+
+document.getElementById("parcelList")
+.appendChild(div);
+}
+
+// CHANTIERS
+
+function addSite(){
+
+let name=
+document.getElementById("siteName").value;
+
+let progress=
+document.getElementById("siteProgress").value;
+
+let div=document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=
+"<h3>"+name+"</h3>"+
+"<progress value='"+progress+"' max='100'></progress>"+
+"<p>"+progress+"%</p>";
+
+document.getElementById("siteList")
+.appendChild(div);
+}
+
+// IMMOBILIER
 
 function addProperty(){
 
-    let name =
-    document.getElementById("propertyName").value;
+let name=
+document.getElementById("propertyName").value;
 
-    let price =
-    document.getElementById("propertyPrice").value;
+let price=
+document.getElementById("propertyPrice").value;
 
-    let file =
-    document.getElementById("propertyImage").files[0];
+let file=
+document.getElementById("propertyImage").files[0];
 
-    if(!name || !price || !file){
-        alert("Remplissez tous les champs");
-        return;
-    }
+if(!file) return;
 
-    let reader = new FileReader();
+let reader=new FileReader();
 
-    reader.onload = function(){
+reader.onload=function(){
 
-        let div = document.createElement("div");
+let div=document.createElement("div");
 
-        div.className = "card";
+div.className="card";
 
-        div.innerHTML = `
-            <h3>🏠 ${name}</h3>
+div.innerHTML=
+"<h3>"+name+"</h3>"+
+"<img src='"+reader.result+"'>"+
+"<p>"+price+" Pi</p>"+
+"<button onclick=\"buy('"+name+"',"+price+")\">Acheter en Pi</button>";
 
-            <img src="${reader.result}">
+document.getElementById("propertyList")
+.appendChild(div);
+};
 
-            <p><strong>${price} Pi</strong></p>
-
-            <button onclick="buyProperty('${name}', ${price})">
-            Acheter en Pi
-            </button>
-        `;
-
-        document
-        .getElementById("propertyList")
-        .appendChild(div);
-
-    };
-
-    reader.readAsDataURL(file);
+reader.readAsDataURL(file);
 }
 
-// ACHAT PI
+// PI LOGIN
 
-function buyProperty(name, price){
+let Pi=null;
 
-    if(!window.Pi){
-        alert("Pi Browser requis");
-        return;
-    }
+document.addEventListener("DOMContentLoaded",()=>{
 
-    Pi.createPayment(
-        {
-            amount: parseFloat(price),
-            memo: "Achat immobilier : " + name
-        },
+if(window.Pi){
 
-        function(paymentId){
-            console.log(paymentId);
-        },
+Pi=window.Pi;
 
-        function(paymentId, txid){
-            alert("Paiement réussi ✅");
-        },
+Pi.init({
+version:"2.0"
+});
 
-        function(error){
-            console.log(error);
-            alert("Paiement annulé");
-        }
-    );
+document.getElementById("piLogin")
+.onclick=()=>{
+
+Pi.authenticate(
+['username','payments'],
+()=>{}
+)
+.then(user=>{
+alert("Bienvenue "+user.user.username);
+})
+.catch(()=>{
+alert("Erreur Pi");
+});
+};
 }
-/* ==========================
-   DEVIS & FACTURE
-========================== */
+});
 
-function createQuote() {
-    alert("Fonction Devis PDF à connecter");
-}
+// PAIEMENT
 
-function createInvoice() {
-    alert("Fonction Facture PDF à connecter");
-}
-          "https://pi-server-8oy1.onrender.com/approve",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                        "application/json"
-                    },
-                    body: JSON.stringify({
-                        paymentId
-                    })
-                }
-            );
-        },
+function buy(name,price){
 
-        (paymentId, txid) => {
-
-            fetch(
-                "https://pi-server-8oy1.onrender.com/complete",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                        "application/json"
-                    },
-                    body: JSON.stringify({
-                        paymentId,
-                        txid
-                    })
-                }
-            );
-
-            alert(
-                "Paiement réussi ✅"
-            );
-        },
-
-        () => {
-            alert(
-                "Paiement annulé"
-            );
-        },
-
-        (err) => {
-            console.log(err);
-            alert(
-                "Erreur paiement"
-            );
-        }
-    );
+if(!Pi){
+alert("Pi Browser requis");
+return;
 }
 
+alert(
+"Paiement de "+
+price+
+" Pi pour "+
+name
+);
+}
+
+// FACTURATION
+
+function createQuote(){
+alert("Devis PDF à développer");
+}
+
+function createInvoice(){
+alert("Facture PDF à développer");
+}
