@@ -245,115 +245,8 @@ function addSite() {
 
     document
         .getElementById("siteList")
-        .appendChild(card);
-}
+        .appendChild(card);}
 
-/* ==========================
-   IMMOBILIER
-========================== */
-
-function addProperty() {
-
-    const name =
-        document.getElementById("propertyName").value;
-
-    const price =
-        document.getElementById("propertyPrice").value;
-
-    if (!name || !price) {
-        alert("Remplir tous les champs");
-        return;
-    }
-
-    const card =
-        document.createElement("div");
-
-    card.className = "card";
-
-    card.innerHTML = `
-        <h3>${name}</h3>
-        <p>${price} Pi</p>
-        <button onclick="buy('${name}', ${price})">
-            Acheter
-        </button>
-    `;
-
-    document
-        .getElementById("propertyList")
-        .appendChild(card);
-}
-
-/* ==========================
-   PAIEMENT PI
-========================== */
-
-function buy(name, price) {
-
-    if (!Pi) {
-        alert("Connectez-vous avec Pi");
-        return;
-    }
-
-    Pi.createPayment(
-
-        {
-            amount: Number(price),
-            memo: "Achat " + name
-        },
-
-        (paymentId) => {
-
-            fetch(
-                "https://pi-server-8oy1.onrender.com/approve",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                        "application/json"
-                    },
-                    body: JSON.stringify({
-                        paymentId
-                    })
-                }
-            );
-        },
-
-        (paymentId, txid) => {
-
-            fetch(
-                "https://pi-server-8oy1.onrender.com/complete",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                        "application/json"
-                    },
-                    body: JSON.stringify({
-                        paymentId,
-                        txid
-                    })
-                }
-            );
-
-            alert(
-                "Paiement réussi ✅"
-            );
-        },
-
-        () => {
-            alert(
-                "Paiement annulé"
-            );
-        },
-
-        (err) => {
-            console.log(err);
-            alert(
-                "Erreur paiement"
-            );
-        }
-    );
-}
 
 // RETOUR
 
@@ -448,3 +341,54 @@ function createQuote() {
 function createInvoice() {
     alert("Fonction Facture PDF à connecter");
 }
+          "https://pi-server-8oy1.onrender.com/approve",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                        "application/json"
+                    },
+                    body: JSON.stringify({
+                        paymentId
+                    })
+                }
+            );
+        },
+
+        (paymentId, txid) => {
+
+            fetch(
+                "https://pi-server-8oy1.onrender.com/complete",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                        "application/json"
+                    },
+                    body: JSON.stringify({
+                        paymentId,
+                        txid
+                    })
+                }
+            );
+
+            alert(
+                "Paiement réussi ✅"
+            );
+        },
+
+        () => {
+            alert(
+                "Paiement annulé"
+            );
+        },
+
+        (err) => {
+            console.log(err);
+            alert(
+                "Erreur paiement"
+            );
+        }
+    );
+}
+
