@@ -150,13 +150,21 @@
 
 <section id="immobilier">
 
-    <h2>🏠 Immobilier</h2>
+<h2>🏠 Immobilier</h2>
 
-    <input id="propertyName"
-           placeholder="Nom propriété">
+<input id="propertyName" placeholder="Nom du bien">
 
-    <input id="propertyPrice"
-           placeholder="Prix en Pi">
+<input id="propertyPrice" type="number" placeholder="Prix en Pi">
+
+<input type="file" id="propertyImage" accept="image/*">
+
+<button onclick="addProperty()">
+Ajouter Bien Immobilier
+</button>
+
+<div id="propertyList"></div>
+
+</section>
 
     <button onclick="addProperty()">
         Ajouter Bien
@@ -227,24 +235,6 @@
 </footer>
 
 <script src="script.js"></script>
-
-<section id="immobilier">
-
-<h2>🏠 Immobilier</h2>
-
-<input id="propertyName" placeholder="Nom du bien">
-
-<input id="propertyPrice" type="number" placeholder="Prix en Pi">
-
-<input type="file" id="propertyImage" accept="image/*">
-
-<button onclick="addProperty()">
-Ajouter Bien Immobilier
-</button>
-
-<div id="propertyList"></div>
-
-</section>
 
 </body>
 </html>
