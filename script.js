@@ -230,3 +230,48 @@ alert("Devis PDF à développer");
 function createInvoice(){
 alert("Facture PDF à développer");
 }
+
+function addMarketItem(){
+
+let title =
+document.getElementById("marketTitle").value;
+
+let price =
+document.getElementById("marketPrice").value;
+
+let file =
+document.getElementById("marketImage").files[0];
+
+if(!title || !price || !file){
+alert("Remplissez tous les champs");
+return;
+}
+
+let reader = new FileReader();
+
+reader.onload = function(){
+
+let div = document.createElement("div");
+
+div.className = "card";
+
+div.innerHTML = `
+<h3>${title}</h3>
+
+<img src="${reader.result}">
+
+<p>${price} Pi</p>
+
+<button onclick="buy('${title}',${price})">
+Acheter
+</button>
+`;
+
+document
+.getElementById("marketList")
+.appendChild(div);
+
+};
+
+reader.readAsDataURL(file);
+}
