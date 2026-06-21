@@ -248,21 +248,63 @@ alert("Erreur Pi");
 }
 });
 
-// PAIEMENT
+// ===================== PAIEMENT PI (avec backend) =====================
+async function buy(name, price) {
+    if (!window.Pi) {
+        alert("❌ Pi Browser requis pour payer");
+        return;
+    }
 
-function buy(name,price){
+    if (!price || price <= 0) {
+        alert("❌ Prix invalide");
+        return;
+    }
 
-if(!Pi){
-alert("Pi Browser requis");
-return;
-}
+    try {
+        // 1. Créer la demande de paiement
+        const payment = await Pi.createPayment({
+            amount: parseFloat(price),
+            memo: `Achat ${name} - Arashi BTP`,
+            metadata: {
+                product: name,
+                price: price,
+                type: "immobilier"
+            }
+        });
 
-alert(
-"Paiement de "+
-price+
-" Pi pour "+
-name
-);
+        // 2. Appeler ton backend Render pour approuver
+        const approveResponse = await fetch('https://arashi-btp-backend.onrender.com/approve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                paymentId: payment.paymentId,
+                amount: price,
+                item: name
+            })
+        });
+
+        const approveData = await approveResponse.json();
+
+        if (!approveResponse.ok) {
+            throw new Error(approveData.message || "Erreur d'approbation par le serveur");
+        }
+
+        // 3. Compléter le paiement côté Pi
+        const completed = await Pi.completePayment({
+            paymentId: payment.paymentId
+        });
+
+        if (completed) {
+            alert(`✅ Paiement réussi !\n${price} Pi pour ${name}`);
+            // Tu peux ajouter ici : recharger la liste des biens
+        } else {
+            alert("❌ Le paiement n'a pas été complété");
+        }
+
+    } catch (error) {
+        console.error("Erreur paiement:", error);
+        alert("❌ Erreur lors du paiement :\n" + error.message);
+    }
 }
 
 // FACTURATION
