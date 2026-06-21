@@ -139,38 +139,82 @@ document.getElementById("siteList")
 
 // IMMOBILIER
 
-function addProperty(){
+async function addProperty(){
 
-let name=
+let name =
 document.getElementById("propertyName").value;
 
-let price=
+let price =
 document.getElementById("propertyPrice").value;
 
-let file=
+let file =
 document.getElementById("propertyImage").files[0];
 
-if(!file) return;
+if(!name || !price || !file){
+alert("Remplissez tous les champs");
+return;
+}
 
-let reader=new FileReader();
+try{
 
-reader.onload=function(){
+const { ref, uploadBytes, getDownloadURL }
+= await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-storage.js");
+
+const { collection, addDoc }
+= await import("https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js");
+
+const fileName =
+Date.now() + "_" + file.name;
+
+const imageRef =
+ref(window.storage,"immobilier/" + fileName);
+
+await uploadBytes(imageRef,file);
+
+const imageUrl =
+await getDownloadURL(imageRef);
+
+await addDoc(
+collection(window.db,"immobilier"),
+{
+name:name,
+price:price,
+image:imageUrl,
+date:new Date().toISOString()
+}
+);
 
 let div=document.createElement("div");
 
 div.className="card";
 
 div.innerHTML=
-"<h3>"+name+"</h3>"+
-"<img src='"+reader.result+"'>"+
-"<p>"+price+" Pi</p>"+
-"<button onclick=\"buy('"+name+"',"+price+")\">Acheter en Pi</button>";
+`
+<h3>${name}</h3>
+<img src="${imageUrl}">
+<p>${price} Pi</p>
+<button onclick="buy('${name}',${price})">
+Acheter en Pi
+</button>
+`;
 
-document.getElementById("propertyList")
+document
+.getElementById("propertyList")
 .appendChild(div);
-};
 
-reader.readAsDataURL(file);
+alert("Bien immobilier enregistré");
+
+}
+catch(error){
+
+console.error(error);
+
+alert(
+"Erreur Firebase : "
++ error.message
+);
+
+}
 }
 
 // PI LOGIN
