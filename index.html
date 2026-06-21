@@ -250,6 +250,28 @@ Publier
     </p>
 </footer>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCJJTzEmu3BpbyiZEF_8XgjEUJXcO_4xCY",
+  authDomain: "arashi-btp.firebaseapp.com",
+  projectId: "arashi-btp",
+  storageBucket: "arashi-btp.firebasestorage.app",
+  messagingSenderId: "27339537390",
+  appId: "1:27339537390:web:38ed4ee2f957aa89f9ecff",
+  measurementId: "G-DN0T5N6HWD"
+};
+
+const app = initializeApp(firebaseConfig);
+
+window.db = getFirestore(app);
+window.storage = getStorage(app);
+</script>
+
+
 <script src="script.js"></script>
 
 </body>
