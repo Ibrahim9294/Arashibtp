@@ -45,7 +45,7 @@
 </section>
 
 <section class="hero">
-    <h2>Plateforme ARASHI BTP</h2>
+    <h2>Plateforme Entreprise ARASHI</h2>
 
     <p>
         Gestion de projets, topographie,
@@ -234,15 +234,62 @@ Publier
 
 </section>
 
-<section>
-
+   <section>
     <h2>π Paiement Pi Network</h2>
-
     <button onclick="buy('Service ARASHI',1)">
         Payer 1 Pi
     </button>
-
 </section>
+
+<!-- ==================== CODE PI NETWORK ==================== -->
+<script>
+// Configuration Pi Network
+const Pi = window.Pi;
+
+async function buy(memo, amount) {
+    if (!Pi) {
+        alert("Pi Network n'est pas disponible. Vérifie ta connexion internet.");
+        return;
+    }
+
+    try {
+        await Pi.init({ version: "2.0" });
+
+        const payment = await Pi.createPayment({
+            amount: amount,
+            memo: memo,
+            metadata: {
+                service: "ARASHI BTP",
+                type: "Service Construction"
+            }
+        });
+
+        // Les callbacks obligatoires
+        payment.onReadyForServerApproval(async (paymentId) => {
+            console.log("✅ Prêt pour approbation - ID:", paymentId);
+        });
+
+        payment.onReadyForServerCompletion(async (paymentId, txid) => {
+            console.log("🎉 Paiement terminé ! TXID:", txid);
+            alert(`✅ Paiement de ${amount} Pi réussi ! Merci pour votre confiance.`);
+        });
+
+        payment.onCancel(() => {
+            alert("⛔ Paiement annulé.");
+        });
+
+        payment.onError((error) => {
+            console.error(error);
+            alert("❌ Erreur paiement : " + (error.message || error));
+        });
+
+    } catch (error) {
+        console.error(error);
+        alert("Erreur lors du paiement : " + error.message);
+    }
+}
+</script>
+<!-- ==================== FIN CODE PI ==================== --> 
 
 <footer>
     <p>
@@ -262,7 +309,7 @@ Publier
   const firebaseConfig = {
     apiKey: "AIzaSyCJJTzEmu3BpbyiZEF_8XgjEUJXcO_4xCY",
     authDomain: "arashi-btp.firebaseapp.com",
-    projectId: "arashi-btp",
+    projectId: "Entreprise arashi",
     storageBucket: "arashi-btp.firebasestorage.app",
     messagingSenderId: "27339537390",
     appId: "1:27339537390:web:28572e255917763cf9ecff",
