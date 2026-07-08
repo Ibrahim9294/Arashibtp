@@ -445,7 +445,7 @@ async function(paymentId){
 
 await fetch(
 
-"https://arashi-btp-backend.onrender.com/approve",
+https://entreprise-arashi.onrender.com,
 
 {
 
