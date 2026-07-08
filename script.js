@@ -445,7 +445,7 @@ async function(paymentId){
 
 await fetch(
 
-"https://entreprise-arashi.onrender.com",
+"https://entreprise-arashi.onrender.com/approve",
 
 {
 
@@ -500,7 +500,7 @@ async function(paymentId,txid){
 
 await fetch(
 
-"https://entreprise-arashi.onrender.com",
+"https://entreprise-arashi.onrender.com/complete",
 
 {
 
