@@ -1,7 +1,7 @@
 {
   "name": "Entreprise-arashi-backend",
   "version": "1.0.0",
-  "description": "Backend pour paiements Pi - Arashi BTP",
+  "description": "Backend pour paiements Pi - Entreprise Arashi",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
