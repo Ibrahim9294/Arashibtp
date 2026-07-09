@@ -478,3 +478,51 @@ section{
 
 
 }
+
+/* ================= MENU MOBILE ================= */
+
+.menu-toggle{
+
+    width:100%;
+
+    padding:15px;
+
+    font-size:18px;
+
+    border:none;
+
+    background:#0d6efd;
+
+    color:white;
+
+    cursor:pointer;
+
+}
+
+.dashboard-menu{
+
+    display:none;
+
+    flex-direction:column;
+
+    background:#f8f8f8;
+
+}
+
+.dashboard-menu a{
+
+    padding:15px;
+
+    text-decoration:none;
+
+    border-bottom:1px solid #ddd;
+
+    color:#333;
+
+}
+
+.dashboard-menu a:hover{
+
+    background:#e9ecef;
+
+}
