@@ -499,7 +499,7 @@ section{
 
 }
 
-.dashboard-menu{
+#dashboardMenu{
 
     display:none;
 
@@ -509,7 +509,7 @@ section{
 
 }
 
-.dashboard-menu a{
+#dashboardMenu a{
 
     padding:15px;
 
@@ -521,7 +521,7 @@ section{
 
 }
 
-.dashboard-menu a:hover{
+#dashboardMenu a:hover{
 
     background:#e9ecef;
 
