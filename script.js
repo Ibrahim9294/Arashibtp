@@ -619,3 +619,21 @@ document.addEventListener("DOMContentLoaded",()=>{
     console.log("✅ Entreprise ARASHI chargée.");
 
 });
+
+// ================= MENU =================
+
+function toggleMenu(){
+
+    const menu=document.getElementById("dashboardMenu");
+
+    if(menu.style.display==="block"){
+
+        menu.style.display="none";
+
+    }else{
+
+        menu.style.display="block";
+
+    }
+
+}
