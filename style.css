@@ -483,17 +483,21 @@ section{
 
 .menu-toggle{
 
+    display:block;
+
     width:100%;
 
     padding:15px;
 
-    font-size:18px;
+    background:#0a3d62;
+
+    color:white;
 
     border:none;
 
-    background:#0d6efd;
+    font-size:20px;
 
-    color:white;
+    font-weight:bold;
 
     cursor:pointer;
 
@@ -503,26 +507,26 @@ section{
 
     display:none;
 
-    flex-direction:column;
-
-    background:#f8f8f8;
+    background:#0a3d62;
 
 }
 
 #dashboardMenu a{
 
-    padding:15px;
+    display:block;
+
+    color:white;
 
     text-decoration:none;
 
-    border-bottom:1px solid #ddd;
+    padding:15px;
 
-    color:#333;
+    border-bottom:1px solid rgba(255,255,255,.2);
 
 }
 
 #dashboardMenu a:hover{
 
-    background:#e9ecef;
+    background:#1e90ff;
 
 }
