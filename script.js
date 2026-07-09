@@ -615,187 +615,46 @@ callbacks
 
 // ================= MARKETPLACE =================
 
+function addMarketItem() {
 
-async function addMarketItem(){
+    let title = document.getElementById("marketTitle").value;
+    let category = document.getElementById("marketCategory").value;
+    let price = document.getElementById("marketPrice").value;
 
+    let file = document.getElementById("marketImage").files[0];
 
+    if (!title || !category || !price) {
+        alert("Veuillez remplir tous les champs.");
+        return;
+    }
 
-let title =
-document.getElementById("marketTitle").value;
+    let imageUrl = "assets/no-image.png";
 
+    if (file) {
+        imageUrl = URL.createObjectURL(file);
+    }
 
+    let card = document.createElement("div");
 
-let category =
-document.getElementById("marketCategory").value;
+    card.className = "product-card";
 
+    card.innerHTML = `
+        <img src="${imageUrl}" alt="${title}">
+        <h3>${title}</h3>
+        <p>${category}</p>
+        <strong>${price} π</strong>
 
+        <button onclick="buy('${title}', ${price})">
+            Acheter avec Pi
+        </button>
+    `;
 
-let price =
-document.getElementById("marketPrice").value;
+    document.getElementById("marketList").appendChild(card);
 
+    document.getElementById("marketTitle").value = "";
+    document.getElementById("marketCategory").value = "";
+    document.getElementById("marketPrice").value = "";
+    document.getElementById("marketImage").value = "";
 
-
-let file =
-document.getElementById("marketImage")
-.files[0];
-
-
-
-if(!title || !price){
-
-
-alert(
-"Informations manquantes"
-);
-
-
-return;
-
-}
-
-
-
-
-try{
-
-
-let imageUrl="";
-
-
-
-if(file){
-
-
-let imageRef =
-firebaseFunctions.ref(
-
-window.storage,
-
-"products/"+Date.now()+"_"+file.name
-
-);
-
-
-
-await firebaseFunctions.uploadBytes(
-
-imageRef,
-
-file
-
-);
-
-
-
-imageUrl =
-await firebaseFunctions.getDownloadURL(
-
-imageRef
-
-);
-
-
-
-}
-
-
-
-
-await firebaseFunctions.addDoc(
-
-firebaseFunctions.collection(
-
-window.db,
-
-"products"
-
-),
-
-
-{
-
-
-title:title,
-
-
-category:category,
-
-
-price:Number(price),
-
-
-image:imageUrl,
-
-
-date:new Date()
-
-
-}
-
-
-
-);
-
-
-
-
-let div =
-document.createElement("div");
-
-
-
-div.className="card";
-
-
-
-div.innerHTML=
-
-
-`
-
-<h3>${title}</h3>
-
-<p>${category}</p>
-
-<p>${price} π</p>
-
-
-<button onclick="buy('${title}',${price})">
-
-Acheter
-
-</button>
-
-`;
-
-
-
-document
-.getElementById("marketList")
-.appendChild(div);
-
-
-
-alert(
-"Produit publié"
-);
-
-
-
-}
-
-catch(error){
-
-
-console.error(error);
-
-
-alert(
-"Erreur Firebase"
-);
-
-
-}
-
-
+    alert("Produit publié avec succès.");
 }
