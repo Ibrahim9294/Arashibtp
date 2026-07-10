@@ -1,1 +1,792 @@
-e
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Entreprise ARASHI | Pi Marketplace</title>
+
+<meta name="description" content="Entreprise ARASHI Construction Immobilier Topographie Marketplace Pi Network">
+
+
+<link rel="stylesheet" href="style.css">
+
+
+<!-- Pi Network SDK -->
+
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+
+</head>
+
+
+<body>
+
+
+
+<!-- HEADER -->
+
+<header class="header">
+
+<h1>
+🏗️ Entreprise ARASHI
+</h1>
+
+
+<p>
+Construction • Immobilier • Topographie • Marketplace Pi
+</p>
+
+
+</header>
+
+
+
+
+
+<!-- MENU -->
+
+<button class="menu-toggle" onclick="toggleMenu()">
+☰ Menu
+</button>
+
+<nav class="dashboard-menu" id="dashboardMenu">
+
+
+
+<a href="#dashboard">
+📊 Dashboard
+</a>
+
+
+<a href="#immobilier">
+🏡 Immobilier
+</a>
+
+
+<a href="#topographie">
+📐 Topographie
+</a>
+
+
+<a href="#construction">
+🏗️ Construction
+</a>
+
+
+<a href="#materiaux">
+🧱 Matériaux
+</a>
+
+
+<a href="#marketplace">
+🛒 Marché Pi
+</a>
+
+
+<a href="#projets">
+📁 Projets
+</a>
+
+
+<a href="#contact">
+📞 Contact
+</a>
+
+
+
+</nav>
+
+
+
+
+
+
+<!-- CONNEXION -->
+
+
+<section class="auth-section">
+
+
+<h2>
+👤 Connexion utilisateur
+</h2>
+
+
+
+<input id="email"
+type="email"
+placeholder="Email">
+
+
+<input id="password"
+type="password"
+placeholder="Mot de passe">
+
+
+
+<button onclick="register()">
+Créer un compte
+</button>
+
+
+
+<button onclick="login()">
+Connexion
+</button>
+
+
+
+<hr>
+
+
+
+<button id="piLogin">
+π Connexion Pi Network
+</button>
+
+
+
+<p id="userStatus">
+Non connecté
+</p>
+
+
+
+</section>
+
+
+
+
+
+
+
+<!-- HERO -->
+
+
+<section class="hero">
+
+
+<h2>
+Bienvenue sur ARASHI Marketplace
+</h2>
+
+
+<p>
+
+Achetez des villas, terrains,
+matériels topographiques,
+machines et matériaux avec Pi Network.
+
+</p>
+
+
+
+<button onclick="scrollToMarketplace()">
+
+🛒 Explorer le marché
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+
+
+<!-- DASHBOARD -->
+
+
+<section id="dashboard">
+
+
+<h2>
+📊 Tableau de bord
+</h2>
+
+
+
+<div class="dashboard-grid">
+
+
+<div class="card">
+
+<h3>
+🏗️ Projets
+</h3>
+
+<p id="totalProjects">
+0
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+<h3>
+🏡 Biens immobiliers
+</h3>
+
+<p id="totalProperties">
+0
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h3>
+📍 Parcelles
+</h3>
+
+<p id="totalParcels">
+0
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h3>
+💰 Revenus Pi
+</h3>
+
+<p id="totalRevenue">
+0 π
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- IMMOBILIER -->
+
+
+<section id="immobilier">
+
+
+<h2>
+🏡 Immobilier ARASHI
+</h2>
+
+
+
+<div class="product-grid">
+
+
+
+<div class="product-card">
+
+
+<img src="assets/villas/villa-moderne.jpg"
+alt="Villa moderne">
+
+
+
+<h3>
+Villa Moderne Niamey
+</h3>
+
+
+<p>
+5 chambres • Piscine • Jardin
+</p>
+
+
+<strong>
+2500 π
+</strong>
+
+
+
+<button onclick="buy('Villa Moderne Niamey',2500)">
+Acheter avec Pi
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="product-card">
+
+
+<img src="assets/terrains/terrain.jpg"
+alt="Terrain">
+
+
+<h3>
+Terrain Résidentiel
+</h3>
+
+
+<p>
+500 m² Lotissement
+</p>
+
+
+<strong>
+800 π
+</strong>
+
+
+
+<button onclick="buy('Terrain Résidentiel',800)">
+Acheter avec Pi
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- TOPOGRAPHIE -->
+
+
+<section id="topographie">
+
+
+<h2>
+📐 Matériel Topographique
+</h2>
+
+
+
+
+<div class="product-grid">
+
+
+<div class="product-card">
+
+
+<img src="assets/topographie/gnss-rtk.jpg">
+
+
+<h3>
+GNSS RTK Professionnel
+</h3>
+
+
+<p>
+GPS • BDS • GLONASS
+</p>
+
+
+<strong>
+3500 π
+</strong>
+
+
+
+<button onclick="buy('GNSS RTK',3500)">
+Acheter
+</button>
+
+
+</div>
+
+
+
+
+
+<div class="product-card">
+
+
+<img src="assets/topographie/station-totale.jpg">
+
+
+<h3>
+Station Totale
+</h3>
+
+
+<p>
+Mesure angles et distances
+</p>
+
+
+<strong>
+5000 π
+</strong>
+
+
+
+<button onclick="buy('Station Totale',5000)">
+Acheter
+</button>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- CONSTRUCTION -->
+
+
+<section id="construction">
+
+
+<h2>
+🏗️ Machines Construction
+</h2>
+
+
+
+<div class="product-grid">
+
+
+<div class="product-card">
+
+
+<img src="assets/construction/betonniere.jpg">
+
+
+<h3>
+Bétonnière
+</h3>
+
+
+<p>
+Matériel chantier
+</p>
+
+
+<strong>
+600 π
+</strong>
+
+
+
+<button onclick="buy('Bétonnière',600)">
+Acheter
+</button>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- MATERIAUX -->
+
+
+<section id="materiaux">
+
+
+<h2>
+🧱 Matériaux Construction
+</h2>
+
+
+
+<div class="product-grid">
+
+
+<div class="product-card">
+
+
+<img src="assets/materiaux/ciment.jpg">
+
+
+<h3>
+Ciment
+</h3>
+
+
+<p>
+Vente gros et détail
+</p>
+
+
+<strong>
+20 π
+</strong>
+
+
+<button onclick="buy('Sac ciment',20)">
+Acheter
+</button>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- MARKETPLACE -->
+
+
+<section id="marketplace">
+
+
+<h2>
+🛒 Marketplace Pi ARASHI
+</h2>
+
+
+<input id="marketTitle"
+placeholder="Nom du produit">
+
+
+
+<input id="marketCategory"
+placeholder="Catégorie">
+
+
+
+<input id="marketPrice"
+type="number"
+placeholder="Prix Pi">
+
+
+
+<input id="marketImage"
+type="file"
+accept="image/*">
+
+
+
+<button onclick="addMarketItem()">
+
+Publier produit
+
+</button>
+
+
+
+
+<div id="marketList">
+
+</div>
+
+
+
+</section>
+
+
+<!-- PANIER -->
+
+<section id="cart">
+
+<h2>🛒 Mon Panier</h2>
+
+<div id="cartList">
+
+<p>Votre panier est vide.</p>
+
+</div>
+
+<h3>
+Total :
+<span id="cartTotal">0 π</span>
+</h3>
+
+<button onclick="checkout()">
+Payer avec Pi
+</button>
+
+</section>
+
+<!-- FAVORIS -->
+
+<section id="favorites">
+
+<h2>❤️ Mes Favoris</h2>
+
+<div id="favoriteList">
+
+</div>
+
+</section>
+
+
+
+
+<!-- PROJETS -->
+
+
+<section id="projets">
+
+
+<h2>
+🏗️ Gestion Projets
+</h2>
+
+
+
+<input id="projectName"
+placeholder="Nom projet">
+
+
+<input id="projectClient"
+placeholder="Client">
+
+
+<input id="projectBudget"
+placeholder="Budget FCFA">
+
+
+
+<button onclick="addProject()">
+
+Ajouter
+
+</button>
+
+
+
+<div id="projectList">
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+<!-- CONTACT -->
+
+
+<section id="contact">
+
+
+<h2>
+📞 Contact ARASHI
+</h2>
+
+
+<p>
+Entreprise ARASHI
+</p>
+
+
+<p>
+Niamey - Niger
+</p>
+
+
+
+<button id="contactBtn">
+
+Contacter
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<footer>
+
+
+<p>
+© 2026 Entreprise ARASHI
+</p>
+
+
+</footer>
+
+
+
+
+
+
+<!-- FIREBASE -->
+
+<!-- SCRIPT PRINCIPAL -->
+<script src="script.js"></script>
+
+</body>
+</html>
