@@ -1,33 +1,41 @@
-🏗️ Entreprise ARASHI - Pi Network Marketplace
-📌 Présentation
-Entreprise ARASHI est une plateforme digitale spécialisée dans :
+# 🖥️ Frontend - Entreprise ARASHI
 
-🏗️ Construction
-🏡 Immobilier
-📐 Topographie
-📍 Lotissement
-🧱 Matériaux de construction
-🛒 Marketplace Pi Network
-L'application permet aux utilisateurs de :
+## 📌 Description
 
-consulter des biens immobiliers ;
-acheter du matériel professionnel ;
-publier des produits ;
-gérer des projets BTP ;
-effectuer des paiements avec Pi Network.
-🚀 Technologies utilisées
-Frontend
-HTML5
-CSS3
-JavaScript
-Pi SDK
-Firebase
-Backend
-Node.js
-Express.js
-Axios
-API Pi Network
-Base de données
-Firebase Firestore
-Firebase Storage
-📁 Structure du projet
+Ce dossier contient toute l'interface utilisateur de l'application Entreprise ARASHI.
+
+## 🚀 Technologies
+
+- HTML5
+- CSS3
+- JavaScript
+- Firebase
+- Pi Network SDK
+
+## 📂 Fichiers
+
+- index.html
+- style.css
+- script.js
+- firebase.js
+- vercel.json
+- assets/
+
+## ✨ Fonctionnalités
+
+- Authentification utilisateur
+- Connexion Pi Network
+- Marketplace
+- Immobilier
+- Construction
+- Topographie
+- Lotissement
+- Gestion des projets
+- Paiement Pi Network
+- Interface responsive
+
+## 🌐 Déploiement
+
+Frontend hébergé sur **Vercel**.
+
+© 2026 Entreprise ARASHI
