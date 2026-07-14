@@ -4,7 +4,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Vendor Center | Entreprise ARASHI</title>
@@ -15,7 +14,7 @@
 
 <body>
 
-<header>
+<header class="header">
 
 <h1>🛍️ Vendor Center</h1>
 
@@ -23,40 +22,160 @@
 
 </header>
 
+
 <section>
 
-<h2>Créer une boutique</h2>
+<h2>🏪 Créer ma boutique</h2>
 
-<input type="text" placeholder="Nom de la boutique">
+<input
+id="shopName"
+type="text"
+placeholder="Nom de la boutique">
 
-<input type="text" placeholder="Pays">
+<input
+id="shopCountry"
+type="text"
+placeholder="Pays">
 
-<input type="email" placeholder="Email">
+<input
+id="shopEmail"
+type="email"
+placeholder="Email">
 
-<button>Créer ma boutique</button>
+<button onclick="createShop()">
+Créer ma boutique
+</button>
+
+<p id="shopStatus"></p>
 
 </section>
 
+
 <section>
 
-<h2>Mes produits</h2>
+<h2>📦 Publier un produit</h2>
 
-<button>Ajouter un produit</button>
+<input
+id="productTitle"
+type="text"
+placeholder="Nom du produit">
+
+<input
+id="productCategory"
+type="text"
+placeholder="Catégorie">
+
+<input
+id="productPrice"
+type="number"
+placeholder="Prix en Pi">
+
+<textarea
+id="productDescription"
+placeholder="Description du produit"></textarea>
+
+<input
+id="productImage"
+type="file"
+accept="image/*">
+
+<button onclick="publishProduct()">
+Publier le produit
+</button>
+
+</section>
+
+
+<section>
+
+<h2>🛍️ Mes produits</h2>
 
 <div id="vendorProducts">
 
-<p>Aucun produit publié.</p>
+<p>
+Aucun produit publié.
+</p>
 
 </div>
 
 </section>
 
+
+<section>
+
+<h2>📊 Tableau de bord vendeur</h2>
+
+<div class="dashboard-grid">
+
+<div class="card">
+
+<h3>
+Produits
+</h3>
+
+<p id="vendorTotalProducts">
+0
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Ventes
+</h3>
+
+<p id="vendorSales">
+0
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Revenus Pi
+</h3>
+
+<p id="vendorRevenue">
+0 π
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section>
+
+<h2>⚙️ Actions</h2>
+
+<button onclick="loadProducts()">
+🔄 Actualiser les produits
+</button>
+
+<button onclick="clearVendorProducts()">
+🗑️ Supprimer tous les produits
+</button>
+
+</section>
+
+
 <br>
 
 <a href="../index.html">
+
 ⬅ Retour à l'accueil
+
 </a>
+
+
+<script src="../js/vendor.js"></script>
 
 </body>
 
-  </html>
+</html>
