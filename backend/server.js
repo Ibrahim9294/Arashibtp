@@ -81,7 +81,10 @@ app.post("/products", async(req,res)=>{
     try{
 
 
-        const product = req.body;
+       const product = {
+    ...req.body,
+    created_at: new Date().toISOString()
+};
 
 
         const {data,error}=await supabase
