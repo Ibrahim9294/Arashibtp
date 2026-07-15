@@ -1,12 +1,11 @@
 // ==========================================
 // ARASHI VENDOR CENTER
-// Gestion boutique et produits
+// Version connectée Backend + Supabase
 // ==========================================
 
 
-let vendorProducts = JSON.parse(
-    localStorage.getItem("arashiProducts")
-) || [];
+const API_URL =
+"https://entreprise-arashi.onrender.com";
 
 
 
@@ -16,24 +15,29 @@ let vendorProducts = JSON.parse(
 
 function createShop(){
 
-    const name = document.getElementById("shopName").value;
-    const country = document.getElementById("shopCountry").value;
-    const email = document.getElementById("shopEmail").value;
+    const name =
+    document.getElementById("shopName").value;
+
+    const country =
+    document.getElementById("shopCountry").value;
+
+    const email =
+    document.getElementById("shopEmail").value;
 
 
     if(!name || !country || !email){
 
         alert("Veuillez remplir tous les champs.");
-
         return;
+
     }
 
 
     const shop = {
 
-        name:name,
-        country:country,
-        email:email
+        name,
+        country,
+        email
 
     };
 
@@ -45,12 +49,9 @@ function createShop(){
 
 
     document.getElementById("shopStatus").innerHTML =
-    "✅ Boutique créée : " + name;
-
+    "✅ Boutique créée : "+name;
 
 }
-
-
 
 
 
@@ -58,7 +59,7 @@ function createShop(){
 // PUBLIER UN PRODUIT
 // ==========================================
 
-function publishProduct(){
+async function publishProduct(){
 
 
     const title =
@@ -70,7 +71,9 @@ function publishProduct(){
 
 
     const price =
-    Number(document.getElementById("productPrice").value);
+    Number(
+    document.getElementById("productPrice").value
+    );
 
 
     const description =
@@ -80,8 +83,7 @@ function publishProduct(){
 
     if(!title || !category || !price){
 
-        alert("Veuillez remplir les informations du produit.");
-
+        alert("Veuillez remplir les informations.");
         return;
 
     }
@@ -90,207 +92,281 @@ function publishProduct(){
 
     const product = {
 
-        id: Date.now(),
 
         title:title,
 
         category:category,
 
-        price:price,
-
         description:description,
 
-        date:new Date().toLocaleDateString(),
+        price_pi:price,
 
-        sales:0
+        image_url:""
+
 
     };
 
 
 
-    vendorProducts.push(product);
+    try{
 
 
+        const response = await fetch(
 
-    localStorage.setItem(
+            API_URL+"/products",
 
-        "arashiProducts",
+            {
 
-        JSON.stringify(vendorProducts)
+            method:"POST",
 
-    );
+            headers:{
 
+                "Content-Type":
+                "application/json"
 
+            },
 
-    alert("✅ Produit publié avec succès.");
 
+            body:
+            JSON.stringify(product)
 
 
-    clearForm();
+            }
 
-
-    loadProducts();
-
-
-}
-
-
-
-
-// ==========================================
-// AFFICHER LES PRODUITS DU VENDEUR
-// ==========================================
-
-function loadProducts(){
-
-
-    const box =
-    document.getElementById("vendorProducts");
-
-
-    if(!box){
-
-        return;
-
-    }
-
-
-
-    box.innerHTML="";
-
-
-
-    if(vendorProducts.length===0){
-
-
-        box.innerHTML =
-        "<p>Aucun produit publié.</p>";
-
-        updateStats();
-
-        return;
-
-    }
-
-
-
-
-
-    vendorProducts.forEach(product=>{
-
-
-        const card =
-        document.createElement("div");
-
-
-        card.className="card";
-
-
-
-        card.innerHTML = `
-
-        <h3>${product.title}</h3>
-
-        <p>
-        Catégorie : ${product.category}
-        </p>
-
-        <p>
-        ${product.description}
-        </p>
-
-        <strong>
-        ${product.price} π
-        </strong>
-
-
-        <br>
-
-
-        <button onclick="deleteProduct(${product.id})">
-        🗑️ Supprimer
-        </button>
-
-
-        `;
-
-
-
-        box.appendChild(card);
-
-
-
-    });
-
-
-
-    updateStats();
-
-
-
-}
-
-
-
-
-
-// ==========================================
-// SUPPRIMER UN PRODUIT
-// ==========================================
-
-function deleteProduct(id){
-
-
-    vendorProducts =
-    vendorProducts.filter(
-        product => product.id !== id
-    );
-
-
-
-    localStorage.setItem(
-
-        "arashiProducts",
-
-        JSON.stringify(vendorProducts)
-
-    );
-
-
-
-    loadProducts();
-
-
-}
-
-
-
-
-// ==========================================
-// SUPPRIMER TOUS LES PRODUITS
-// ==========================================
-
-function clearVendorProducts(){
-
-
-    if(confirm("Supprimer tous les produits ?")){
-
-
-        vendorProducts=[];
-
-
-        localStorage.removeItem(
-            "arashiProducts"
         );
 
 
-        loadProducts();
+
+        const data =
+        await response.json();
+
+
+
+        if(response.ok){
+
+
+            alert(
+            "✅ Produit publié dans Marketplace"
+            );
+
+
+            clearForm();
+
+            loadProducts();
+
+
+
+        }else{
+
+
+            alert(
+            "Erreur : "+JSON.stringify(data)
+            );
+
+
+        }
+
+
+
+    }catch(error){
+
+
+        console.log(error);
+
+        alert(
+        "Serveur indisponible"
+        );
+
 
     }
 
 
+
 }
 
+
+
+
+// ==========================================
+// AFFICHER LES PRODUITS
+// ==========================================
+
+async function loadProducts(){
+
+
+const box =
+document.getElementById("vendorProducts");
+
+
+
+if(!box){
+
+return;
+
+}
+
+
+
+try{
+
+
+const response =
+await fetch(
+
+API_URL+"/products"
+
+);
+
+
+
+const products =
+await response.json();
+
+
+
+box.innerHTML="";
+
+
+
+if(products.length===0){
+
+
+box.innerHTML=
+"<p>Aucun produit publié.</p>";
+
+updateStats([]);
+
+return;
+
+}
+
+
+
+products.forEach(product=>{
+
+
+const card =
+document.createElement("div");
+
+
+card.className="card";
+
+
+
+card.innerHTML=`
+
+<h3>${product.title}</h3>
+
+
+<p>
+Catégorie :
+${product.category}
+</p>
+
+
+<p>
+${product.description || ""}
+</p>
+
+
+<strong>
+${product.price_pi} π
+</strong>
+
+
+<br>
+
+
+<button onclick="deleteProduct('${product.id}')">
+
+🗑️ Supprimer
+
+</button>
+
+
+`;
+
+
+
+box.appendChild(card);
+
+
+
+});
+
+
+
+updateStats(products);
+
+
+
+}catch(error){
+
+
+console.log(error);
+
+
+box.innerHTML=
+"<p>Erreur chargement produits</p>";
+
+
+}
+
+
+
+}
+
+
+
+
+// ==========================================
+// SUPPRIMER PRODUIT
+// ==========================================
+
+async function deleteProduct(id){
+
+
+
+if(!confirm("Supprimer ce produit ?")){
+
+return;
+
+}
+
+
+
+try{
+
+
+await fetch(
+
+API_URL+"/products/"+id,
+
+{
+
+method:"DELETE"
+
+}
+
+);
+
+
+
+loadProducts();
+
+
+
+}catch(error){
+
+
+console.log(error);
+
+
+}
+
+
+
+}
 
 
 
@@ -302,77 +378,93 @@ function clearVendorProducts(){
 function clearForm(){
 
 
-    document.getElementById("productTitle").value="";
-
-    document.getElementById("productCategory").value="";
-
-    document.getElementById("productPrice").value="";
-
-    document.getElementById("productDescription").value="";
+document.getElementById("productTitle").value="";
 
 
-}
+document.getElementById("productCategory").value="";
 
 
+document.getElementById("productPrice").value="";
 
 
-
-// ==========================================
-// STATISTIQUES VENDEUR
-// ==========================================
-
-function updateStats(){
-
-
-    const total =
-    document.getElementById("vendorTotalProducts");
-
-
-    if(total){
-
-        total.innerHTML =
-        vendorProducts.length;
-
-    }
-
-
-
-    const revenue =
-    document.getElementById("vendorRevenue");
-
-
-    if(revenue){
-
-        let sum=0;
-
-
-        vendorProducts.forEach(p=>{
-
-            sum += p.price;
-
-        });
-
-
-        revenue.innerHTML =
-        sum+" π";
-
-    }
+document.getElementById("productDescription").value="";
 
 
 }
 
 
 
+// ==========================================
+// STATISTIQUES
+// ==========================================
+
+function updateStats(products){
+
+
+
+const total =
+document.getElementById(
+"vendorTotalProducts"
+);
+
+
+
+if(total){
+
+total.innerHTML =
+products.length;
+
+}
+
+
+
+const revenue =
+document.getElementById(
+"vendorRevenue"
+);
+
+
+
+if(revenue){
+
+
+let sum=0;
+
+
+products.forEach(p=>{
+
+
+sum += Number(p.price_pi);
+
+
+});
+
+
+
+revenue.innerHTML =
+sum+" π";
+
+
+}
+
+
+
+}
+
 
 
 // ==========================================
-// CHARGEMENT
+// INITIALISATION
 // ==========================================
 
 document.addEventListener(
+
 "DOMContentLoaded",
+
 ()=>{
 
-    loadProducts();
+loadProducts();
 
-});
+}
+
+);
