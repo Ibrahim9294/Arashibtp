@@ -1,107 +1,117 @@
+
 // ==========================================
 // ARASHI MARKETPLACE
-// Affichage des produits vendeurs
+// Connexion Supabase via Render
 // ==========================================
 
 
-let marketplaceProducts = JSON.parse(
-    localStorage.getItem("arashiProducts")
-) || [];
+const API_URL =
+"https://entreprise-arashi.onrender.com";
 
 
 
-// ==========================================
-// CHARGER LES PRODUITS
-// ==========================================
-
-function loadMarketplace(){
+async function loadMarketplace(){
 
 
-    const list =
-    document.getElementById("marketList");
+const list =
+document.getElementById("marketList");
 
 
-    if(!list){
-
-        return;
-
-    }
-
-
-    list.innerHTML="";
+if(!list) return;
 
 
 
-    if(marketplaceProducts.length === 0){
+try{
 
 
-        list.innerHTML =
-        "<p>Aucun produit disponible.</p>";
-
-
-        return;
-
-    }
+const response =
+await fetch(
+API_URL+"/products"
+);
 
 
 
-    marketplaceProducts.forEach(product=>{
-
-
-        const card =
-        document.createElement("div");
-
-
-        card.className="product-card";
+const products =
+await response.json();
 
 
 
-        card.innerHTML = `
-
-
-        <h3>
-        ${product.title}
-        </h3>
-
-
-        <p>
-        Catégorie : ${product.category}
-        </p>
-
-
-        <p>
-        ${product.description}
-        </p>
-
-
-        <strong>
-        ${product.price} π
-        </strong>
-
-
-        <button onclick="addToCart('${product.title}',${product.price})">
-
-        🛒 Ajouter au panier
-
-        </button>
-
-
-        <button onclick="buy('${product.title}',${product.price})">
-
-        💳 Acheter avec Pi
-
-        </button>
-
-
-        `;
+list.innerHTML="";
 
 
 
-        list.appendChild(card);
+if(products.length===0){
+
+list.innerHTML =
+"<p>Aucun produit disponible</p>";
+
+return;
+
+}
 
 
 
-    });
+products.forEach(product=>{
+
+
+list.innerHTML += `
+
+<div class="product-card">
+
+
+<h3>
+${product.title}
+</h3>
+
+
+<p>
+${product.category}
+</p>
+
+
+<p>
+${product.description || ""}
+</p>
+
+
+<strong>
+${product.price_pi} π
+</strong>
+
+
+<br><br>
+
+
+<button onclick="addToCart(
+'${product.title}',
+${product.price_pi}
+)">
+
+🛒 Ajouter au panier
+
+</button>
+
+
+</div>
+
+`;
+
+
+});
+
+
+
+}catch(error){
+
+
+console.log(error);
+
+
+list.innerHTML =
+"Erreur serveur";
+
+
+}
 
 
 
@@ -109,14 +119,11 @@ function loadMarketplace(){
 
 
 
-// ==========================================
-// INITIALISATION
-// ==========================================
 
 document.addEventListener(
+
 "DOMContentLoaded",
-()=>{
 
-    loadMarketplace();
+loadMarketplace
 
-});
+);
