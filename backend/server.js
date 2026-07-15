@@ -1,6 +1,6 @@
 // ==========================================
-// ENTREPRISE ARASHI - BACKEND PI NETWORK
-// Production Backend
+// ENTREPRISE ARASHI - BACKEND
+// Pi Network + Supabase
 // ==========================================
 
 require("dotenv").config();
@@ -8,11 +8,30 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const { createClient } = require("@supabase/supabase-js");
+
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+
+// ==========================================
+// CONFIG SUPABASE
+// ==========================================
+
+const supabase = createClient(
+
+    process.env.SUPABASE_URL,
+
+    process.env.SUPABASE_SECRET_KEY
+
+);
+
+
+console.log("✅ Supabase configuré");
+
 
 
 // ==========================================
@@ -24,13 +43,11 @@ const PI_API_KEY = process.env.PI_API_KEY;
 const PI_API_URL = "https://api.minepi.com/v2";
 
 
-// Vérification clé API
+if(!PI_API_KEY){
 
-if (!PI_API_KEY) {
+    console.log("⚠️ PI_API_KEY manquante");
 
-    console.log("⚠️ PI_API_KEY manquante dans Render");
-
-} else {
+}else{
 
     console.log("✅ PI_API_KEY chargée");
 
@@ -42,13 +59,166 @@ if (!PI_API_KEY) {
 // TEST SERVEUR
 // ==========================================
 
-app.get("/", (req,res)=>{
+app.get("/",(req,res)=>{
 
     res.send(
-        "✅ Backend ARASHI Pi Network fonctionne"
+        "✅ Backend ARASHI Pi + Supabase fonctionne"
     );
 
 });
+
+
+
+// ==========================================
+// PRODUITS MARKETPLACE
+// ==========================================
+
+
+// Ajouter un produit
+
+app.post("/products", async(req,res)=>{
+
+    try{
+
+
+        const product = req.body;
+
+
+        const {data,error}=await supabase
+
+        .from("products")
+
+        .insert([product])
+
+        .select();
+
+
+
+        if(error){
+
+            return res.status(400).json(error);
+
+        }
+
+
+        res.json(data);
+
+
+
+    }catch(error){
+
+
+        res.status(500).json({
+
+            error:error.message
+
+        });
+
+
+    }
+
+});
+
+
+
+
+// Voir tous les produits
+
+app.get("/products", async(req,res)=>{
+
+    try{
+
+
+        const {data,error}=await supabase
+
+        .from("products")
+
+        .select("*")
+
+        .order("created_at",
+        {ascending:false});
+
+
+
+        if(error){
+
+            return res.status(400).json(error);
+
+        }
+
+
+        res.json(data);
+
+
+
+    }catch(error){
+
+
+        res.status(500).json({
+
+            error:error.message
+
+        });
+
+
+    }
+
+});
+
+
+
+
+// Supprimer produit
+
+app.delete("/products/:id", async(req,res)=>{
+
+
+    try{
+
+
+        const {error}=await supabase
+
+        .from("products")
+
+        .delete()
+
+        .eq(
+            "id",
+            req.params.id
+        );
+
+
+
+        if(error){
+
+            return res.status(400).json(error);
+
+        }
+
+
+        res.json({
+
+            success:true
+
+        });
+
+
+
+    }catch(error){
+
+
+        res.status(500).json({
+
+            error:error.message
+
+        });
+
+
+    }
+
+
+});
+
 
 
 
@@ -59,103 +229,57 @@ app.get("/", (req,res)=>{
 app.post("/approve", async(req,res)=>{
 
 
-    try {
+try{
 
 
-        const {
-            paymentId,
-            product,
-            amount
-        } = req.body;
-
-
-        console.log("Paiement reçu :",paymentId);
-
-        console.log("Produit :",product);
-
-        console.log("Montant :",amount);
+const {
+paymentId,
+product,
+amount
+}=req.body;
 
 
 
-        if(!paymentId){
+const response = await axios.post(
 
-            return res.status(400).json({
+`${PI_API_URL}/payments/${paymentId}/approve`,
 
-                error:"paymentId manquant"
+{},
 
-            });
+{
 
-        }
+headers:{
 
+"Authorization":
+`Key ${PI_API_KEY}`,
 
+"Content-Type":
+"application/json"
 
-        const response = await axios.post(
+}
 
-            `${PI_API_URL}/payments/${paymentId}/approve`,
+}
 
-            {},
-
-            {
-
-                headers:{
-
-                    "Authorization":
-                    `Key ${PI_API_KEY}`,
-
-                    "Content-Type":
-                    "application/json"
-
-                }
-
-            }
-
-        );
+);
 
 
 
-        console.log(
-            "Paiement approuvé",
-            response.data
-        );
+res.json(response.data);
 
 
 
-        res.json({
-
-            success:true,
-
-            data:response.data
-
-        });
+}catch(error){
 
 
+res.status(500).json({
 
-    }
+error:error.response?.data || error.message
 
-    catch(error){
-
-
-        console.error(
-
-            "Erreur approbation :",
-
-            error.response?.data || error.message
-
-        );
+});
 
 
-        res.status(500).json({
+}
 
-            success:false,
-
-            error:
-            error.response?.data ||
-            error.message
-
-        });
-
-
-    }
 
 
 });
@@ -170,120 +294,62 @@ app.post("/approve", async(req,res)=>{
 app.post("/complete", async(req,res)=>{
 
 
-    try {
+try{
 
 
-        const {
+const {
 
-            paymentId,
+paymentId,
 
-            txid
+txid
 
-        } = req.body;
+}=req.body;
 
 
 
-        console.log(
-            "Finalisation paiement",
-            paymentId
-        );
+const response = await axios.post(
 
+`${PI_API_URL}/payments/${paymentId}/complete`,
 
-        if(!paymentId || !txid){
+{
 
+txid
 
-            return res.status(400).json({
+},
 
-                error:
-                "paymentId ou txid manquant"
+{
 
-            });
+headers:{
 
+"Authorization":
+`Key ${PI_API_KEY}`,
 
-        }
+"Content-Type":
+"application/json"
 
+}
 
+}
 
-        const response = await axios.post(
+);
 
 
-            `${PI_API_URL}/payments/${paymentId}/complete`,
 
+res.json(response.data);
 
-            {
 
-                txid:txid
 
-            },
+}catch(error){
 
 
-            {
+res.status(500).json({
 
-                headers:{
+error:error.response?.data || error.message
 
-                    "Authorization":
-                    `Key ${PI_API_KEY}`,
+});
 
-                    "Content-Type":
-                    "application/json"
 
-                }
-
-            }
-
-        );
-
-
-
-        console.log(
-
-            "Paiement terminé",
-
-            response.data
-
-        );
-
-
-
-        res.json({
-
-            success:true,
-
-            data:response.data
-
-        });
-
-
-
-    }
-
-
-    catch(error){
-
-
-        console.error(
-
-            "Erreur completion :",
-
-            error.response?.data || error.message
-
-        );
-
-
-
-        res.status(500).json({
-
-            success:false,
-
-            error:
-            error.response?.data ||
-            error.message
-
-        });
-
-
-
-    }
+}
 
 
 
@@ -293,9 +359,8 @@ app.post("/complete", async(req,res)=>{
 
 
 // ==========================================
-// PORT RENDER
+// PORT
 // ==========================================
-
 
 const PORT = process.env.PORT || 3000;
 
@@ -303,11 +368,11 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT,()=>{
 
 
-    console.log(
+console.log(
 
-        `🚀 Serveur ARASHI lancé sur port ${PORT}`
+`🚀 ARASHI Backend lancé sur ${PORT}`
 
-    );
+);
 
 
 });
