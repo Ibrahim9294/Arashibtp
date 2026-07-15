@@ -1,7 +1,6 @@
-
 // ==========================================
-// ARASHI MARKETPLACE
-// Connexion Supabase via Render
+// ARASHI V2.0
+// MARKETPLACE + SUPABASE IMAGES
 // ==========================================
 
 
@@ -25,9 +24,7 @@ try{
 
 
 const response =
-await fetch(
-API_URL+"/products"
-);
+await fetch(API_URL + "/products");
 
 
 
@@ -40,12 +37,14 @@ list.innerHTML="";
 
 
 
-if(products.length===0){
+if(products.length === 0){
+
 
 list.innerHTML =
 "<p>Aucun produit disponible</p>";
 
 return;
+
 
 }
 
@@ -56,7 +55,13 @@ products.forEach(product=>{
 
 list.innerHTML += `
 
+
 <div class="product-card">
+
+
+<img src="${product.image_url || 'assets/default.jpg'}"
+alt="${product.title}">
+
 
 
 <h3>
@@ -64,9 +69,11 @@ ${product.title}
 </h3>
 
 
+
 <p>
 ${product.category}
 </p>
+
 
 
 <p>
@@ -74,12 +81,14 @@ ${product.description || ""}
 </p>
 
 
+
 <strong>
 ${product.price_pi} π
 </strong>
 
 
-<br><br>
+
+<br>
 
 
 <button onclick="addToCart(
@@ -92,7 +101,9 @@ ${product.price_pi}
 </button>
 
 
+
 </div>
+
 
 `;
 
@@ -108,7 +119,7 @@ console.log(error);
 
 
 list.innerHTML =
-"Erreur serveur";
+"❌ Impossible de charger les produits";
 
 
 }
