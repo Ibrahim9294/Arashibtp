@@ -556,3 +556,248 @@ body{
     padding:30px;
 
 }
+
+/* ==========================================
+   RESPONSIVE MOBILE ARASHI V2.0
+========================================== */
+
+
+@media(max-width:900px){
+
+
+    .sidebar{
+
+        transform:translateX(-100%);
+
+        transition:0.3s;
+
+        z-index:200;
+
+    }
+
+
+
+    .sidebar.active{
+
+        transform:translateX(0);
+
+    }
+
+
+
+    .menu-toggle{
+
+        display:block;
+
+        position:sticky;
+
+        top:0;
+
+        z-index:150;
+
+    }
+
+
+
+    .main{
+
+        margin-left:0;
+
+        padding:20px;
+
+    }
+
+
+
+    .header h1{
+
+        font-size:22px;
+
+    }
+
+
+
+    .header p{
+
+        font-size:14px;
+
+    }
+
+
+
+}
+
+
+
+/* ==========================================
+   ANIMATIONS
+========================================== */
+
+
+@keyframes fadeIn{
+
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+
+}
+
+
+
+.arashi-card,
+.product-card,
+.stat-card,
+.news-card{
+
+
+    animation:fadeIn .5s ease;
+
+}
+
+
+
+
+
+/* ==========================================
+   BOUTONS GENERAUX
+========================================== */
+
+
+button{
+
+
+    font-family:'Inter',sans-serif;
+
+    transition:.3s;
+
+}
+
+
+
+button:hover{
+
+
+    transform:scale(1.05);
+
+}
+
+
+
+/* ==========================================
+   FORMULAIRES
+========================================== */
+
+
+input,
+textarea,
+select{
+
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    border:1px solid #ddd;
+
+    margin:8px 0;
+
+    font-size:15px;
+
+}
+
+
+
+input:focus,
+textarea:focus{
+
+
+    outline:none;
+
+    border-color:var(--primary);
+
+}
+
+
+
+
+
+/* ==========================================
+   DASHBOARD
+========================================== */
+
+
+.dashboard-grid{
+
+
+    display:grid;
+
+    grid-template-columns:
+
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+}
+
+
+
+.card{
+
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+}
+
+
+
+
+
+/* ==========================================
+   DARK MODE PREPARATION
+========================================== */
+
+
+.dark-mode{
+
+
+    background:#111827;
+
+    color:white;
+
+}
+
+
+
+.dark-mode .card,
+.dark-mode .product-card,
+.dark-mode .arashi-card{
+
+
+    background:#1F2937;
+
+    color:white;
+
+}
