@@ -1,0 +1,243 @@
+/* ==========================================
+   ENTREPRISE ARASHI V2.0
+   DESIGN SYSTEM
+========================================== */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap');
+
+
+:root {
+
+    --primary:#0B3D91;
+    --secondary:#F4B400;
+    --white:#FFFFFF;
+    --dark:#1F2937;
+    --light:#F3F4F6;
+
+    --shadow:0 8px 20px rgba(0,0,0,0.08);
+
+    --radius:16px;
+
+}
+
+
+
+/* ==========================================
+   RESET
+========================================== */
+
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:var(--light);
+
+    color:var(--dark);
+
+}
+
+
+
+/* ==========================================
+   HEADER
+========================================== */
+
+
+.header{
+
+    background:var(--primary);
+
+    color:var(--white);
+
+    padding:25px;
+
+    text-align:center;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:100;
+
+}
+
+
+
+.header h1{
+
+    font-family:'Poppins',sans-serif;
+
+    font-size:28px;
+
+}
+
+
+
+.header p{
+
+    margin:10px 0;
+
+}
+
+
+
+/* Bouton Pi */
+
+
+#piLogin{
+
+    background:var(--secondary);
+
+    color:var(--dark);
+
+    border:none;
+
+    padding:12px 25px;
+
+    border-radius:30px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+
+
+/* ==========================================
+   MENU MOBILE
+========================================== */
+
+
+.menu-toggle{
+
+    display:none;
+
+    background:var(--primary);
+
+    color:white;
+
+    border:none;
+
+    padding:12px;
+
+    width:100%;
+
+}
+
+
+
+
+
+/* ==========================================
+   SIDEBAR
+========================================== */
+
+
+.sidebar{
+
+    position:fixed;
+
+    left:0;
+
+    top:0;
+
+    width:270px;
+
+    height:100vh;
+
+    background:var(--dark);
+
+    color:white;
+
+    padding:20px;
+
+    overflow-y:auto;
+
+}
+
+
+
+.sidebar h2{
+
+    color:var(--secondary);
+
+    margin-bottom:20px;
+
+}
+
+
+
+.sidebar a{
+
+    display:block;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    margin-bottom:5px;
+
+}
+
+
+
+.sidebar a:hover{
+
+    background:var(--primary);
+
+}
+
+
+
+/* ==========================================
+   CONTENU
+========================================== */
+
+
+.main{
+
+    margin-left:270px;
+
+    padding:30px;
+
+}
+
+
+
+/* ==========================================
+   RECHERCHE
+========================================== */
+
+
+.search-box input{
+
+    width:100%;
+
+    padding:15px;
+
+    border-radius:30px;
+
+    border:none;
+
+    box-shadow:var(--shadow);
+
+    font-size:16px;
+
+}
