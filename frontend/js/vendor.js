@@ -1,470 +1,136 @@
-// ==========================================
-// ARASHI VENDOR CENTER
-// Version connectée Backend + Supabase
-// ==========================================
+import { supabase } from './supabase.js';
+import { ArashiAuth } from './auth.js';
 
+document.addEventListener("DOMContentLoaded", () => {
+    initMenu();
+    setupFormSubmission();
+});
 
-const API_URL =
-"https://entreprise-arashi.onrender.com";
+// Gestion du menu mobile sur la page Vendor
+function initMenu() {
+    const toggleBtn = document.getElementById("menuToggle");
+    const sidebar = document.getElementById("sidebar");
 
-
-
-// ==========================================
-// CREER UNE BOUTIQUE
-// ==========================================
-
-function createShop(){
-
-    const name =
-    document.getElementById("shopName").value;
-
-    const country =
-    document.getElementById("shopCountry").value;
-
-    const email =
-    document.getElementById("shopEmail").value;
-
-
-    if(!name || !country || !email){
-
-        alert("Veuillez remplir tous les champs.");
-        return;
-
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("active");
+        });
     }
-
-
-    const shop = {
-
-        name,
-        country,
-        email
-
-    };
-
-
-    localStorage.setItem(
-        "arashiShop",
-        JSON.stringify(shop)
-    );
-
-
-    document.getElementById("shopStatus").innerHTML =
-    "✅ Boutique créée : "+name;
-
 }
 
+// Gestion de la soumission du formulaire
+function setupFormSubmission() {
+    const form = document.getElementById("vendorForm");
+    const statusDiv = document.getElementById("status");
 
+    if (!form) return;
 
-// ==========================================
-// PUBLIER UN PRODUIT
-// ==========================================
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-async function publishProduct(){
-
-
-    const title =
-    document.getElementById("productTitle").value;
-
-
-    const category =
-    document.getElementById("productCategory").value;
-
-
-    const price =
-    Number(
-    document.getElementById("productPrice").value
-    );
-
-
-    const description =
-    document.getElementById("productDescription").value;
-
-
-
-    if(!title || !category || !price){
-
-        alert("Veuillez remplir les informations.");
-        return;
-
-    }
-
-
-
-    const product = {
-
-
-        title:title,
-
-        category:category,
-
-        description:description,
-
-        price_pi:price,
-
-        image_url:""
-
-
-    };
-
-
-
-    try{
-
-
-        const response = await fetch(
-
-            API_URL+"/products",
-
-            {
-
-            method:"POST",
-
-            headers:{
-
-                "Content-Type":
-                "application/json"
-
-            },
-
-
-            body:
-            JSON.stringify(product)
-
-
-            }
-
-        );
-
-
-
-        const data =
-        await response.json();
-
-
-
-        if(response.ok){
-
-
-            alert(
-            "✅ Produit publié dans Marketplace"
-            );
-
-
-            clearForm();
-
-            loadProducts();
-
-
-
-        }else{
-
-
-            alert(
-            "Erreur : "+JSON.stringify(data)
-            );
-
-
+        // Récupération de la session utilisateur Pi locale
+        const currentUser = ArashiAuth.getLocalSession();
+        if (!currentUser) {
+            showStatus("❌ Erreur : Vous devez être connecté via le Pi Browser pour publier un produit.", "error");
+            return;
         }
 
+        // Affichage de l'état de chargement
+        showStatus("⏳ Traitement et téléversement des images en cours...", "loading");
 
+        // Récupération des données du formulaire
+        const title = document.getElementById("title").value;
+        const category = document.getElementById("category").value;
+        const description = document.getElementById("description").value;
+        const price_pi = parseFloat(document.getElementById("price_pi").value);
+        const price_fcfa = parseFloat(document.getElementById("price_fcfa").value);
+        const stock = parseInt(document.getElementById("stock").value) || 1;
+        const country = document.getElementById("country").value;
+        const imageFiles = document.getElementById("images").files;
 
-    }catch(error){
+        if (!supabase) {
+            showStatus("⚠️ Mode Démo : Supabase non configuré, mais le formulaire est valide !", "success");
+            return;
+        }
 
+        try {
+            let uploadedImagesUrls = [];
 
-        console.log(error);
+            // 1. Upload des images sur Supabase Storage (si des images sont sélectionnées)
+            if (imageFiles.length > 0) {
+                for (let i = 0; i < imageFiles.length; i++) {
+                    const file = imageFiles[i];
+                    // Génère un nom de fichier unique pour éviter les collisions
+                    const fileExtension = file.name.split('.').pop();
+                    const fileName = `${currentUser.uid}_${Date.now()}_${i}.${fileExtension}`;
+                    
+                    // Envoi vers le bucket appelé 'product-images' (Assure-toi de le créer sur Supabase)
+                    const { data: storageData, error: storageError } = await supabase.storage
+                        .from('product-images')
+                        .upload(`public/${fileName}`, file);
 
-        alert(
-        "Serveur indisponible"
-        );
+                    if (storageError) throw storageError;
 
+                    // Récupération de l'URL publique de l'image
+                    const { data: publicUrlData } = supabase.storage
+                        .from('product-images')
+                        .getPublicUrl(`public/${fileName}`);
 
+                    uploadedImagesUrls.push(publicUrlData.publicUrl);
+                }
+            } else {
+                // Image par défaut si aucune photo n'est ajoutée
+                uploadedImagesUrls.push('https://via.placeholder.com/600x400?text=ARASHI+v2.0');
+            }
+
+            // 2. Insertion de la ligne produit dans la table 'products' de Supabase
+            const { data, error: insertError } = await supabase
+                .from('products')
+                .insert([{
+                    seller_id: currentUser.uid, // Relié à l'UID de l'utilisateur Pi
+                    title: title,
+                    category: category,
+                    description: description,
+                    price_pi: price_pi,
+                    price_fcfa: price_fcfa,
+                    stock: stock,
+                    country: country,
+                    images: uploadedImagesUrls, // Tableau d'URLs d'images
+                    status: 'available'
+                }]);
+
+            if (insertError) throw insertError;
+
+            // 3. Succès
+            showStatus("🚀 Félicitations ! Votre annonce a été publiée avec succès à l'international.", "success");
+            form.reset();
+
+        } catch (error) {
+            console.error("Erreur lors de la publication :", error);
+            showStatus(`❌ Échec de la publication : ${error.message}`, "error");
+        }
+    });
+}
+
+// Fonction utilitaire pour afficher les alertes de statut à l'utilisateur
+function showStatus(message, type) {
+    const statusDiv = document.getElementById("status");
+    if (!statusDiv) return;
+
+    statusDiv.style.display = "block";
+    statusDiv.innerText = message;
+
+    if (type === "success") {
+        statusDiv.style.background = "#d4edda";
+        statusDiv.style.color = "#155724";
+        statusDiv.style.border = "1px solid #c3e6cb";
+    } else if (type === "error") {
+        statusDiv.style.background = "#f8d7da";
+        statusDiv.style.color = "#721c24";
+        statusDiv.style.border = "1px solid #f5c6cb";
+    } else {
+        statusDiv.style.background = "#fff3cd";
+        statusDiv.style.color = "#856404";
+        statusDiv.style.border = "1px solid #ffeeba";
     }
-
-
-
 }
-
-
-
-
-// ==========================================
-// AFFICHER LES PRODUITS
-// ==========================================
-
-async function loadProducts(){
-
-
-const box =
-document.getElementById("vendorProducts");
-
-
-
-if(!box){
-
-return;
-
-}
-
-
-
-try{
-
-
-const response =
-await fetch(
-
-API_URL+"/products"
-
-);
-
-
-
-const products =
-await response.json();
-
-
-
-box.innerHTML="";
-
-
-
-if(products.length===0){
-
-
-box.innerHTML=
-"<p>Aucun produit publié.</p>";
-
-updateStats([]);
-
-return;
-
-}
-
-
-
-products.forEach(product=>{
-
-
-const card =
-document.createElement("div");
-
-
-card.className="card";
-
-
-
-card.innerHTML=`
-
-<h3>${product.title}</h3>
-
-
-<p>
-Catégorie :
-${product.category}
-</p>
-
-
-<p>
-${product.description || ""}
-</p>
-
-
-<strong>
-${product.price_pi} π
-</strong>
-
-
-<br>
-
-
-<button onclick="deleteProduct('${product.id}')">
-
-🗑️ Supprimer
-
-</button>
-
-
-`;
-
-
-
-box.appendChild(card);
-
-
-
-});
-
-
-
-updateStats(products);
-
-
-
-}catch(error){
-
-
-console.log(error);
-
-
-box.innerHTML=
-"<p>Erreur chargement produits</p>";
-
-
-}
-
-
-
-}
-
-
-
-
-// ==========================================
-// SUPPRIMER PRODUIT
-// ==========================================
-
-async function deleteProduct(id){
-
-
-
-if(!confirm("Supprimer ce produit ?")){
-
-return;
-
-}
-
-
-
-try{
-
-
-await fetch(
-
-API_URL+"/products/"+id,
-
-{
-
-method:"DELETE"
-
-}
-
-);
-
-
-
-loadProducts();
-
-
-
-}catch(error){
-
-
-console.log(error);
-
-
-}
-
-
-
-}
-
-
-
-
-// ==========================================
-// VIDER FORMULAIRE
-// ==========================================
-
-function clearForm(){
-
-
-document.getElementById("productTitle").value="";
-
-
-document.getElementById("productCategory").value="";
-
-
-document.getElementById("productPrice").value="";
-
-
-document.getElementById("productDescription").value="";
-
-
-}
-
-
-
-// ==========================================
-// STATISTIQUES
-// ==========================================
-
-function updateStats(products){
-
-
-
-const total =
-document.getElementById(
-"vendorTotalProducts"
-);
-
-
-
-if(total){
-
-total.innerHTML =
-products.length;
-
-}
-
-
-
-const revenue =
-document.getElementById(
-"vendorRevenue"
-);
-
-
-
-if(revenue){
-
-
-let sum=0;
-
-
-products.forEach(p=>{
-
-
-sum += Number(p.price_pi);
-
-
-});
-
-
-
-revenue.innerHTML =
-sum+" π";
-
-
-}
-
-
-
-}
-
-
-
-// ==========================================
-// INITIALISATION
-// ==========================================
-
-document.addEventListener(
-
-"DOMContentLoaded",
-
-()=>{
-
-loadProducts();
-
-}
-
-);
