@@ -1,75 +1,135 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
-    <title>ARASHI Vendor Center</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARASHI Vendor Center | Espace Vendeur Web3</title>
+    
+    <!-- Style Unifié -->
     <link rel="stylesheet" href="../css/style.css">
+    
+    <!-- SDK Supabase requis pour l'envoi des données -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-
 <body>
 
-<div class="main">
+    <!-- BOUTON MENU MOBILE -->
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-<h1>🛍️ Vendor Center</h1>
+    <!-- SIDEBAR ARASHI (Cohérence visuelle) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p>v2.0 Pi Ecosystem</p>
+        </div>
+        <nav>
+            <a href="../index.html">🏠 Accueil</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="immobilier.html">🏡 Immobilier</a>
+            <a href="topographie.html">📐 Topographie</a>
+            <a href="construction.html">🏗️ Construction</a>
+            <a href="materiaux.html">🧱 Matériaux</a>
+            <a href="marketplace.html">🛒 Marketplace</a>
+            <a href="vendor.html" class="active">🛍️ Vendor Center</a>
+            <a href="partnership.html">🤝 Partnership</a>
+            <a href="orders.html">📦 Commandes</a>
+            <a href="ai.html">🤖 ARASHI AI</a>
+        </nav>
+    </aside>
 
-<p>Publiez vos produits sur le Marketplace ARASHI.</p>
+    <!-- ZONE DE CONTENU PRINCIPAL -->
+    <div class="content">
+        
+        <!-- BARRE SUPÉRIEURE -->
+        <header class="topbar">
+            <h1>🛍️ Vendor Center</h1>
+            <div class="auth-area">
+                <span id="userStatus">Connecté en tant que Vendor</span>
+            </div>
+        </header>
 
-<form id="vendorForm">
+        <!-- FORMULAIRE DE PUBLICATION -->
+        <main class="main-form-container" style="padding: 40px; max-width: 800px; margin: 0 auto; width: 100%;">
+            <div class="form-header" style="margin-bottom: 30px;">
+                <h2>Publier une nouvelle annonce</h2>
+                <p style="color: var(--text-muted);">Remplissez le formulaire ci-dessous pour ajouter votre bien ou matériel sur la plateforme ARASHI.</p>
+            </div>
 
-<input
-type="text"
-id="title"
-placeholder="Nom du produit"
-required>
+            <form id="vendorForm" style="background: white; padding: 30px; border-radius: 16px; box-shadow: var(--shadow-premium); display: flex; flex-direction: column; gap: 20px;">
+                
+                <!-- Nom du produit -->
+                <div class="form-group">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">Nom de l'article / du bien *</label>
+                    <input type="text" id="title" placeholder="Ex: Villa duplex 5 pièces, Récepteur GPS GNSS RTK..." required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
 
-<select id="category">
+                <!-- Catégorie (Alignée avec tes tables Supabase) -->
+                <div class="form-group">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">Catégorie *</label>
+                    <select id="category" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                        <option value="villa">🏠 Villa (Immobilier)</option>
+                        <option value="terrain">🌍 Terrain (Immobilier)</option>
+                        <option value="topographie">📐 Matériel Topographique</option>
+                        <option value="construction">🏗️ Engins / Machines de construction</option>
+                        <option value="materiaux">🧱 Matériaux de construction (Ciment, fer...)</option>
+                        <option value="vehicules">🚛 Véhicules professionnels</option>
+                    </select>
+                </div>
 
-<option value="villas">🏠 Villas</option>
+                <!-- Description -->
+                <div class="form-group">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">Description détaillée</label>
+                    <textarea id="description" placeholder="Décrivez l'état, les caractéristiques, la localisation exacte..." rows="5" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;"></textarea>
+                </div>
 
-<option value="terrains">🌍 Terrains</option>
+                <!-- Double Grille pour les prix -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Prix en Pi (π) *</label>
+                        <input type="number" id="price_pi" step="0.0001" placeholder="Ex: 150" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Prix équivalent en FCFA *</label>
+                        <input type="number" id="price_fcfa" placeholder="Ex: 150000" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                </div>
 
-<option value="topographie">📐 Topographie</option>
+                <!-- Stock & Pays -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Stock disponible</label>
+                        <input type="number" id="stock" value="1" min="1" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Pays de localisation *</label>
+                        <input type="text" id="country" placeholder="Ex: Côte d'Ivoire, Sénégal..." required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                </div>
 
-<option value="construction">🏗️ Construction</option>
+                <!-- Images multiples -->
+                <div class="form-group">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">Photos du produit (Une ou plusieurs)</label>
+                    <input type="file" id="images" accept="image/*" multiple style="width: 100%; padding: 10px 0;">
+                    <small style="color: var(--text-muted); display: block; margin-top: 5px;">Vous pouvez sélectionner plusieurs photos à la fois.</small>
+                </div>
 
-<option value="materiaux">🧱 Matériaux</option>
+                <!-- Bouton de publication premium -->
+                <button type="submit" class="hero-btn" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 10px;">
+                    🚀 Publier sur ARASHI
+                </button>
+            </form>
 
-<option value="marketplace">🛒 Marketplace</option>
+            <!-- Statut de l'envoi -->
+            <div id="status" style="margin-top: 20px; text-align: center; font-weight: bold; padding: 15px; border-radius: 8px; display: none;"></div>
+        </main>
 
-</select>
+        <footer style="text-align: center; padding: 30px 0;">
+            <p>© 2026 Entreprise ARASHI v2.0 - Tous droits réservés.</p>
+        </footer>
+    </div>
 
-<textarea
-id="description"
-placeholder="Description">
-</textarea>
-
-<input
-type="number"
-id="price_pi"
-placeholder="Prix en Pi"
-required>
-
-<input
-type="file"
-id="image"
-accept="image/*">
-
-<button type="submit">
-
-Publier le produit
-
-</button>
-
-</form>
-
-<div id="status"></div>
-
-</div>
-
-<script src="../js/vendor.js"></script>
-
+    <!-- Moteur JS pour faire fonctionner cette page -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/vendor.js"></script>
 </body>
-
-</html>
+                </html>
