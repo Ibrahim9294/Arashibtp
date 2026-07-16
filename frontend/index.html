@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Entreprise ARASHI | Pi Marketplace V2.0</title>
+
+<meta name="description" content="Entreprise ARASHI Construction Immobilier Topographie Marketplace Pi Network">
+
+
+<link rel="stylesheet" href="css/style.css">
+
+
+<!-- Pi Network SDK -->
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<header class="header">
+
+<h1>
+🏗️ ENTREPRISE ARASHI
+</h1>
+
+
+<p>
+Construire • Mesurer • Investir • Innover
+</p>
+
+
+<button id="piLogin">
+
+🪙 Connexion Pi
+
+</button>
+
+
+<p id="userStatus">
+Non connecté
+</p>
+
+
+</header>
+
+
+
+
+
+<!-- BOUTON MENU MOBILE -->
+
+<button class="menu-toggle" onclick="toggleMenu()">
+
+☰ Menu
+
+</button>
+
+
+
+
+
+<!-- MENU LATERAL -->
+
+<aside class="sidebar" id="sidebar">
+
+
+<h2>
+ARASHI V2.0
+</h2>
+
+
+<nav>
+
+
+<a href="index.html">
+🏠 Accueil
+</a>
+
+
+<a href="pages/dashboard.html">
+📊 Dashboard
+</a>
+
+
+<a href="pages/immobilier.html">
+🏡 Immobilier
+</a>
+
+
+<a href="pages/topographie.html">
+📐 Topographie
+</a>
+
+
+<a href="pages/construction.html">
+🏗️ Construction
+</a>
+
+
+<a href="pages/materiaux.html">
+🧱 Matériaux
+</a>
+
+
+<a href="pages/marketplace.html">
+🛒 Marketplace
+</a>
+
+
+<a href="pages/vendor.html">
+🛍️ Vendor Center
+</a>
+
+
+<a href="pages/partnership.html">
+🤝 Partnership
+</a>
+
+
+<a href="pages/pi-ecosystem.html">
+🏛️ Pi Ecosystem
+</a>
+
+
+<a href="pages/orders.html">
+📦 Commandes
+</a>
+
+
+<a href="pages/payments.html">
+💳 Paiements Pi
+</a>
+
+
+<a href="pages/profile.html">
+👤 Profil
+</a>
+
+
+<a href="pages/admin.html">
+👑 Admin Control
+</a>
+
+
+<a href="pages/penalty.html">
+⚖️ Penalty Center
+</a>
+
+
+<a href="pages/languages.html">
+🌍 Langues
+</a>
+
+
+<a href="pages/settings.html">
+⚙️ Paramètres
+</a>
+
+
+<a href="pages/notifications.html">
+🔔 Notifications
+</a>
+
+
+<a href="pages/messages.html">
+💬 Messages
+</a>
+
+
+<a href="pages/ai.html">
+🤖 ARASHI AI
+</a>
+
+
+<a href="pages/help.html">
+❓ Support
+</a>
+
+
+</nav>
+
+
+</aside>
+
+
+
+
+
+<!-- CONTENU PRINCIPAL -->
+
+<main class="main">
+
+
+<section class="search-box">
+
+
+<input 
+type="search"
+id="globalSearch"
+placeholder="🔎 Rechercher un produit, projet ou vendeur...">
+
+
+</section>
+
+
+<!-- =========================
+ MODULES ARASHI
+========================= -->
+
+<section class="modules">
+
+
+<h2>
+🌍 Services ARASHI
+</h2>
+
+
+<div class="card-grid">
+
+
+
+<div class="arashi-card">
+
+<h3>
+🏡 Immobilier
+</h3>
+
+<p>
+Villas, terrains, investissements immobiliers.
+</p>
+
+<a href="pages/immobilier.html">
+Explorer
+</a>
+
+</div>
+
+
+
+
+<div class="arashi-card">
+
+<h3>
+📐 Topographie
+</h3>
+
+<p>
+GNSS RTK, stations totales, services de mesure.
+</p>
+
+<a href="pages/topographie.html">
+Explorer
+</a>
+
+</div>
+
+
+
+
+
+<div class="arashi-card">
+
+<h3>
+🏗️ Construction
+</h3>
+
+<p>
+Machines, projets BTP et services construction.
+</p>
+
+<a href="pages/construction.html">
+Explorer
+</a>
+
+</div>
+
+
+
+
+
+<div class="arashi-card">
+
+<h3>
+🧱 Matériaux
+</h3>
+
+<p>
+Ciment, fer, équipements et fournitures.
+</p>
+
+<a href="pages/materiaux.html">
+Explorer
+</a>
+
+</div>
+
+
+
+
+
+<div class="arashi-card">
+
+<h3>
+🛒 Marketplace Pi
+</h3>
+
+<p>
+Acheter et vendre avec Pi Network.
+</p>
+
+<a href="pages/marketplace.html">
+Explorer
+</a>
+
+</div>
+
+
+
+
+
+<div class="arashi-card">
+
+<h3>
+🛍️ Vendor Center
+</h3>
+
+<p>
+Créer votre boutique et vendre vos produits.
+</p>
+
+<a href="pages/vendor.html">
+Commencer
+</a>
+
+</div>
+
+
+
+
+
+<div class="arashi-card">
+
+<h3>
+🤝 Partnership
+</h3>
+
+<p>
+Rejoindre les partenaires ARASHI.
+</p>
+
+<a href="pages/partnership.html">
+Découvrir
+</a>
+
+</div>
+
+
+
+
+
+<div class="arashi-card">
+
+<h3>
+🏛️ Pi Ecosystem
+</h3>
+
+<p>
+Blockchain, Web3 et intégration Pi Network.
+</p>
+
+<a href="pages/pi-ecosystem.html">
+Découvrir
+</a>
+
+</div>
+
+
+
+
+
+<div class="arashi-card">
+
+<h3>
+🤖 ARASHI AI
+</h3>
+
+<p>
+Assistant intelligent pour construction et commerce.
+</p>
+
+<a href="pages/ai.html">
+Utiliser
+</a>
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+<!-- =========================
+ STATISTIQUES
+========================= -->
+
+<section class="stats">
+
+
+<h2>
+📊 Statistiques ARASHI
+</h2>
+
+
+<div class="stats-grid">
+
+
+<div class="stat-card">
+
+<h3>
+👥 Utilisateurs
+</h3>
+
+<strong id="totalUsers">
+0
+</strong>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h3>
+🏪 Vendors
+</h3>
+
+<strong id="totalVendors">
+0
+</strong>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h3>
+🏠 Biens
+</h3>
+
+<strong id="totalProperties">
+0
+</strong>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h3>
+💳 Paiements Pi
+</h3>
+
+<strong id="totalPayments">
+0 π
+</strong>
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<!-- =========================
+ ACTUALITES
+========================= -->
+
+
+<section class="news">
+
+
+<h2>
+📢 Actualités ARASHI
+</h2>
+
+
+
+<div class="news-card">
+
+
+<h3>
+⭐ Nouveaux produits
+</h3>
+
+<p>
+Découvrez les nouveaux équipements et matériaux disponibles.
+</p>
+
+
+</div>
+
+
+
+
+<div class="news-card">
+
+
+<h3>
+🏗️ Nouveaux projets
+</h3>
+
+<p>
+Suivez les projets immobiliers et construction ARASHI.
+</p>
+
+
+</div>
+
+
+
+
+<div class="news-card">
+
+
+<h3>
+🌍 Nouveaux partenaires
+</h3>
+
+<p>
+Les entreprises peuvent rejoindre l'écosystème ARASHI.
+</p>
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+<!-- =========================
+ FOOTER
+========================= -->
+
+
+<footer class="footer">
+
+
+<h3>
+🏗️ Entreprise ARASHI
+</h3>
+
+
+<p>
+Construction • Immobilier • Topographie • Marketplace Pi
+</p>
+
+
+<p>
+© 2026 ARASHI V2.0
+</p>
+
+
+</footer>
+
+
+
+
+
+<!-- =========================
+ SCRIPTS
+========================= -->
+
+
+<script src="js/app.js"></script>
+
+<script src="js/pi.js"></script>
+
+<script src="js/marketplace.js"></script>
+
+
+</body>
+
+</html>
