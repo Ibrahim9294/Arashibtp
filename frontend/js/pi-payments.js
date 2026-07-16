@@ -1,7 +1,6 @@
 import { ArashiAuth } from './auth.js';
 
-// On enlève le "const Pi = window.Pi || null" global pour éviter les erreurs de chargement
-
+// Configuration de l'authentification au clic sur le bouton de login
 document.addEventListener("DOMContentLoaded", () => {
     const loginBtn = document.getElementById("piLogin");
     if (loginBtn) {
@@ -9,8 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// 1. FONCTION DE CONNEXION PI
 async function loginWithPi() {
-    // On récupère window.Pi au moment du clic
     const Pi = window.Pi; 
 
     if (!Pi) {
@@ -18,10 +17,9 @@ async function loginWithPi() {
         return;
     }
 
-    // Initialisation ici pour être sûr
-    Pi.init({ version: "2.0", sandbox: true });
-
     try {
+        Pi.init({ version: "2.0", sandbox: true });
+
         const scopes = ['username', 'payments'];
         const authResult = await Pi.authenticate(scopes, onIncompletePaymentFound);
         
@@ -37,23 +35,27 @@ async function loginWithPi() {
     }
 }
 
+// 2. FONCTION GLOBALE D'ACHAT PI (Exposée à l'objet global 'window')
 window.initiatePiPurchase = function(productId, pricePi) {
-    // On récupère window.Pi au moment de l'achat
+    // 🚨 ALERTE DE SÉCURITÉ ET DE TEST
+    alert(`[ARASHI Sandbox] Lancement de l'achat.\nProduit : ${productId}\nPrix : ${pricePi} Pi`);
+
     const Pi = window.Pi;
 
     if (!Pi) {
-        alert("Pi SDK non détecté. Assurez-vous d'être dans le Pi Browser.");
+        alert("Le SDK de Pi Network est introuvable. Assurez-vous d'utiliser l'application Pi Browser officielle.");
         return;
     }
 
     const paymentData = {
-        amount: pricePi,
+        amount: Number(pricePi),
         memo: `Achat produit #${productId} sur ARASHI Marketplace`,
         metadata: { productId: productId }
     };
 
     const callbacks = {
         onReadyForServerApproval: async (paymentId) => {
+            console.log("Approbation en cours pour le paiement ID :", paymentId);
             await fetch("https://entreprise-arashi.onrender.com/approve", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -61,6 +63,7 @@ window.initiatePiPurchase = function(productId, pricePi) {
             });
         },
         onReadyForServerCompletion: async (paymentId, txid) => {
+            console.log("Finalisation de la transaction :", txid);
             await fetch("https://entreprise-arashi.onrender.com/complete", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -73,11 +76,16 @@ window.initiatePiPurchase = function(productId, pricePi) {
             console.log("Paiement annulé par l'utilisateur.", paymentId);
         },
         onError: (error, payment) => {
-            console.error("Erreur Pi :", error, payment);
+            console.error("Une erreur est survenue lors du paiement Pi :", error, payment);
+            alert("Erreur lors de la transaction Pi Network.");
         }
     };
 
-    Pi.createPayment(paymentData, callbacks);
+    try {
+        Pi.createPayment(paymentData, callbacks);
+    } catch (error) {
+        console.error("Erreur d'initialisation du paiement :", error);
+    }
 };
 
 function onIncompletePaymentFound(payment) {
