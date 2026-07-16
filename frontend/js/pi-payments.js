@@ -52,8 +52,8 @@ window.initiatePiPurchase = function(productId, pricePi) {
 
     const callbacks = {
         onReadyForServerApproval: async (paymentId) => {
-            // Étape 1 : Appel vers votre backend hébergé sur Render pour approbation sécurisée
-            await fetch("https://votre-backend-render.onrender.com/api/pi/approve", {
+            // Étape 1 : Appel vers ton backend Render pour approbation sécurisée
+            await fetch("https://entreprise-arashi.onrender.com/approve", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ paymentId })
@@ -61,7 +61,7 @@ window.initiatePiPurchase = function(productId, pricePi) {
         },
         onReadyForServerCompletion: async (paymentId, txid) => {
             // Étape 2 : Validation finale du paiement après transfert blockchain réussi
-            await fetch("https://votre-backend-render.onrender.com/api/pi/complete", {
+            await fetch("https://entreprise-arashi.onrender.com/complete", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ paymentId, txid })
@@ -82,5 +82,5 @@ window.initiatePiPurchase = function(productId, pricePi) {
 
 function onIncompletePaymentFound(payment) {
     console.warn("Un paiement incomplet a été détecté :", payment);
-    // Demandez à votre backend Render de résoudre ou d'archiver la transaction incomplète
-                                      }
+    // Optionnel : appel vers ton serveur pour fermer ce paiement si nécessaire
+}
