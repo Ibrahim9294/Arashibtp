@@ -2,179 +2,71 @@
 <html lang="fr">
 
 <head>
+    <meta charset="UTF-8">
+    <title>ARASHI Vendor Center</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Vendor Center | Entreprise ARASHI</title>
-
-<link rel="stylesheet" href="../style.css">
-
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
 
-<header class="header">
+<div class="main">
 
 <h1>🛍️ Vendor Center</h1>
 
-<p>Publiez vos produits sur la Marketplace ARASHI.</p>
+<p>Publiez vos produits sur le Marketplace ARASHI.</p>
 
-</header>
-
-
-<section>
-
-<h2>🏪 Créer ma boutique</h2>
+<form id="vendorForm">
 
 <input
-id="shopName"
 type="text"
-placeholder="Nom de la boutique">
+id="title"
+placeholder="Nom du produit"
+required>
 
-<input
-id="shopCountry"
-type="text"
-placeholder="Pays">
+<select id="category">
 
-<input
-id="shopEmail"
-type="email"
-placeholder="Email">
+<option value="villas">🏠 Villas</option>
 
-<button onclick="createShop()">
-Créer ma boutique
-</button>
+<option value="terrains">🌍 Terrains</option>
 
-<p id="shopStatus"></p>
+<option value="topographie">📐 Topographie</option>
 
-</section>
+<option value="construction">🏗️ Construction</option>
 
+<option value="materiaux">🧱 Matériaux</option>
 
-<section>
+<option value="marketplace">🛒 Marketplace</option>
 
-<h2>📦 Publier un produit</h2>
-
-<input
-id="productTitle"
-type="text"
-placeholder="Nom du produit">
-
-<input
-id="productCategory"
-type="text"
-placeholder="Catégorie">
-
-<input
-id="productPrice"
-type="number"
-placeholder="Prix en Pi">
+</select>
 
 <textarea
-id="productDescription"
-placeholder="Description du produit"></textarea>
+id="description"
+placeholder="Description">
+</textarea>
 
 <input
-id="productImage"
+type="number"
+id="price_pi"
+placeholder="Prix en Pi"
+required>
+
+<input
 type="file"
+id="image"
 accept="image/*">
 
-<button onclick="publishProduct()">
+<button type="submit">
+
 Publier le produit
+
 </button>
 
-</section>
+</form>
 
-
-<section>
-
-<h2>🛍️ Mes produits</h2>
-
-<div id="vendorProducts">
-
-<p>
-Aucun produit publié.
-</p>
+<div id="status"></div>
 
 </div>
-
-</section>
-
-
-<section>
-
-<h2>📊 Tableau de bord vendeur</h2>
-
-<div class="dashboard-grid">
-
-<div class="card">
-
-<h3>
-Produits
-</h3>
-
-<p id="vendorTotalProducts">
-0
-</p>
-
-</div>
-
-
-<div class="card">
-
-<h3>
-Ventes
-</h3>
-
-<p id="vendorSales">
-0
-</p>
-
-</div>
-
-
-<div class="card">
-
-<h3>
-Revenus Pi
-</h3>
-
-<p id="vendorRevenue">
-0 π
-</p>
-
-</div>
-
-</div>
-
-</section>
-
-
-<section>
-
-<h2>⚙️ Actions</h2>
-
-<button onclick="loadProducts()">
-🔄 Actualiser les produits
-</button>
-
-<button onclick="clearVendorProducts()">
-🗑️ Supprimer tous les produits
-</button>
-
-</section>
-
-
-<br>
-
-<a href="../index.html">
-
-⬅ Retour à l'accueil
-
-</a>
-<script>
-console.log("Page vendeur chargée");
-  </script>
 
 <script src="../js/vendor.js"></script>
 
