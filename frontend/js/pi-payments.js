@@ -1,10 +1,6 @@
 import { ArashiAuth } from './auth.js';
 
-const Pi = window.Pi || null;
-
-if (Pi) {
-    Pi.init({ version: "2.0", sandbox: true }); // true pour bac à sable développeur, false pour production
-}
+// On enlève le "const Pi = window.Pi || null" global pour éviter les erreurs de chargement
 
 document.addEventListener("DOMContentLoaded", () => {
     const loginBtn = document.getElementById("piLogin");
@@ -14,20 +10,24 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function loginWithPi() {
+    // On récupère window.Pi au moment du clic
+    const Pi = window.Pi; 
+
     if (!Pi) {
         alert("Ouvrez ARASHI depuis le Pi Browser officiel pour utiliser les transactions Web3.");
         return;
     }
 
+    // Initialisation ici pour être sûr
+    Pi.init({ version: "2.0", sandbox: true });
+
     try {
         const scopes = ['username', 'payments'];
         const authResult = await Pi.authenticate(scopes, onIncompletePaymentFound);
         
-        // Sauvegarde de session locale & synchronisation avec Supabase
         ArashiAuth.saveLocalSession(authResult.user);
         await ArashiAuth.syncWithSupabase(authResult.user);
 
-        // Mise à jour de l'UI
         document.getElementById("userStatus").innerHTML = `🟢 Connecté : <strong>${authResult.user.username}</strong>`;
         document.getElementById("profileName").innerText = authResult.user.username;
         document.getElementById("piLogin").style.display = "none";
@@ -37,10 +37,12 @@ async function loginWithPi() {
     }
 }
 
-// Fonction globale d'achat d'un bien / produit en Pi
 window.initiatePiPurchase = function(productId, pricePi) {
+    // On récupère window.Pi au moment de l'achat
+    const Pi = window.Pi;
+
     if (!Pi) {
-        alert("Veuillez installer et utiliser le Pi Browser pour cette transaction.");
+        alert("Pi SDK non détecté. Assurez-vous d'être dans le Pi Browser.");
         return;
     }
 
@@ -52,7 +54,6 @@ window.initiatePiPurchase = function(productId, pricePi) {
 
     const callbacks = {
         onReadyForServerApproval: async (paymentId) => {
-            // Étape 1 : Appel vers ton backend Render pour approbation sécurisée
             await fetch("https://entreprise-arashi.onrender.com/approve", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -60,7 +61,6 @@ window.initiatePiPurchase = function(productId, pricePi) {
             });
         },
         onReadyForServerCompletion: async (paymentId, txid) => {
-            // Étape 2 : Validation finale du paiement après transfert blockchain réussi
             await fetch("https://entreprise-arashi.onrender.com/complete", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -73,7 +73,7 @@ window.initiatePiPurchase = function(productId, pricePi) {
             console.log("Paiement annulé par l'utilisateur.", paymentId);
         },
         onError: (error, payment) => {
-            console.error("Une erreur est survenue lors de la transaction Pi :", error, payment);
+            console.error("Erreur Pi :", error, payment);
         }
     };
 
@@ -82,5 +82,4 @@ window.initiatePiPurchase = function(productId, pricePi) {
 
 function onIncompletePaymentFound(payment) {
     console.warn("Un paiement incomplet a été détecté :", payment);
-    // Optionnel : appel vers ton serveur pour fermer ce paiement si nécessaire
 }
