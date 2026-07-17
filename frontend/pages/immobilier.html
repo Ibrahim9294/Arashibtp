@@ -227,3 +227,51 @@
 </body>
     </html>
                 
+        // 2. FONCTION GLOBALE POUR LE BOUTON DE PAIEMENT PI BLOCKCHAIN CORRIGÉE
+        window.triggerPurchase = async function(propertyId, pricePi, propertyTitle) {
+            console.log(`Tentative d'achat : ${propertyTitle}`);
+            
+            if (!window.Pi) {
+                alert("⚙️ Le SDK Pi Network n'est pas détecté. Assurez-vous d'être dans le Pi Browser.");
+                return;
+            }
+
+            try {
+                // FORCE LA DEMANDE D'AUTORISATION DE PAIEMENT AU NAVIGATEUR PI
+                const scopes = ['username', 'payments'];
+                alert("🔐 Vérification des autorisations Pi Blockchain...");
+                
+                await window.Pi.authenticate(scopes, function(payment) {
+                    console.log("Paiement incomplet trouvé et géré automatiquement:", payment);
+                });
+
+                // LANCE LE PAIEMENT UNE FOIS AUTORISÉ
+                alert(`💸 Ouverture de la fenêtre de paiement Pi pour : ${propertyTitle} (${pricePi} Pi)...`);
+                
+                await window.Pi.createPayment({
+                    amount: parseFloat(pricePi),
+                    memo: `Achat ARASHI v3.0: ${propertyTitle}`,
+                    metadata: { property_id: propertyId }
+                }, {
+                    onReadyForServerApproval: function(paymentId) {
+                        console.log("Paiement approuvé par le client, ID:", paymentId);
+                    },
+                    onReadyForServerCompletion: function(paymentId, txid) {
+                        console.log("Paiement finalisé sur la Blockchain, TXID:", txid);
+                        alert("✅ Paiement réussi ! Votre réservation a été enregistrée.");
+                    },
+                    onCancel: function(paymentId) { 
+                        alert("❌ Paiement annulé."); 
+                    },
+                    onError: function(error, payment) { 
+                        console.error("Erreur Pi", error); 
+                        alert("❌ Erreur de transaction : " + error.message);
+                    }
+                });
+
+            } catch (err) {
+                console.error("Erreur critique:", err);
+                alert("Erreur de connexion Pi Network : " + err.message);
+            }
+        };
+        
