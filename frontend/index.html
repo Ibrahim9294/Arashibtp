@@ -1,1 +1,63 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARASHI v3.0 | Écosystème Global B2B & B2C Pi Network</title>
+    <!-- Lien vers le fichier CSS fusionné et optimisé -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- SDK Officiel Pi Network -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</head>
+<body>
+
+    <!-- Menu Toggle pour mobile -->
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
+
+    <!-- Sidebar : Architecture v3.0 -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p>v3.0 Pi Ecosystem</p>
+        </div>
+        <nav>
+            <a href="index.html" class="active">🏠 Accueil</a>
+            <a href="pages/dashboard.html">📊 Dashboard</a>
+            <a href="pages/immobilier.html">🏡 Immobilier</a>
+            <a href="pages/topographie.html">📐 Topographie</a>
+            <a href="pages/construction.html">🏗️ Construction</a>
+            <a href="pages/materiaux.html">🧱 Matériaux</a>
+            <a href="pages/marketplace.html">🛒 Marketplace</a>
+            <a href="pages/vendor.html">🛍️ Vendor Center</a>
+            <a href="pages/partnership.html">🤝 Partnership</a>
+            <a href="pages/orders.html">📦 Commandes</a>
+            <a href="pages/admin.html">👑 Admin</a>
+            <a href="pages/ai.html">🤖 ARASHI AI</a>
+        </nav>
+    </aside>
+
+    <!-- Contenu Principal -->
+    <div class="content">
+        <header class="topbar">
+            <h1>ARASHI Portal</h1>
+            <div class="auth-area">
+                <button id="piLogin" onclick="loginWithPi()">🪙 Connexion Pi</button>
+                <span id="userStatus"></span>
+            </div>
+        </header>
+
+        <!-- Section Hero (Bannière d'accueil) -->
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Bienvenue sur ARASHI v3.0</h2>
+                <p>La plateforme Web3 de référence pour l'immobilier, la construction et le commerce en Pi.</p>
+                <div class="hero-tags">
+                    <span>🏗️ Construction</span>
+                    <span>🏡 Immobilier</span>
+                    <span>📐 Topographie</span>
+                    <span>🛒 Marketplace</span>
+                </div>
+                <button class="hero-btn" onclick="scrollToPopular()">Explorer l'écosystème</button>
+            </div>
+        </section>
