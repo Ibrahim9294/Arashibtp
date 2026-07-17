@@ -1,101 +1,212 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Immobilier ARASHI</title>
-
-<link rel="stylesheet" href="../style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immobilier & BTP | Entreprise ARASHI v3.0</title>
+    <!-- Lien vers le fichier CSS global de la racine -->
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .filter-bar {
+            background: var(--white);
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-bar select, .filter-bar input {
+            padding: 10px 15px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+        .badge-status {
+            background: #e1f5fe;
+            color: #0288d1;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
 </head>
-
-
 <body>
 
+    <!-- Menu Toggle pour mobile -->
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-<header class="header">
+    <!-- Sidebar : Architecture v3.0 -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p>v3.0 Immobilier</p>
+        </div>
+        <nav>
+            <a href="../index.html">🏠 Accueil</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="immobilier.html" class="active">🏡 Immobilier</a>
+            <a href="topographie.html">📐 Topographie</a>
+            <a href="construction.html">🏗️ Construction</a>
+            <a href="materiaux.html">🧱 Matériaux</a>
+            <a href="marketplace.html">🛒 Marketplace</a>
+            <a href="vendor.html">🛍️ Vendor Center</a>
+            <a href="partnership.html">🤝 Partnership</a>
+            <a href="orders.html">📦 Mes Commandes</a>
+            <a href="admin.html">👑 Admin</a>
+            <a href="ai.html">🤖 ARASHI AI</a>
+        </nav>
+    </aside>
 
-<h1>🏡 Immobilier ARASHI</h1>
+    <!-- Contenu Principal -->
+    <div class="content">
+        <header class="topbar">
+            <h1>Pôle Immobilier & BTP</h1>
+            <div class="auth-area">
+                <span id="userStatus">🟢 Chargement...</span>
+            </div>
+        </header>
 
-<p>
-Villas, terrains et bâtiments.
-</p>
+        <!-- Section Hero -->
+        <section class="hero" style="background: linear-gradient(135deg, #0B3D91 0%, #154fae 100%);">
+            <h2>Terrains & Logements en Monnaie Pi</h2>
+            <p>Devenez propriétaire en toute sécurité. Tous nos biens et levés topographiques sont certifiés par l'Entreprise ARASHI.</p>
+            <div class="hero-tags">
+                <span>📍 Terrains Titrés</span>
+                <span>🔑 Villas Clés en Main</span>
+                <span>📐 Levés Topographiques</span>
+            </div>
+        </section>
 
-</header>
+        <!-- Barre de Filtres et Recherche -->
+        <section class="search-container" style="margin: 20px 40px 0 40px;">
+            <div class="filter-bar">
+                <input type="text" id="searchProperty" placeholder="Rechercher une ville, un quartier..." style="flex: 1; min-width: 200px;">
+                <select id="filterType">
+                    <option value="all">Tous les types</option>
+                    <option value="terrain">Terrains</option>
+                    <option value="villa">Villas & Maisons</option>
+                    <option value="appartement">Appartements</option>
+                </select>
+                <select id="filterPrice">
+                    <option value="all">Tous les prix</option>
+                    <option value="asc">Prix croissants</option>
+                    <option value="desc">Prix décroissants</option>
+                </select>
+            </div>
+        </section>
 
+        <!-- Grille des Biens Immobiliers -->
+        <section class="main-services">
+            <h2>🏡 Biens disponibles & Opportunités</h2>
+            <div class="property-grid" id="propertyGrid">
+                <!-- Les cartes immobilières dynamiques s'injecteront ici via Supabase -->
+                <div class="product-card-placeholder">
+                    <p>⏳ Connexion à la base de données ARASHI en cours...</p>
+                </div>
+            </div>
+        </section>
 
+        <!-- Footer -->
+        <footer>
+            <p>© 2026 Entreprise ARASHI v3.0 - Tous droits réservés.</p>
+        </footer>
+    </div>
 
-<section>
+    <!-- Chargement des modules JS -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/app.js"></script>
 
-<h2>Nos biens</h2>
+    <!-- Script Logique Immobilière Live -->
+    <script type="module">
+        import { supabase } from '../js/supabase.js';
 
+        document.addEventListener("DOMContentLoaded", () => {
+            // Affichage de l'utilisateur connecté
+            const savedUser = localStorage.getItem("pi_user");
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                if (document.getElementById("userStatus")) {
+                    document.getElementById("userStatus").innerHTML = `🟢 <strong>@${user.username}</strong>`;
+                }
+            }
 
-<div class="product-grid">
+            // Chargement des propriétés depuis Supabase
+            loadProperties();
+        });
 
+        async function loadProperties() {
+            const grid = document.getElementById("propertyGrid");
+            if (!grid) return;
 
-<div class="product-card">
+            try {
+                // Requête sur la table 'properties'
+                const { data: properties, error } = await supabase
+                    .from('properties')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-<img src="../assets/villas/villa-moderne.jpg">
+                if (error) throw error;
 
-<h3>Villa Moderne</h3>
+                if (!properties || properties.length === 0) {
+                    grid.innerHTML = `
+                        <div class="product-card-placeholder" style="grid-column: 1/-1;">
+                            <p>🍃 Aucun bien immobilier n'est répertorié pour le moment.</p>
+                        </div>`;
+                    return;
+                }
 
-<p>
-5 chambres - Jardin - Garage
-</p>
+                grid.innerHTML = ""; // Clear placeholder
 
-<strong>
-2 π
-</strong>
+                properties.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "service-card";
+                    
+                    const priceDisplay = item.price_pi 
+                        ? `🪙 <strong>${item.price_pi} π</strong>` 
+                        : `💵 <strong>${item.price_fcfa || item.price} FCFA</strong>`;
 
+                    card.innerHTML = `
+                        <div style="text-align:center; margin-bottom:15px; position:relative;">
+                            <img src="${item.image_url || '../assets/images/placeholder.jpg'}" alt="${item.title}" style="width:100%; height:180px; object-fit:cover; border-radius:8px;">
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span class="badge-status">${item.type || 'Immobilier'}</span>
+                            <span style="font-size:12px; color:#888;">📍 ${item.location || 'Non spécifié'}</span>
+                        </div>
+                        <h3>${item.title}</h3>
+                        <p style="font-size:13px; color:#666; margin-bottom:15px;">${item.description || ''}</p>
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #eee; padding-top:15px;">
+                            <span style="color:var(--primary-color); font-size:16px;">${priceDisplay}</span>
+                            <button onclick="window.triggerPurchase('${item.id}', ${item.price_pi || 0}, '${item.title}')" 
+                                    style="background:var(--primary-color); color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px;">
+                                Réserver / Acheter
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
 
-<button>
-Acheter
-</button>
-
-
-</div>
-
-
-
-<div class="product-card">
-
-<img src="../assets/terrains/terrain.jpg">
-
-<h3>Terrain résidentiel</h3>
-
-<p>
-Parcelle disponible
-</p>
-
-
-<strong>
-0.5 π
-</strong>
-
-
-<button>
-Acheter
-</button>
-
-
-</div>
-
-
-</div>
-
-
-</section>
-
-
-
-<a href="../index.html">
-⬅ Retour accueil
-</a>
-
-
+            } catch (err) {
+                console.error("Erreur chargement immobilier :", err);
+                grid.innerHTML = `
+                    <div class="product-card-placeholder" style="grid-column: 1/-1; border-color:#ff4d4d; color:#ff4d4d;">
+                        <p>⚠️ Erreur lors de la synchronisation des biens immobiliers avec Supabase.</p>
+                    </div>`;
+            }
+        }
+    </script>
 </body>
-
-</html>
+  </html>
+          
