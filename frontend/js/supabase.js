@@ -1,13 +1,11 @@
-/**
- * ARASHI v2.0 - Configuration Supabase Client
- */
-const SUPABASE_URL = "https://VOTRE_PROJET.supabase.co"; // À remplacer par votre URL
-const SUPABASE_ANON_KEY = "VOTRE_CLE_ANONYME"; // À remplacer par votre clé anonyme
+// Import du SDK Supabase
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-export const supabase = (typeof window.supabase !== 'undefined')
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-    : null;
+// Ton URL Supabase (tirée de ta photo)
+const SUPABASE_URL = "https://cjmunzphzqazivbkgrdq.supabase.co"; 
 
-if (!supabase) {
-    console.warn("Script d'importation CDN Supabase manquant ou mal configuré.");
-}
+// Ta clé Anon publique (tirée de ta photo)
+const SUPABASE_ANON_KEY = "sb_publishable_-7GJRL8TW81oHvjt-N17ZQ_OS8qD-cu"; 
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const STORAGE_BUCKET = "products";
