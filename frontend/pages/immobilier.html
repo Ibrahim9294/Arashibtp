@@ -123,17 +123,16 @@
         </footer>
     </div>
 
-    <!-- Chargement SDK Pi et Modules -->
+    <!-- 1. Chargement du SDK Pi officiel -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    <script type="module" src="../js/supabase.js"></script>
-    <script type="module" src="../js/auth.js"></script>
-    <script type="module" src="../js/app.js"></script>
+    
+    <!-- 2. Chargement de TON script principal de production qui contient la fonction buy() -->
+    <script src="../js/app.js"></script>
 
-    <!-- Logique de la page et Achat -->
+    <!-- 3. Connexion Supabase et injection des biens immobiliers -->
     <script type="module">
         import { supabase } from '../js/supabase.js';
 
-        // 1. CHARGEMENT DYNAMIQUE DES BIENS DEPUIS SUPABASE
         async function loadProperties() {
             try {
                 const { data, error } = await supabase
@@ -146,132 +145,41 @@
                 if (!grid) return;
 
                 if (!data || data.length === 0) {
-                    grid.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: var(--text-muted);'>Aucun bien disponible pour le moment.</p>";
+                    grid.innerHTML = "<p style='grid-column: 1/-1; text-align: center;'>Aucun bien disponible pour le moment.</p>";
                     return;
                 }
 
-                // Injection du code HTML pour chaque terrain trouvé
+                // Utilisation directe de ta fonction globale buy() présente dans app.js
                 grid.innerHTML = data.map(item => `
                     <div class="service-card" style="background: var(--white); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between;">
                         <div>
-                            <span class="badge-status">${item.type ? item.type.toUpperCase() : 'BIEN'}</span>
+                            <span class="badge-status">${item.type ? item.type.toUpperCase() : 'IMMO'}</span>
                             <h3 style="margin: 10px 0 5px 0; color: var(--dark-blue); font-size: 1.2rem;">${item.title}</h3>
-                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">${item.description || 'Aucune description disponible.'}</p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">${item.description || ''}</p>
                             <p style="font-size: 0.95rem; margin-bottom: 15px;">📍 <b>${item.location || 'Non spécifiée'}</b></p>
                         </div>
-                        <div style="border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div style="border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px; display: flex; align-items: center; justify-content: space-between;">
                             <span style="font-size: 1.3rem; font-weight: 700; color: #f5a623;">${item.price_pi || 0} 𝝅</span>
-                            <button class="btn" onclick="window.triggerPurchase('${item.id}', ${item.price_pi || 0}, '${item.title.replace(/'/g, "\\'")}')" style="background: var(--dark-blue); color: var(--white); padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.2s;">
-                                🔑 Acheter / Réserver
+                            
+                            <!-- ICI : On appelle proprement ta fonction native buy() -->
+                            <button class="btn" onclick="buy('${item.title.replace(/'/g, "\\'")}', ${item.price_pi || 0})" style="background: var(--dark-blue); color: var(--white); padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                🔑 Réserver / Acheter
                             </button>
                         </div>
                     </div>
                 `).join('');
 
             } catch (err) {
-                console.error("Erreur de récupération Supabase:", err);
+                console.error("Erreur Supabase:", err);
                 const grid = document.getElementById('propertyGrid');
-                if (grid) {
-                    grid.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: #e74c3c;'>❌ Impossible de charger les données. Vérifiez votre configuration Supabase.</p>";
-                }
+                if (grid) grid.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: red;'>❌ Erreur de base de données.</p>";
             }
         }
 
-        // Lancement automatique dès que le document DOM est prêt
         document.addEventListener("DOMContentLoaded", () => {
             loadProperties();
         });
-
-        // 2. FONCTION GLOBALE POUR LE BOUTON DE PAIEMENT PI BLOCKCHAIN
-        window.triggerPurchase = async function(propertyId, pricePi, propertyTitle) {
-            console.log(`Tentative d'achat : ${propertyTitle}`);
-            
-            const savedUser = localStorage.getItem("pi_user");
-            if (!savedUser) {
-                alert("⚠️ Vous devez être connecté avec votre compte Pi pour effectuer un achat.");
-                return;
-            }
-
-            if (window.Pi) {
-                try {
-                    alert(`💸 Initialisation du paiement Blockchain pour : ${propertyTitle} (${pricePi} Pi)...`);
-                    
-                    const payment = await window.Pi.createPayment({
-                        amount: parseFloat(pricePi),
-                        memo: `Achat ARASHI v3.0: ${propertyTitle}`,
-                        metadata: { property_id: propertyId }
-                    }, {
-                        onReadyForServerApproval: function(paymentId) {
-                            console.log("Paiement approuvé par le client, ID:", paymentId);
-                        },
-                        onReadyForServerCompletion: function(paymentId, txid) {
-                            console.log("Paiement finalisé sur la Blockchain, TXID:", txid);
-                            alert("✅ Paiement réussi ! Votre réservation a été enregistrée sur la Blockchain Pi.");
-                        },
-                        onCancel: function(paymentId) { 
-                            alert("❌ Paiement annulé."); 
-                        },
-                        onError: function(error, payment) { 
-                            console.error("Erreur Pi", error); 
-                            alert("❌ Une erreur est survenue lors de la transaction Pi.");
-                        }
-                    });
-                } catch (err) {
-                    alert("Erreur lors du lancement de la fenêtre de paiement Pi.");
-                }
-            } else {
-                alert("⚙️ Le SDK Pi Network n'est pas détecté. Assurez-vous d'être dans le Pi Browser.");
-            }
-        };
     </script>
 </body>
-    </html>
-                
-        // 2. FONCTION GLOBALE POUR LE BOUTON DE PAIEMENT PI BLOCKCHAIN CORRIGÉE
-        window.triggerPurchase = async function(propertyId, pricePi, propertyTitle) {
-            console.log(`Tentative d'achat : ${propertyTitle}`);
+                    </html>
             
-            if (!window.Pi) {
-                alert("⚙️ Le SDK Pi Network n'est pas détecté. Assurez-vous d'être dans le Pi Browser.");
-                return;
-            }
-
-            try {
-                // FORCE LA DEMANDE D'AUTORISATION DE PAIEMENT AU NAVIGATEUR PI
-                const scopes = ['username', 'payments'];
-                alert("🔐 Vérification des autorisations Pi Blockchain...");
-                
-                await window.Pi.authenticate(scopes, function(payment) {
-                    console.log("Paiement incomplet trouvé et géré automatiquement:", payment);
-                });
-
-                // LANCE LE PAIEMENT UNE FOIS AUTORISÉ
-                alert(`💸 Ouverture de la fenêtre de paiement Pi pour : ${propertyTitle} (${pricePi} Pi)...`);
-                
-                await window.Pi.createPayment({
-                    amount: parseFloat(pricePi),
-                    memo: `Achat ARASHI v3.0: ${propertyTitle}`,
-                    metadata: { property_id: propertyId }
-                }, {
-                    onReadyForServerApproval: function(paymentId) {
-                        console.log("Paiement approuvé par le client, ID:", paymentId);
-                    },
-                    onReadyForServerCompletion: function(paymentId, txid) {
-                        console.log("Paiement finalisé sur la Blockchain, TXID:", txid);
-                        alert("✅ Paiement réussi ! Votre réservation a été enregistrée.");
-                    },
-                    onCancel: function(paymentId) { 
-                        alert("❌ Paiement annulé."); 
-                    },
-                    onError: function(error, payment) { 
-                        console.error("Erreur Pi", error); 
-                        alert("❌ Erreur de transaction : " + error.message);
-                    }
-                });
-
-            } catch (err) {
-                console.error("Erreur critique:", err);
-                alert("Erreur de connexion Pi Network : " + err.message);
-            }
-        };
-        
