@@ -80,3 +80,30 @@ window.scrollToPopular = function() {
         section.scrollIntoView({ behavior: "smooth" });
     }
 };
+// ... (tes codes existants, laisse-les tranquilles) ...
+
+// ==========================================
+// DEBUT DU BLOC A AJOUTER TOUT EN BAS :
+// ==========================================
+window.triggerPurchase = async function(propertyId, pricePi, propertyTitle) {
+    console.log(`Tentative d'achat pour le bien : ${propertyTitle} (${pricePi} Pi)`);
+    
+    // 1. Vérifier si l'utilisateur est connecté via l'écosystème Pi
+    const savedUser = localStorage.getItem("pi_user");
+    if (!savedUser) {
+        alert("⚠️ Vous devez être connecté avec votre compte Pi pour effectuer un achat.");
+        return;
+    }
+
+    // 2. Lancer la procédure de paiement Pi Network
+    if (window.createPiPayment) {
+        // Appelle la fonction de paiement présente dans pi-payments.js
+        window.createPiPayment(pricePi, `Achat Immobilier : ${propertyTitle}`, propertyId);
+    } else {
+        alert("⚙️ Le module de paiement Pi Blockchain n'est pas encore totalement initialisé. Veuillez réessayer dans un instant.");
+    }
+};
+// ==========================================
+// FIN DU BLOC
+// ==========================================
+   
