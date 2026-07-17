@@ -1,123 +1,82 @@
-import { supabase } from './supabase.js';
-
-window.scrollToPopular = function() {
-    const section = document.getElementById("popularSection");
-    if (section) section.scrollIntoView({ behavior: 'smooth' });
-};
+/* ==========================================
+   ENTREPRISE ARASHI v3.0 - Script App UI
+========================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-    initMenu();
-    loadStats();
-    loadPopularProducts();
+    console.log("🚀 Entreprise ARASHI v3.0 - Interface Initialisée");
+
+    // 1. Gestion du Menu Mobile (Sidebar)
+    initMobileMenu();
+
+    // 2. Gestion de la Barre de Recherche Globale
+    initGlobalSearch();
+
+    // 3. Animation / Initialisation des Statistiques de l'Accueil
+    initStatsPlaceholder();
 });
 
-// Gérer l'ouverture du menu mobile
-function initMenu() {
-    const toggleBtn = document.getElementById("menuToggle");
+/**
+ * Gère l'ouverture et la fermeture de la sidebar sur mobile
+ */
+function initMobileMenu() {
+    const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
 
-    if (toggleBtn && sidebar) {
-        toggleBtn.addEventListener("click", () => {
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener("click", (e) => {
             sidebar.classList.toggle("active");
+            e.stopPropagation(); // Empêche la fermeture immédiate
+        });
+
+        // Ferme la sidebar si on clique en dehors (sur le contenu principal)
+        document.addEventListener("click", (e) => {
+            if (sidebar.classList.contains("active") && !sidebar.contains(e.target) && e.target !== menuToggle) {
+                sidebar.classList.remove("active");
+            }
         });
     }
 }
 
-// Charger dynamiquement les compteurs depuis Supabase
-async function loadStats() {
-    if (!supabase) return;
+/**
+ * Gère la saisie dans la barre de recherche globale
+ */
+function initGlobalSearch() {
+    const searchInput = document.getElementById("globalSearch");
 
-    try {
-        // 1. Nombre d'utilisateurs
-        const { count: usersCount } = await supabase.from('users').select('*', { count: 'exact', head: true });
-        // 2. Nombre de boutiques
-        const { count: vendorsCount } = await supabase.from('vendors').select('*', { count: 'exact', head: true });
-        // 3. Nombre de produits / biens immo
-        const { count: productsCount } = await supabase.from('products').select('*', { count: 'exact', head: true });
-
-        document.getElementById("totalUsers").innerText = usersCount || 1250; // Fallback démo
-        document.getElementById("totalVendors").innerText = vendorsCount || 85;
-        document.getElementById("totalProperties").innerText = productsCount || 34;
-        document.getElementById("totalPayments").innerText = "14,850 π";
-
-    } catch (err) {
-        console.warn("Erreur de chargement des stats (Données démo affichées) :", err.message);
-    }
-}
-
-// Charger dynamiquement les produits populaires
-async function loadPopularProducts() {
-    const grid = document.getElementById("popularProductsGrid");
-    if (!grid) return;
-
-    if (!supabase) {
-        // Code secours hors ligne avec données d'illustrations de vos secteurs
-        grid.innerHTML = getDemoProductsHtml();
-        return;
-    }
-
-    try {
-        const { data: products, error } = await supabase
-            .from('products')
-            .select('*')
-            .limit(4);
-
-        if (error) throw error;
-
-        if (!products || products.length === 0) {
-            grid.innerHTML = getDemoProductsHtml();
-            return;
-        }
-
-        grid.innerHTML = "";
-        products.forEach(p => {
-            const card = document.createElement("div");
-            card.className = "product-card";
-            card.innerHTML = `
-                <img class="product-image" src="${p.images[0] || 'https://via.placeholder.com/300x200'}" alt="${p.title}">
-                <div class="product-info">
-                    <h3>${p.title}</h3>
-                    <p class="product-vendor">📍 ${p.country || 'International'}</p>
-                    <div class="product-prices">
-                        <span class="price-pi">${p.price_pi} π</span>
-                        <span class="price-fcfa">${p.price_fcfa.toLocaleString('fr-FR')} FCFA</span>
-                    </div>
-                    <button class="btn-buy" onclick="initiatePiPurchase('${p.id}', ${p.price_pi})">Acheter maintenant</button>
-                </div>
-            `;
-            grid.appendChild(card);
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            const query = e.target.value.trim().toLowerCase();
+            if (query.length > 2) {
+                console.log(`🔍 Entreprise ARASHI - Recherche en cours pour : "${query}"`);
+                // Plus tard, cette fonction pourra filtrer les éléments de la marketplace ou de l'immobilier
+            }
         });
-    } catch (err) {
-        console.error("Erreur de récupération des produits :", err);
-        grid.innerHTML = getDemoProductsHtml();
     }
 }
 
-function getDemoProductsHtml() {
-    return `
-        <div class="product-card">
-            <img class="product-image" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=300&q=80" alt="Villa">
-            <div class="product-info">
-                <h3>🏡 Villa Bassam Premium</h3>
-                <p class="product-vendor">📍 Côte d'Ivoire | ARASHI Immo</p>
-                <div class="product-prices">
-                    <span class="price-pi">45,000 π</span>
-                    <span class="price-fcfa">45 000 000 FCFA</span>
-                </div>
-                <button class="btn-buy" onclick="alert('Veuillez vous connecter via le Pi Browser pour initier le paiement.')">Acheter</button>
-            </div>
-        </div>
-        <div class="product-card">
-            <img class="product-image" src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=300&q=80" alt="Station GNSS">
-            <div class="product-info">
-                <h3>📐 Récepteur GNSS RTK v2</h3>
-                <p class="product-vendor">📍 Sénégal | Topographie Pro</p>
-                <div class="product-prices">
-                    <span class="price-pi">1,200 π</span>
-                    <span class="price-fcfa">1 200 000 FCFA</span>
-                </div>
-                <button class="btn-buy" onclick="alert('Veuillez vous connecter via le Pi Browser pour initier le paiement.')">Acheter</button>
-            </div>
-        </div>
-    `;
+/**
+ * Initialise des données visuelles de départ pour les statistiques
+ * Note : Ce code sera connecté à Supabase dans l'étape 'supabase.js'
+ */
+function initStatsPlaceholder() {
+    const totalUsers = document.getElementById("totalUsers");
+    const totalVendors = document.getElementById("totalVendors");
+    const totalProperties = document.getElementById("totalProperties");
+    const totalPayments = document.getElementById("totalPayments");
+
+    // Valeurs de démonstration professionnelles en attendant la synchro live
+    if (totalUsers) totalUsers.innerText = "1,250+";
+    if (totalVendors) totalVendors.innerText = "84";
+    if (totalProperties) totalProperties.innerText = "310";
+    if (totalPayments) totalPayments.innerText = "45,820 π";
 }
+
+/**
+ * Fonction de défilement fluide vers la section des opportunités
+ */
+window.scrollToPopular = function() {
+    const section = document.getElementById("popularSection");
+    if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+    }
+};
