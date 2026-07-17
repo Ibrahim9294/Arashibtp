@@ -123,90 +123,51 @@
         </footer>
     </div>
 
-    <!-- Chargement des modules JS -->
+       <!-- Chargement SDK Pi et Modules -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <script type="module" src="../js/supabase.js"></script>
     <script type="module" src="../js/auth.js"></script>
     <script type="module" src="../js/app.js"></script>
 
-    <!-- Script Logique Immobilière Live -->
+    <!-- Logique de la page et Achat -->
     <script type="module">
         import { supabase } from '../js/supabase.js';
 
-        document.addEventListener("DOMContentLoaded", () => {
-            // Affichage de l'utilisateur connecté
+        // Cette fonction doit être globale pour être appelée par le bouton HTML
+        window.triggerPurchase = async function(propertyId, pricePi, propertyTitle) {
+            console.log(`Tentative d'achat : ${propertyTitle}`);
+            
             const savedUser = localStorage.getItem("pi_user");
-            if (savedUser) {
-                const user = JSON.parse(savedUser);
-                if (document.getElementById("userStatus")) {
-                    document.getElementById("userStatus").innerHTML = `🟢 <strong>@${user.username}</strong>`;
-                }
+            if (!savedUser) {
+                alert("⚠️ Vous devez être connecté avec votre compte Pi pour effectuer un achat.");
+                return;
             }
 
-            // Chargement des propriétés depuis Supabase
-            loadProperties();
-        });
-
-        async function loadProperties() {
-            const grid = document.getElementById("propertyGrid");
-            if (!grid) return;
-
-            try {
-                // Requête sur la table 'properties'
-                const { data: properties, error } = await supabase
-                    .from('properties')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                if (!properties || properties.length === 0) {
-                    grid.innerHTML = `
-                        <div class="product-card-placeholder" style="grid-column: 1/-1;">
-                            <p>🍃 Aucun bien immobilier n'est répertorié pour le moment.</p>
-                        </div>`;
-                    return;
-                }
-
-                grid.innerHTML = ""; // Clear placeholder
-
-                properties.forEach(item => {
-                    const card = document.createElement("div");
-                    card.className = "service-card";
+            if (window.Pi) {
+                try {
+                    alert(`💸 Initialisation du paiement Blockchain pour : ${propertyTitle} (${pricePi} Pi)...`);
                     
-                    const priceDisplay = item.price_pi 
-                        ? `🪙 <strong>${item.price_pi} π</strong>` 
-                        : `💵 <strong>${item.price_fcfa || item.price} FCFA</strong>`;
-
-                    card.innerHTML = `
-                        <div style="text-align:center; margin-bottom:15px; position:relative;">
-                            <img src="${item.image_url || '../assets/images/placeholder.jpg'}" alt="${item.title}" style="width:100%; height:180px; object-fit:cover; border-radius:8px;">
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <span class="badge-status">${item.type || 'Immobilier'}</span>
-                            <span style="font-size:12px; color:#888;">📍 ${item.location || 'Non spécifié'}</span>
-                        </div>
-                        <h3>${item.title}</h3>
-                        <p style="font-size:13px; color:#666; margin-bottom:15px;">${item.description || ''}</p>
-                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #eee; padding-top:15px;">
-                            <span style="color:var(--primary-color); font-size:16px;">${priceDisplay}</span>
-                            <button onclick="window.triggerPurchase('${item.id}', ${item.price_pi || 0}, '${item.title}')" 
-                                    style="background:var(--primary-color); color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px;">
-                                Réserver / Acheter
-                            </button>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-
-            } catch (err) {
-                console.error("Erreur chargement immobilier :", err);
-                grid.innerHTML = `
-                    <div class="product-card-placeholder" style="grid-column: 1/-1; border-color:#ff4d4d; color:#ff4d4d;">
-                        <p>⚠️ Erreur lors de la synchronisation des biens immobiliers avec Supabase.</p>
-                    </div>`;
+                    const payment = await window.Pi.createPayment({
+                        amount: parseFloat(pricePi),
+                        memo: `Achat ARASHI: ${propertyTitle}`,
+                        metadata: { property_id: propertyId }
+                    }, {
+                        onReadyForServerApproval: function(paymentId) {
+                            console.log("Paiement approuvé par le client, ID:", paymentId);
+                        },
+                        onReadyForServerCompletion: function(paymentId, txid) {
+                            console.log("Paiement finalisé sur la Blockchain, TXID:", txid);
+                            alert("✅ Paiement réussi !");
+                        },
+                        onCancel: function(paymentId) { alert("❌ Paiement annulé."); },
+                        onError: function(error, payment) { console.error("Erreur Pi", error); }
+                    });
+                } catch (err) {
+                    alert("Erreur lors du lancement de la fenêtre de paiement Pi.");
+                }
+            } else {
+                alert("⚙️ Le SDK Pi Network n'est pas détecté. Assurez-vous d'être dans le Pi Browser.");
             }
-        }
+        };
     </script>
-</body>
-  </html>
-          
+ 
