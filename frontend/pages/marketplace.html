@@ -1,79 +1,171 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Marketplace Pi ARASHI</title>
-
-<link rel="stylesheet" href="../style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace | Entreprise ARASHI v3.0</title>
+    <!-- Lien vers le fichier CSS global -->
+    <link rel="stylesheet" href="../css/style.css">
 </head>
-
-
 <body>
 
+    <!-- Menu Toggle pour mobile -->
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-<header class="header">
+    <!-- Sidebar : Architecture v3.0 -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p>v3.0 Marketplace</p>
+        </div>
+        <nav>
+            <a href="../index.html">🏠 Accueil</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="immobilier.html">🏡 Immobilier</a>
+            <a href="topographie.html">📐 Topographie</a>
+            <a href="construction.html">🏗️ Construction</a>
+            <a href="materiaux.html">🧱 Matériaux</a>
+            <a href="marketplace.html" class="active">🛒 Marketplace</a>
+            <a href="vendor.html">🛍️ Vendor Center</a>
+            <a href="partnership.html">🤝 Partnership</a>
+            <a href="orders.html">📦 Mes Commandes</a>
+            <a href="admin.html">👑 Admin</a>
+            <a href="ai.html">🤖 ARASHI AI</a>
+        </nav>
+    </aside>
 
-<h1>🛒 Marketplace ARASHI</h1>
+    <!-- Contenu Principal -->
+    <div class="content">
+        <header class="topbar">
+            <h1>Marketplace Globale Pi</h1>
+            <div class="auth-area">
+                <span id="userStatus">🟢 Chargement...</span>
+            </div>
+        </header>
 
-<p>
-Achetez et vendez avec Pi Network.
-</p>
+        <!-- Section Hero -->
+        <section class="hero" style="background: linear-gradient(135deg, #F4B400 0%, #0B3D91 100%);">
+            <h2>Le Marché B2B & B2C Pi Network</h2>
+            <p>Achetez vos matériaux, équipements et fournitures directement avec votre Wallet Pi auprès de nos vendeurs certifiés.</p>
+        </section>
 
-</header>
+        <!-- Recherche dédiée aux produits -->
+        <section class="search-container">
+            <div class="search-box">
+                <input type="text" id="marketSearch" placeholder="Rechercher un produit, un matériau, une marque...">
+            </div>
+        </section>
 
+        <!-- Grille des Produits -->
+        <section class="popular-products" style="margin-top: 20px;">
+            <div class="section-header">
+                <h2>🛍️ Toutes les offres disponibles</h2>
+            </div>
+            
+            <div class="products-grid" id="fullProductsGrid">
+                <!-- Les articles de la boutique s'injecteront dynamiquement ici -->
+                <div class="product-card-placeholder">
+                    <p>⏳ Chargement des articles du catalogue de l'Entreprise ARASHI...</p>
+                </div>
+            </div>
+        </section>
 
+        <!-- Footer -->
+        <footer>
+            <p>© 2026 Entreprise ARASHI v3.0 - Tous droits réservés.</p>
+        </footer>
+    </div>
 
-<section>
+    <!-- Chargement des modules JS -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/pi-payments.js"></script>
 
-<h2>Produits disponibles</h2>
+    <!-- Script de liaison dynamique pour la Marketplace complète -->
+    <script type="module">
+        import { supabase, STORAGE_BUCKET } from '../js/supabase.js';
 
+        document.addEventListener("DOMContentLoaded", () => {
+            // Affichage de l'utilisateur connecté
+            const savedUser = localStorage.getItem("pi_user");
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                if (document.getElementById("userStatus")) {
+                    document.getElementById("userStatus").innerHTML = `🟢 <strong>@${user.username}</strong>`;
+                }
+            }
 
-<div id="marketList">
+            // Charger l'intégralité du catalogue
+            loadCatalog();
+        });
 
+        async function loadCatalog() {
+            const gridContainer = document.getElementById("fullProductsGrid");
+            if (!gridContainer) return;
 
-<div class="product-card">
+            try {
+                const { data: products, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-<h3>Ciment</h3>
+                if (error) throw error;
 
-<p>
-Matériaux construction
-</p>
+                if (!products || products.length === 0) {
+                    gridContainer.innerHTML = `
+                        <div class="product-card-placeholder">
+                            <p>🛍️ Le catalogue est actuellement vide. Revenez très bientôt !</p>
+                        </div>`;
+                    return;
+                }
 
-<strong>
-0.0001 π
-</strong>
+                gridContainer.innerHTML = "";
 
+                products.forEach(product => {
+                    let imageUrl = "../assets/images/placeholder.jpg";
+                    if (product.image_url) {
+                        if (!product.image_url.startsWith('http')) {
+                            const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(product.image_url);
+                            imageUrl = data.publicUrl;
+                        } else {
+                            imageUrl = product.image_url;
+                        }
+                    }
 
-<button>
-Acheter avec Pi
-</button>
+                    const card = document.createElement("div");
+                    card.className = "service-card";
+                    card.style.borderTop = "4px solid #F4B400";
 
+                    const priceDisplay = product.price_pi 
+                        ? `🪙 <strong>${product.price_pi} π</strong>` 
+                        : `💵 <strong>${product.price_fcfa || product.price} FCFA</strong>`;
 
-</div>
+                    card.innerHTML = `
+                        <div style="text-align:center; margin-bottom:15px;">
+                            <img src="${imageUrl}" alt="${product.title}" style="max-width:100%; height:140px; object-fit:cover; border-radius:8px;">
+                        </div>
+                        <h3>${product.title || product.name}</h3>
+                        <p style="font-size:13px; color:#666; height:40px; overflow:hidden;">${product.description || ''}</p>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:10px; border-top:1px solid #f5f5f5;">
+                            <span style="font-size:16px; color:#0B3D91;">${priceDisplay}</span>
+                            <button onclick="window.createPiPayment(${product.price_pi || 0}, 'Achat : ${product.title || product.name}', '${product.id}')" 
+                                    style="background:#0B3D91; color:white; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600;">
+                                Acheter
+                            </button>
+                        </div>
+                    `;
+                    gridContainer.appendChild(card);
+                });
 
-
-</div>
-
-
-</section>
-
-
-
-<a href="../index.html">
-⬅ Retour accueil
-</a>
-
-
-  <script src="../js/cart.js"></script>
-<script src="../js/marketplace.js"></script>
-<script src="../js/payment.js"></script>
-
+            } catch (err) {
+                console.error("Erreur catalogue marketplace :", err);
+                gridContainer.innerHTML = `
+                    <div class="product-card-placeholder" style="border-color:#ff4d4d; color:#ff4d4d;">
+                        <p>⚠️ Impossible de récupérer les produits de la boutique pour le moment.</p>
+                    </div>`;
+            }
+        }
+    </script>
 </body>
-
 </html>
