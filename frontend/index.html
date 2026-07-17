@@ -6,8 +6,8 @@
     <title>ARASHI v2.0 | Écosystème Global B2B & B2C Pi Network</title>
     <link rel="stylesheet" href="css/style.css">
     
+    <!-- SDK Officiel Pi Network requis pour charger window.Pi -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -37,7 +37,8 @@
         <header class="topbar">
             <h1>ARASHI Portal</h1>
             <div class="auth-area">
-                <button id="piLogin">🪙 Connexion Pi</button>
+                <!-- AJUSTEMENT ICI : Ajout du onclick pour lier l'authentification -->
+                <button id="piLogin" onclick="loginWithPi()">🪙 Connexion Pi</button>
                 <span id="userStatus"></span>
             </div>
         </header>
@@ -144,9 +145,10 @@
         </footer>
     </div>
 
+    <!-- Chargement ordonné des modules JS -->
     <script type="module" src="js/supabase.js"></script>
     <script type="module" src="js/auth.js"></script>
     <script type="module" src="js/pi-payments.js"></script>
     <script type="module" src="js/app.js"></script>
 </body>
-                 </html>
+                    </html>
