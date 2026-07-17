@@ -1,75 +1,122 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Dashboard | Entreprise ARASHI</title>
-
-<link rel="stylesheet" href="../style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Dashboard | Entreprise ARASHI v3.0</title>
+    <!-- Lien vers le fichier CSS global de la racine -->
+    <link rel="stylesheet" href="../css/style.css">
 </head>
-
 <body>
 
+    <!-- Menu Toggle pour mobile -->
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-<header class="header">
+    <!-- Sidebar : Architecture v3.0 -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p>v3.0 Dashboard</p>
+        </div>
+        <nav>
+            <a href="../index.html">🏠 Accueil</a>
+            <a href="dashboard.html" class="active">📊 Dashboard</a>
+            <a href="immobilier.html">🏡 Immobilier</a>
+            <a href="topographie.html">📐 Topographie</a>
+            <a href="construction.html">🏗️ Construction</a>
+            <a href="materiaux.html">🧱 Matériaux</a>
+            <a href="marketplace.html">🛒 Marketplace</a>
+            <a href="vendor.html">🛍️ Vendor Center</a>
+            <a href="partnership.html">🤝 Partnership</a>
+            <a href="orders.html">📦 Mes Commandes</a>
+            <a href="admin.html">👑 Admin</a>
+            <a href="ai.html">🤖 ARASHI AI</a>
+        </nav>
+    </aside>
 
-<h1>📊 Dashboard ARASHI</h1>
+    <!-- Contenu Principal -->
+    <div class="content">
+        <header class="topbar">
+            <h1>Mon Espace Personnel</h1>
+            <div class="auth-area">
+                <span id="userStatus">🟢 Chargement...</span>
+            </div>
+        </header>
 
-<p>
-Tableau de bord de votre activité.
-</p>
+        <!-- Section Hero du Dashboard -->
+        <section class="hero" style="background: linear-gradient(135deg, #0B3D91 0%, #F4B400 100%);">
+            <div class="hero-content">
+                <h2>Ravi de vous revoir, <span id="profileName">Pionnier</span> !</h2>
+                <p>Gérez vos activités, vos biens immobiliers, vos commandes et vos transactions Pi en toute sécurité.</p>
+            </div>
+        </section>
 
-</header>
+        <!-- Section Statistiques Utilisateur -->
+        <section class="stats">
+            <h2>📊 Aperçu de mon activité</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-icon">📦</span>
+                    <div>
+                        <strong id="orderCount">0</strong>
+                        <p>Commandes passées</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">❤️</span>
+                    <div>
+                        <strong id="favCount">0</strong>
+                        <p>Mes Favoris</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">🪙</span>
+                    <div>
+                        <strong id="userBalancePi">0 π</strong>
+                        <p>Dépenses sur ARASHI</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
+        <!-- Section Actions et Raccourcis -->
+        <section class="quick-actions">
+            <h2>⚡ Actions Rapides</h2>
+            <div class="actions-grid">
+                <a href="immobilier.html?action=my_listings" class="action-btn">🏡 Gérer mes biens</a>
+                <a href="orders.html" class="action-btn">📜 Historique d'achats</a>
+                <a href="settings.html" class="action-btn">⚙️ Paramètres du profil</a>
+                <button onclick="window.logoutARASHI()" class="action-btn" style="color: #ff4d4d; border-color: rgba(255,77,77,0.2); cursor: pointer; width: 100%; height: 100%;">🚪 Déconnexion</button>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer>
+            <p>© 2026 Entreprise ARASHI v3.0 - Tous droits réservés.</p>
+        </footer>
+    </div>
 
+    <!-- Chargement des modules JS -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/app.js"></script>
 
-<section>
-
-<h2>Statistiques</h2>
-
-
-<div class="dashboard-grid">
-
-
-<div class="card">
-<h3>🏗️ Projets</h3>
-<p>0</p>
-</div>
-
-
-<div class="card">
-<h3>🏡 Biens immobiliers</h3>
-<p>0</p>
-</div>
-
-
-<div class="card">
-<h3>🛒 Produits</h3>
-<p>0</p>
-</div>
-
-
-<div class="card">
-<h3>💰 Revenus Pi</h3>
-<p>0 π</p>
-</div>
-
-
-</div>
-
-
-</section>
-
-
-<a href="../index.html">
-⬅ Retour accueil
-</a>
-
-
+    <script type="module">
+        // Petit script local pour synchroniser immédiatement l'affichage du pseudo enregistré
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedUser = localStorage.getItem("pi_user");
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                const userStatus = document.getElementById("userStatus");
+                const profileName = document.getElementById("profileName");
+                
+                if (userStatus) userStatus.innerHTML = `🟢 <strong>@${user.username}</strong>`;
+                if (profileName) profileName.innerText = `@${user.username}`;
+            } else {
+                const userStatus = document.getElementById("userStatus");
+                if (userStatus) userStatus.innerHTML = `🔴 Non connecté à Pi`;
+            }
+        });
+    </script>
 </body>
-
 </html>
