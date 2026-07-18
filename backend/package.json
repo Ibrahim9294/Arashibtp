@@ -1,7 +1,7 @@
 {
-  "name": "arashi-btp-backend",
+  "name": "arashi-v3-backend",
   "version": "1.0.0",
-  "description": "Backend Pi Network pour Entreprise ARASHI",
+  "description": "Backend Pi Network pour Entreprise ARASHI V3",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
