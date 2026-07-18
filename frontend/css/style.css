@@ -4,17 +4,26 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
-:root {
-    --primary-color: #0B3D91;      /* Bleu Spatial ARASHI */
-    --secondary-color: #F4B400;    /* Jaune Or Pi Network */
-    --dark-color: #1a1a1a;
-    --light-bg: #f5f7fb;
-    --white: #ffffff;
-    --border-radius: 12px;
-    --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    --transition: all 0.3s ease;
-}
+:root{
+    --primary-color:#0B3D91;
+    --secondary-color:#F4B400;
 
+    --success:#28a745;
+    --danger:#dc3545;
+    --warning:#ffc107;
+
+    --dark:#1d1d1d;
+    --light:#f5f7fb;
+    --white:#ffffff;
+
+    --text:#222;
+    --text-muted:#666;
+    --border:#e5e5e5;
+
+    --shadow:0 8px 25px rgba(0,0,0,.08);
+    --radius:14px;
+    --transition:.3s;
+}
 * {
     margin: 0;
     padding: 0;
