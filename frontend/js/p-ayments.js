@@ -1,101 +1,124 @@
-/* ==========================================
-   ENTREPRISE ARASHI v3.0 - API Pi Payments
-========================================== */
+// ======================================
+// ARASHI v3.0
+// Pi Payments
+// ======================================
 
-import { supabase } from './supabase.js';
+import { supabase } from "./supabase.js";
 
-console.log("🪙 Module Pi Payments ARASHI v3.0 Initialisé");
+const API_URL = "https://TON-SERVICE-RENDER.onrender.com";
+// Remplace TON-SERVICE-RENDER par l'URL de ton backend Render
 
-const Pi = window.Pi;
+window.createPiPayment = async function(amount, memo, productId = null) {
 
-/**
- * Lance le processus de paiement officiel en monnaie Pi
- * @param {number} amount - Le montant en Pi (ex: 3.14)
- * @param {string} memo - La raison du paiement (ex: "Achat Ciment Tonne")
- * @param {string} itemId - L'identifiant du produit ou de la propriété
- */
-window.createPiPayment = function(amount, memo, itemId) {
-    if (!Pi) {
-        alert("Veuillez utiliser le Pi Browser pour effectuer vos transactions en Pi.");
-        return;
+    try {
+
+        const saved = localStorage.getItem("pi_user");
+
+        if (!saved) {
+            alert("Veuillez vous connecter avec Pi.");
+            return;
+        }
+
+        if (!window.Pi) {
+            alert("SDK Pi indisponible.");
+            return;
+        }
+
+        const payment = await Pi.createPayment(
+
+            {
+                amount: Number(amount),
+                memo: memo,
+                metadata: {
+                    productId
+                }
+            },
+
+            {
+
+                onReadyForServerApproval: async function(paymentId) {
+
+                    await fetch(`${API_URL}/approve`, {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            paymentId
+                        })
+
+                    });
+
+                },
+
+                onReadyForServerCompletion: async function(paymentId, txid) {
+
+                    await fetch(`${API_URL}/complete`, {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            paymentId,
+                            txid
+                        })
+
+                    });
+
+                    const user = JSON.parse(saved);
+
+                    await supabase.from("payments").insert({
+
+                        pi_payment_id: paymentId,
+
+                        username: user.username,
+
+                        amount: amount,
+
+                        blockchain_txid: txid,
+
+                        status: "completed"
+
+                    });
+
+                    alert("Paiement effectué avec succès.");
+
+                },
+
+                onCancel: function(paymentId) {
+
+                    console.log("Paiement annulé :", paymentId);
+
+                    alert("Paiement annulé.");
+
+                },
+
+                onError: function(error) {
+
+                    console.error(error);
+
+                    alert("Erreur lors du paiement.");
+
+                }
+
+            }
+
+        );
+
+        return payment;
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Impossible de créer le paiement.");
+
     }
 
-    console.log(`💸 Initialisation d'un paiement de ${amount} π pour : "${memo}"`);
-
-    // Appel de l'API de paiement du SDK Pi
-    Pi.createPayment({
-        amount: amount,
-        memo: memo,
-        metadata: { itemId: itemId },
-    }, {
-        onReadyForServerApproval: function(paymentId) {
-            console.log(`⏳ Paiement approuvé par l'utilisateur. ID: ${paymentId}. En attente de validation serveur...`);
-            // Étape 1 : Envoyer le paymentId à ton serveur ou Supabase pour validation
-            approvePaymentOnServer(paymentId);
-        },
-        onReadyForServerCompletion: function(paymentId, txid) {
-            console.log(`✅ Transaction soumise à la blockchain Pi ! TXID: ${txid}`);
-            // Étape 2 : Confirmer la finalisation de la transaction
-            completePaymentOnServer(paymentId, txid);
-        },
-        onCancel: function(paymentId) {
-            console.log(`❌ Paiement annulé par l'utilisateur (ID: ${paymentId})`);
-            alert("Paiement annulé.");
-        },
-        onError: function(error, payment) {
-            console.error("❌ Erreur critique lors du paiement Pi :", error, payment);
-            alert("Une erreur est survenue lors de la transaction.");
-        }
-    });
 };
-
-/**
- * Approuve le paiement côté serveur (sécurité obligatoire Pi Network)
- */
-async function approvePaymentOnServer(paymentId) {
-    try {
-        // Enregistrement temporaire de la tentative de paiement dans Supabase
-        const { error } = await supabase
-            .from('payments')
-            .insert([{ 
-                pi_payment_id: paymentId, 
-                status: 'approved',
-                updated_at: new Date().toISOString()
-            }]);
-
-        if (error) console.error("⚠️ Erreur log Supabase (Approbation) :", error);
-        
-        // Note : Pour l'environnement de production Pi Core Team, 
-        // l'approbation finale doit être envoyée depuis ton serveur Render à l'API Pi.
-        console.log("🚀 Notification d'approbation enregistrée.");
-    } catch (err) {
-        console.error("Erreur serveur approbation :", err);
-    }
-}
-
-/**
- * Finalise et clôture la transaction dans ta base de données
- */
-async function completePaymentOnServer(paymentId, txid) {
-    try {
-        // Mise à jour du statut final du paiement dans Supabase
-        const { error } = await supabase
-            .from('payments')
-            .update({ 
-                status: 'completed', 
-                blockchain_txid: txid,
-                updated_at: new Date().toISOString()
-            })
-            .eq('pi_payment_id', paymentId);
-
-        if (error) {
-            console.error("❌ Erreur lors de la mise à jour du paiement dans Supabase :", error);
-        } else {
-            console.log("🎉 Paiement enregistré et validé avec succès dans l'écosystème ARASHI !");
-            alert("Félicitations ! Votre paiement en Pi a été validé avec succès.");
-            window.location.reload();
-        }
-    } catch (err) {
-        console.error("Erreur serveur complétion :", err);
-    }
-}
