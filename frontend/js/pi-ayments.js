@@ -92,9 +92,9 @@ await supabase.from("payments").insert({
                                 status: "initialized"
                             });
 
-                        const response = await fetch(
-                            `${API_URL}/approve`,
-                            {
+                        const response = 
+const response = await fetch(`${API_URL}/approve`, {
+                       {
                                 method: "POST",
                                 headers: {
                                     "Content-Type":
@@ -154,9 +154,9 @@ await supabase.from("payments").insert({
                             );
                         }
 
-                        await supabase
-                            .from("payments")
-                            .update({
+                       await supabase
+.from("payments")
+.update({
                                 blockchain_txid: txid,
                                 status: "completed",
                                 updated_at:
@@ -190,6 +190,12 @@ await supabase.from("payments").insert({
                         paymentId
                     );
 
+await supabase
+.from("payments")
+.update({
+    status: "cancelled"
+})
+.eq("pi_payment_id", paymentId);
                     await supabase
                         .from("payments")
                         .update({
@@ -210,6 +216,12 @@ await supabase.from("payments").insert({
 
                     console.error(error);
 
+await supabase
+.from("payments")
+.update({
+    status: "failed"
+})
+.eq("pi_payment_id", paymentId);
                     if (payment?.identifier) {
 
                         await supabase
