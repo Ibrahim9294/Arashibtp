@@ -129,3 +129,62 @@ async function loadStatistics() {
 }
 
 loadStatistics();
+
+window.buy = async function (productName, amount) {
+
+    if (!window.createPiPayment) {
+
+        alert("Pi Payment n'est pas chargé.");
+
+        return;
+
+    }
+
+    await window.createPiPayment(
+        amount,
+        productName
+    );
+
+};
+
+const search = document.getElementById("globalSearch");
+
+if (search) {
+
+    search.addEventListener("keyup", e => {
+
+        const value = e.target.value.toLowerCase();
+
+        document.querySelectorAll(".service-card").forEach(card => {
+
+            card.style.display =
+                card.innerText.toLowerCase().includes(value)
+                ? "block"
+                : "none";
+
+        });
+
+    });
+
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const savedUser = localStorage.getItem("pi_user");
+
+    if (savedUser) {
+
+        const user = JSON.parse(savedUser);
+
+        const status = document.getElementById("userStatus");
+
+        if (status) {
+
+            status.innerHTML =
+                `🟢 @${user.username}`;
+
+        }
+
+    }
+
+});
