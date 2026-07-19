@@ -202,3 +202,118 @@ async function loadStatistics(){
     }
 
 }
+// ===============================
+// PRODUITS POPULAIRES
+// ===============================
+
+async function loadPopularProducts() {
+
+    const grid = document.getElementById("popularProductsGrid");
+
+    if (!grid) return;
+
+    try {
+
+        const { data, error } = await supabase
+            .from("products")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(4);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            grid.innerHTML = `
+                <div class="product-card-placeholder">
+                    Aucun produit disponible.
+                </div>`;
+            return;
+        }
+
+        grid.innerHTML = "";
+
+        data.forEach(product => {
+
+            grid.innerHTML += `
+
+            <div class="service-card">
+
+                <img
+                    src="${product.image_url || 'assets/images/placeholder.jpg'}"
+                    alt="${product.title}"
+                    style="width:100%;height:180px;object-fit:cover;border-radius:8px;">
+
+                <h3>${product.title}</h3>
+
+                <p>${product.description || ""}</p>
+
+                <strong style="color:#0B3D91">
+                    ${product.price_pi || 0} π
+                </strong>
+
+            </div>
+
+            `;
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+loadPopularProducts();
+// ===============================
+// NOTIFICATIONS
+// ===============================
+
+window.showNotification = function(message) {
+
+    alert(message);
+
+};
+// ===============================
+// DECONNEXION
+// ===============================
+
+window.logout = function() {
+
+    localStorage.removeItem("pi_user");
+
+    location.reload();
+
+};
+// ===============================
+// SESSION
+// ===============================
+
+window.addEventListener("load", () => {
+
+    const saved = localStorage.getItem("pi_user");
+
+    if (saved) {
+
+        const user = JSON.parse(saved);
+
+        const status = document.getElementById("userStatus");
+
+        if (status) {
+
+            status.innerHTML = "🟢 @" + user.username;
+
+        }
+
+    }
+
+});// ===============================
+// AUTO REFRESH
+// ===============================
+
+setInterval(() => {
+
+    loadStatistics();
+
+}, 30000);
