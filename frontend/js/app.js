@@ -1,224 +1,131 @@
+// =====================================
+// ARASHI v3.0
+// app.js
+// =====================================
+
 import { supabase } from "./supabase.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+const sidebar = document.getElementById("sidebar");
+const menuToggle = document.getElementById("menuToggle");
 
-    initMenu();
+if (menuToggle && sidebar) {
+    menuToggle.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+    });
+}
 
-    checkUser();
+window.scrollToPopular = function () {
+    document
+        .getElementById("popularSection")
+        ?.scrollIntoView({
+            behavior: "smooth"
+        });
+};
 
-    initLogout();
+async function loadStatistics() {
 
-    loadStats();
+    try {
 
-    loadPopularProducts();
+        const [
+            users,
+            vendors,
+            properties,
+            payments
+        ] = await Promise.all([
 
-    initSearch();
+            supabase.from("profiles").select("*", { count: "exact", head: true }),
+            supabase.from("vendors").select("*", { count: "exact", head: true }),
+            supabase.from("properties").select("*", { count: "exact", head: true }),
+            supabase.from("payments").select("*")
 
-});
+        ]);
 
-function initMenu(){
+        document.getElementById("totalUsers").textContent =
+            users.count || 0;
 
-const btn=document.getElementById("menuToggle");
+        document.getElementById("totalVendors").textContent =
+            vendors.count || 0;
 
-const sidebar=document.getElementById("sidebar");
+        document.getElementById("totalProperties").textContent =
+            properties.count || 0;
 
-if(btn && sidebar){
+        let totalPi = 0;
 
-btn.onclick=()=>{
+        payments.data?.forEach(p => {
 
-sidebar.classList.toggle("active");
+            if (p.status === "completed") {
+
+                totalPi += Number(p.amount);
+
+            }
+
+        });
+
+        document.getElementById("totalPayments").textContent =
+            totalPi + " π";
+
+    }
+
+    catch (e) {
+
+        console.error(e);
+
+    }
 
 }
 
-}
+loadStatistics();
+
+async function loadStatistics() {
+
+    try {
+
+        const [
+            users,
+            vendors,
+            properties,
+            payments
+        ] = await Promise.all([
+
+            supabase.from("profiles").select("*", { count: "exact", head: true }),
+            supabase.from("vendors").select("*", { count: "exact", head: true }),
+            supabase.from("properties").select("*", { count: "exact", head: true }),
+            supabase.from("payments").select("*")
+
+        ]);
+
+        document.getElementById("totalUsers").textContent =
+            users.count || 0;
+
+        document.getElementById("totalVendors").textContent =
+            vendors.count || 0;
+
+        document.getElementById("totalProperties").textContent =
+            properties.count || 0;
+
+        let totalPi = 0;
+
+        payments.data?.forEach(p => {
+
+            if (p.status === "completed") {
+
+                totalPi += Number(p.amount);
+
+            }
+
+        });
+
+        document.getElementById("totalPayments").textContent =
+            totalPi + " π";
+
+    }
+
+    catch (e) {
+
+        console.error(e);
+
+    }
 
 }
 
-function checkUser(){
-
-const saved=localStorage.getItem("pi_user");
-
-const status=document.getElementById("userStatus");
-
-if(!status) return;
-
-if(saved){
-
-const user=JSON.parse(saved);
-
-status.innerHTML="🟢 @"+user.username;
-
-}else{
-
-status.innerHTML="🔴 Non connecté";
-
-}
-
-}
-function initLogout(){
-
-const btn=document.getElementById("logoutBtn");
-
-if(!btn) return;
-
-btn.onclick=()=>{
-
-localStorage.removeItem("pi_user");
-
-window.location.reload();
-
-}
-
-}
-
-function initSearch(){
-
-const input=document.getElementById("globalSearch");
-
-if(!input) return;
-
-input.addEventListener("keyup",()=>{
-
-const value=input.value.toLowerCase();
-
-document.querySelectorAll(".service-card").forEach(card=>{
-
-card.style.display=
-
-card.innerText.toLowerCase().includes(value)
-
-?
-
-"block"
-
-:
-
-"none";
-
-});
-
-});
-
-}
-
-async function loadStats(){
-
-if(!supabase) return;
-
-try{
-
-const {count:users}=await supabase
-
-.from("profiles")
-
-.select("*",{count:"exact",head:true});
-
-const {count:vendors}=await supabase
-
-.from("vendors")
-
-.select("*",{count:"exact",head:true});
-
-const {count:products}=await supabase
-
-.from("products")
-
-.select("*",{count:"exact",head:true});
-
-document.getElementById("totalUsers").textContent=users||0;
-
-document.getElementById("totalVendors").textContent=vendors||0;
-
-document.getElementById("totalProperties").textContent=products||0;
-
-document.getElementById("totalPayments").textContent="0 π";
-
-}
-
-catch(e){
-
-console.log(e);
-
-}
-
-}
-
-async function loadPopularProducts(){
-
-const grid=document.getElementById("popularProductsGrid");
-
-if(!grid) return;
-
-try{
-
-const {data}=await supabase
-
-.from("products")
-
-.select("*")
-
-.limit(4);
-
-grid.innerHTML="";
-
-if(!data || data.length===0){
-
-grid.innerHTML="<p>Aucun produit.</p>";
-
-return;
-
-}
-
-data.forEach(product=>{
-
-grid.innerHTML+=`
-
-<div class="service-card">
-
-<img
-
-class="product-image"
-
-src="${product.image_url||'assets/images/placeholder.jpg'}">
-
-<h3>${product.title}</h3>
-
-<p>${product.description||""}</p>
-
-<strong>
-
-${product.price_pi} π
-
-</strong>
-
-</div>
-
-`;
-
-});
-
-}
-
-catch(err){
-
-console.log(err);
-
-}
-
-}
-
-window.scrollToPopular=function(){
-
-const section=document.getElementById("popularSection");
-
-if(section){
-
-section.scrollIntoView({
-
-behavior:"smooth"
-
-});
-
-}
-
-}
+loadStatistics();
