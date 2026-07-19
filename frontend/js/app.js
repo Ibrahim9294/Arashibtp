@@ -1,81 +1,13 @@
-// =====================================
-// ARASHI v3.0
-// app.js
-// =====================================
+// ===============================
+// ARASHI v3.0 - app.js
+// ===============================
 
 import { supabase } from "./supabase.js";
 
 const sidebar = document.getElementById("sidebar");
 const menuToggle = document.getElementById("menuToggle");
-
-if (menuToggle && sidebar) {
-    menuToggle.addEventListener("click", () => {
-        sidebar.classList.toggle("active");
-    });
-}
-
-window.scrollToPopular = function () {
-    document
-        .getElementById("popularSection")
-        ?.scrollIntoView({
-            behavior: "smooth"
-        });
-};
-
-async function loadStatistics() {
-
-    try {
-
-        const [
-            users,
-            vendors,
-            properties,
-            payments
-        ] = await Promise.all([
-
-            supabase.from("profiles").select("*", { count: "exact", head: true }),
-            supabase.from("vendors").select("*", { count: "exact", head: true }),
-            supabase.from("properties").select("*", { count: "exact", head: true }),
-            supabase.from("payments").select("*")
-
-        ]);
-
-        document.getElementById("totalUsers").textContent =
-            users.count || 0;
-
-        document.getElementById("totalVendors").textContent =
-            vendors.count || 0;
-
-        document.getElementById("totalProperties").textContent =
-            properties.count || 0;
-
-        let totalPi = 0;
-
-        payments.data?.forEach(p => {
-
-            if (p.status === "completed") {
-
-                totalPi += Number(p.amount);
-
-            }
-
-        });
-
-        document.getElementById("totalPayments").textContent =
-            totalPi + " π";
-
-    }
-
-    catch (e) {
-
-        console.error(e);
-
-    }
-
-}
-
-loadStatistics();
-
+const userStatus = document.getElementById("userStatus");
+const piLoginBtn = document.getElementById("piLogin");
 async function loadStatistics() {
 
     try {
@@ -188,3 +120,85 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+// ===============================
+// MENU MOBILE
+// ===============================
+
+if (menuToggle && sidebar) {
+    menuToggle.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+    });
+}
+// ===============================
+// UTILISATEUR CONNECTÉ
+// ===============================
+
+function checkUser() {
+
+    const saved = localStorage.getItem("pi_user");
+
+    if (!saved) {
+        if(userStatus){
+            userStatus.textContent = "Non connecté";
+        }
+        return;
+    }
+
+    const user = JSON.parse(saved);
+
+    if(userStatus){
+        userStatus.innerHTML = `🟢 @${user.username}`;
+    }
+
+}
+// ===============================
+// STATISTIQUES
+// ===============================
+
+async function loadStatistics(){
+
+    try{
+
+        const {count:users}=await supabase
+        .from("profiles")
+        .select("*",{count:"exact",head:true});
+
+        const {count:vendors}=await supabase
+        .from("vendors")
+        .select("*",{count:"exact",head:true});
+
+        const {count:properties}=await supabase
+        .from("properties")
+        .select("*",{count:"exact",head:true});
+
+        const {data:payments}=await supabase
+        .from("payments")
+        .select("amount");
+
+        let totalPi=0;
+
+        if(payments){
+            payments.forEach(p=>{
+                totalPi+=Number(p.amount)||0;
+            });
+        }
+
+        if(document.getElementById("totalUsers"))
+            document.getElementById("totalUsers").textContent=users||0;
+
+        if(document.getElementById("totalVendors"))
+            document.getElementById("totalVendors").textContent=vendors||0;
+
+        if(document.getElementById("totalProperties"))
+            document.getElementById("totalProperties").textContent=properties||0;
+
+        if(document.getElementById("totalPayments"))
+            document.getElementById("totalPayments").textContent=totalPi+" π";
+
+    }catch(e){
+
+        console.error(e);
+
+    }
+
+}
