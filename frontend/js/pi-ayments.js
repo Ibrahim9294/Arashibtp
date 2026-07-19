@@ -5,7 +5,7 @@
 
 import { supabase } from "./supabase.js";
 
-const API_URL = "https://TON-SERVICE-RENDER.onrender.com";
+const API_URL = "https://entreprise-arashi.onrender.com";
 // Remplace TON-SERVICE-RENDER par l'URL de ton backend Render
 
 window.createPiPayment = async function(amount, memo, productId = null) {
