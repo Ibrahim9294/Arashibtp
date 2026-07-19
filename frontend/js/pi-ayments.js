@@ -1,27 +1,21 @@
 // =====================================
 // ARASHI v3.0
 // pi-payments.js
-// Version corrigée
+// Version Finale
 // =====================================
 
 import { supabase } from "./supabase.js";
 
 const API_URL = "https://entreprise-arashi.onrender.com";
 
-// Vérification du SDK Pi
-if (!window.Pi) {
-    console.error("SDK Pi non chargé.");
-}
-
-// Initialisation Pi
-try {
+// Initialisation du SDK Pi
+if (window.Pi) {
     Pi.init({
         version: "2.0",
-        sandbox: true
-        // mettre false lors du passage en Mainnet
+        sandbox: true // mettre false en Mainnet
     });
-} catch (e) {
-    console.error("Erreur d'initialisation Pi :", e);
+} else {
+    console.error("SDK Pi non chargé.");
 }
 
 window.createPiPayment = async function (
@@ -34,20 +28,20 @@ window.createPiPayment = async function (
 
         const savedUser = localStorage.getItem("pi_user");
 
-const user = JSON.parse(saved);
-
-if (!user.uid) {
-    alert("Utilisateur Pi invalide.");
-    return;
-}
-
         if (!savedUser) {
-            alert("Veuillez d'abord vous connecter avec Pi.");
+            alert("Veuillez vous connecter avec Pi.");
             return;
         }
 
         if (!window.Pi) {
-            alert("Le SDK Pi Network est introuvable.");
+            alert("SDK Pi indisponible.");
+            return;
+        }
+
+        const user = JSON.parse(savedUser);
+
+        if (!user.uid || !user.username) {
+            alert("Utilisateur Pi invalide.");
             return;
         }
 
@@ -58,15 +52,8 @@ if (!user.uid) {
             return;
         }
 
-        const user = JSON.parse(savedUser);
+        document.body.style.cursor = "wait";
 
-// Enregistrement du paiement avant validation
-await supabase.from("payments").insert({
-    pi_payment_id: crypto.randomUUID(),
-    username: user.username,
-    amount: amount,
-    status: "initialized"
-});
         const payment = await Pi.createPayment(
 
             {
@@ -88,38 +75,32 @@ await supabase.from("payments").insert({
                             .upsert({
                                 pi_payment_id: paymentId,
                                 username: user.username,
-                                amount,
+                                amount: amount,
                                 status: "initialized"
                             });
 
-                        const response = 
-const response = await fetch(`${API_URL}/approve`, {
-                       {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-                                credentials: "include",
-                                body: JSON.stringify({
-                                    paymentId
-                                })
-                            }
-                        );
+                        const response = await fetch(`${API_URL}/approve`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            credentials: "include",
+                            body: JSON.stringify({
+                                paymentId
+                            })
+                        });
 
                         if (!response.ok) {
-                            throw new Error(
-                                "Erreur serveur APPROVE"
-                            );
+                            throw new Error("Erreur serveur APPROVE");
                         }
+
+                        console.log(await response.json());
 
                     } catch (err) {
 
                         console.error(err);
 
-                        alert(
-                            "Impossible d'approuver le paiement."
-                        );
+                        alert("Impossible d'approuver le paiement.");
 
                     }
 
@@ -132,52 +113,61 @@ const response = await fetch(`${API_URL}/approve`, {
 
                     try {
 
-                        const response = await fetch(
-                            `${API_URL}/complete`,
-                            {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-                                credentials: "include",
-                                body: JSON.stringify({
-                                    paymentId,
-                                    txid
-                                })
-                            }
-                        );
+                        const response = await fetch(`${API_URL}/complete`, {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+
+                            credentials: "include",
+
+                            body: JSON.stringify({
+                                paymentId,
+                                txid
+                            })
+
+                        });
 
                         if (!response.ok) {
-                            throw new Error(
-                                "Erreur serveur COMPLETE"
-                            );
+                            throw new Error("Erreur serveur COMPLETE");
                         }
 
-                       await supabase
-.from("payments")
-.update({
-                                blockchain_txid: txid,
-                                status: "completed",
-                                updated_at:
-                                    new Date().toISOString()
-                            })
-                            .eq(
-                                "pi_payment_id",
-                                paymentId
-                            );
+                        console.log(await response.json());
 
-                        alert(
-                            "✅ Paiement Pi effectué avec succès."
-                        );
+                        await supabase
+                            .from("payments")
+                            .update({
+
+                                blockchain_txid: txid,
+
+                                status: "completed",
+
+                                updated_at: new Date().toISOString()
+
+                            })
+
+                            .eq("pi_payment_id", paymentId);
+
+                        console.log({
+                            paymentId,
+                            txid,
+                            amount,
+                            username: user.username
+                        });
+
+                        document.body.style.cursor = "default";
+
+                        alert("✅ Paiement effectué avec succès.");
 
                     } catch (err) {
 
                         console.error(err);
 
-                        alert(
-                            "Erreur pendant la finalisation du paiement."
-                        );
+                        document.body.style.cursor = "default";
+
+                        alert("Erreur lors de la finalisation du paiement.");
 
                     }
 
@@ -185,28 +175,23 @@ const response = await fetch(`${API_URL}/approve`, {
 
                 onCancel: async (paymentId) => {
 
-                    console.log(
-                        "Paiement annulé",
-                        paymentId
-                    );
+                    document.body.style.cursor = "default";
 
-await supabase
-.from("payments")
-.update({
-    status: "cancelled"
-})
-.eq("pi_payment_id", paymentId);
+                    console.log("Paiement annulé :", paymentId);
+
                     await supabase
+
                         .from("payments")
+
                         .update({
+
                             status: "cancelled",
-                            updated_at:
-                                new Date().toISOString()
+
+                            updated_at: new Date().toISOString()
+
                         })
-                        .eq(
-                            "pi_payment_id",
-                            paymentId
-                        );
+
+                        .eq("pi_payment_id", paymentId);
 
                     alert("Paiement annulé.");
 
@@ -214,33 +199,29 @@ await supabase
 
                 onError: async (error, payment) => {
 
+                    document.body.style.cursor = "default";
+
                     console.error(error);
 
-await supabase
-.from("payments")
-.update({
-    status: "failed"
-})
-.eq("pi_payment_id", paymentId);
                     if (payment?.identifier) {
 
                         await supabase
+
                             .from("payments")
+
                             .update({
+
                                 status: "error",
-                                updated_at:
-                                    new Date().toISOString()
+
+                                updated_at: new Date().toISOString()
+
                             })
-                            .eq(
-                                "pi_payment_id",
-                                payment.identifier
-                            );
+
+                            .eq("pi_payment_id", payment.identifier);
 
                     }
 
-                    alert(
-                        "Une erreur est survenue pendant le paiement."
-                    );
+                    alert("Une erreur est survenue pendant le paiement.");
 
                 }
 
@@ -250,13 +231,15 @@ await supabase
 
         return payment;
 
-    } catch (err) {
+    }
+
+    catch (err) {
+
+        document.body.style.cursor = "default";
 
         console.error(err);
 
-        alert(
-            "Impossible de lancer le paiement Pi."
-        );
+        alert("Impossible de lancer le paiement Pi.");
 
     }
 
