@@ -8,6 +8,22 @@ import { supabase } from "./supabase.js";
 
 const API_URL = "https://entreprise-arashi.onrender.com";
 
+// Vérification du SDK Pi
+if (!window.Pi) {
+    console.error("SDK Pi non chargé.");
+}
+
+// Initialisation Pi
+try {
+    Pi.init({
+        version: "2.0",
+        sandbox: true
+        // mettre false lors du passage en Mainnet
+    });
+} catch (e) {
+    console.error("Erreur d'initialisation Pi :", e);
+}
+
 window.createPiPayment = async function (
     amount,
     memo,
@@ -17,6 +33,13 @@ window.createPiPayment = async function (
     try {
 
         const savedUser = localStorage.getItem("pi_user");
+
+const user = JSON.parse(saved);
+
+if (!user.uid) {
+    alert("Utilisateur Pi invalide.");
+    return;
+}
 
         if (!savedUser) {
             alert("Veuillez d'abord vous connecter avec Pi.");
@@ -37,6 +60,13 @@ window.createPiPayment = async function (
 
         const user = JSON.parse(savedUser);
 
+// Enregistrement du paiement avant validation
+await supabase.from("payments").insert({
+    pi_payment_id: crypto.randomUUID(),
+    username: user.username,
+    amount: amount,
+    status: "initialized"
+});
         const payment = await Pi.createPayment(
 
             {
