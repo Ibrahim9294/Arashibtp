@@ -1,213 +1,140 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import axios from "axios";
-
-dotenv.config();
+const express = require('express');
+const axios = require('axios');
+const path = require('path');
+require('dotenv').config();
 
 const app = express();
-
-app.use(cors({
-    origin: true,
-    credentials: true
-}));
-
-app.use(express.json());
-
 const PORT = process.env.PORT || 3000;
 
-const PI_API = "https://api.minepi.com/v2/payments";
+// Middleware pour analyser le JSON dans les requêtes
+app.use(express.json());
 
-const PI_API_KEY = process.env.PI_API_KEY;
+// Service des fichiers statiques du Frontend sur Render
+app.use(express.static(path.join(__dirname, '../frontend')));
 
-// =====================================
-// Test serveur
-// =====================================
+// URL de base de l'API Pi Network
+const PI_API_URL = 'https://api.minepi.com/v2';
 
-app.get("/", (req, res) => {
-    res.json({
-        success: true,
-        app: "ARASHI v3.0 Backend",
-        status: "Running"
-    });
+// En-têtes pour les requêtes vers l'API Pi Network
+const getPiHeaders = () => ({
+  headers: {
+    Authorization: `Key ${process.env.PI_API_KEY}`,
+    'Content-Type': 'json'
+  }
 });
 
-// =====================================
-// APPROVE PAYMENT
-// =====================================
+// ==========================================
+// ENDPOINTS DE PAIEMENT PI NETWORK
+// ==========================================
 
-app.post("/approve", async (req, res) => {
+/**
+ * 1. APPROVE PAYMENT (/approve)
+ * Appelé par le SDK Pi JS ou le client backend lorsque l'utilisateur initie un paiement.
+ * Transmet l'approbation à l'API Pi.
+ */
+app.post('/approve', async (req, res) => {
+  const { paymentId } = req.body;
 
-    try {
+  if (!paymentId) {
+    return res.status(400).json({ error: 'paymentId est requis' });
+  }
 
-        const { paymentId } = req.body;
+  try {
+    const response = await axios.post(
+      `${PI_API_URL}/payments/${paymentId}/approve`,
+      {},
+      getPiHeaders()
+    );
+    console.log(`[Pi Payment] Approbé avec succès: ${paymentId}`);
+    return res.status(200).json(response.data);
+  } catch (error) {
+    console.error(`[Error /approve]:`, error.response ? error.response.data : error.message);
+    return res.status(500).json({ error: 'Échec lors de l\'approbation du paiement' });
+  }
+});
 
-        if (!paymentId) {
-            return res.status(400).json({
-                success: false,
-                message: "paymentId manquant"
-            });
-        }
+/**
+ * 2. COMPLETE PAYMENT (/complete)
+ * Appelé une fois que le paiement a été soumis à la Blockchain Pi ou validé.
+ */
+app.post('/complete', async (req, res) => {
+  const { paymentId, txid } = req.body;
 
-        const response = await axios.post(
+  if (!paymentId || !txid) {
+    return res.status(400).json({ error: 'paymentId et txid sont requis' });
+  }
 
-            `${PI_API}/${paymentId}/approve`,
+  try {
+    const response = await axios.post(
+      `${PI_API_URL}/payments/${paymentId}/complete`,
+      { txid },
+      getPiHeaders()
+    );
+    console.log(`[Pi Payment] Complété avec succès: ${paymentId}, TXID: ${txid}`);
+    return res.status(200).json(response.data);
+  } catch (error) {
+    console.error(`[Error /complete]:`, error.response ? error.response.data : error.message);
+    return res.status(500).json({ error: 'Échec lors de la complétion du paiement' });
+  }
+});
 
-            {},
+/**
+ * 3. VERIFY PAYMENT (/verify)
+ * Vérifie l'état actuel d'un paiement directement auprès des serveurs de Pi Network.
+ */
+app.get('/verify/:paymentId', async (req, res) => {
+  const { paymentId } = req.params;
 
-            {
-                headers: {
-                    Authorization: `Key ${PI_API_KEY}`
-                }
-            }
+  try {
+    const response = await axios.get(
+      `${PI_API_URL}/payments/${paymentId}`,
+      getPiHeaders()
+    );
+    return res.status(200).json(response.data);
+  } catch (error) {
+    console.error(`[Error /verify]:`, error.response ? error.response.data : error.message);
+    return res.status(500).json({ error: 'Impossible de vérifier le paiement' });
+  }
+});
 
-        );
+/**
+ * 4. WEBHOOK (/webhook)
+ * Reçoit les événements asynchrones envoyés par Pi Network (paiements incomplets, annulations, etc.).
+ */
+app.post('/webhook', async (req, res) => {
+  const event = req.body;
 
-        res.json(response.data);
+  console.log('[Pi Webhook] Événement reçu:', JSON.stringify(event, null, 2));
 
-    } catch (err) {
-
-        console.error(err.response?.data || err.message);
-
-        res.status(500).json({
-            success: false,
-            error: err.response?.data || err.message
-        });
-
+  try {
+    // Traitement selon le type d'événement Pi
+    if (event && event.action) {
+      switch (event.action) {
+        case 'payment_completed':
+          console.log(`Paiement ${event.payment_id} confirmé via webhook.`);
+          break;
+        case 'payment_cancelled':
+          console.log(`Paiement ${event.payment_id} annulé.`);
+          break;
+        default:
+          console.log(`Action non gérée: ${event.action}`);
+      }
     }
 
+    // Répondre toujours 200 OK à Pi Network pour valider la réception du Webhook
+    return res.status(200).send('Webhook reçu');
+  } catch (error) {
+    console.error('[Error /webhook]:', error);
+    return res.status(500).send('Erreur serveur webhook');
+  }
 });
 
-// =====================================
-// COMPLETE PAYMENT
-// =====================================
-
-app.post("/complete", async (req, res) => {
-
-    try {
-
-        const { paymentId, txid } = req.body;
-
-        if (!paymentId || !txid) {
-
-            return res.status(400).json({
-
-                success: false,
-
-                message: "paymentId ou txid manquant"
-
-            });
-
-        }
-
-        const response = await axios.post(
-
-            `${PI_API}/${paymentId}/complete`,
-
-            {
-                txid
-            },
-
-            {
-                headers: {
-                    Authorization: `Key ${PI_API_KEY}`
-                }
-            }
-
-        );
-
-        res.json(response.data);
-
-    }
-
-    catch (err) {
-
-        console.error(err.response?.data || err.message);
-
-        res.status(500).json({
-
-            success: false,
-
-            error: err.response?.data || err.message
-
-        });
-
-    }
-
+// Route fallback : renvoie index.html du frontend pour toute autre route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
-// =====================================
-// VERIFY PAYMENT
-// =====================================
-
-app.post("/verify", async (req, res) => {
-
-    try {
-
-        const { paymentId } = req.body;
-
-        const response = await axios.get(
-
-            `${PI_API}/${paymentId}`,
-
-            {
-                headers: {
-                    Authorization: `Key ${PI_API_KEY}`
-                }
-            }
-
-        );
-
-        res.json(response.data);
-
-    }
-
-    catch (err) {
-
-        res.status(500).json({
-
-            success: false,
-
-            error: err.response?.data || err.message
-
-        });
-
-    }
-
-});
-
-// =====================================
-// CANCEL PAYMENT
-// =====================================
-
-app.post("/cancel", async (req, res) => {
-
-    res.json({
-
-        success: true,
-
-        message: "Paiement annulé"
-
-    });
-
-});
-
-// =====================================
-// WEBHOOK
-// =====================================
-
-app.post("/webhook", async (req, res) => {
-
-    console.log("Webhook Pi :", req.body);
-
-    res.sendStatus(200);
-
-});
-
-// =====================================
-
+// Lancement du serveur
 app.listen(PORT, () => {
-
-    console.log(`✅ Serveur ARASHI démarré sur le port ${PORT}`);
-
+  console.log(`=== Serveur Backend ArashiBTP démarré sur le port ${PORT} ===`);
 });
