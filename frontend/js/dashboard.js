@@ -1,101 +1,101 @@
 // =====================================
 // ARASHI v3.0
-// vendor.js
+// dashboard.js
 // =====================================
 
-import { supabase, STORAGE_BUCKET } from "./supabase.js";
+import { supabase } from "./supabase.js";
 
-window.saveProduct = async function () {
+async function loadDashboard() {
 
     try {
 
-        const title =
-            document.getElementById("title").value.trim();
+        const [
 
-        const description =
-            document.getElementById("description").value.trim();
+            users,
 
-        const price =
-            Number(document.getElementById("price").value);
+            vendors,
 
-        const stock =
-            Number(document.getElementById("stock").value);
+            products,
 
-        const image =
-            document.getElementById("image").files[0];
+            properties,
 
-        if (!title || !price) {
+            payments
 
-            alert("Veuillez remplir les champs obligatoires.");
+        ] = await Promise.all([
 
-            return;
+            supabase
+                .from("profiles")
+                .select("*", {
+                    count: "exact",
+                    head: true
+                }),
 
-        }
+            supabase
+                .from("vendors")
+                .select("*", {
+                    count: "exact",
+                    head: true
+                }),
 
-        let imagePath = null;
+            supabase
+                .from("products")
+                .select("*", {
+                    count: "exact",
+                    head: true
+                }),
 
-        if (image) {
+            supabase
+                .from("properties")
+                .select("*", {
+                    count: "exact",
+                    head: true
+                }),
 
-            imagePath =
-                Date.now() + "_" + image.name;
+            supabase
+                .from("payments")
+                .select("*")
 
-            const { error: uploadError } =
-                await supabase.storage
+        ]);
 
-                .from(STORAGE_BUCKET)
+        const set = (id, value) => {
 
-                .upload(imagePath, image);
+            const el = document.getElementById(id);
 
-            if (uploadError)
-                throw uploadError;
+            if (el) {
 
-        }
+                el.textContent = value;
 
-        const savedUser =
-            JSON.parse(localStorage.getItem("pi_user"));
+            }
 
-        if (!savedUser) {
+        };
 
-            alert("Connectez-vous avec Pi.");
+        set("dashboardUsers", users.count || 0);
 
-            return;
+        set("dashboardVendors", vendors.count || 0);
 
-        }
+        set("dashboardProducts", products.count || 0);
 
-        const { data: vendor } =
-            await supabase
+        set("dashboardProperties", properties.count || 0);
 
-            .from("vendors")
+        let revenue = 0;
 
-            .select("id")
+        let completed = 0;
 
-            .eq("profile_id", savedUser.id)
+        payments.data?.forEach(payment => {
 
-            .single();
+            if (payment.status === "completed") {
 
-        await supabase
+                revenue += Number(payment.amount);
 
-            .from("products")
+                completed++;
 
-            .insert({
+            }
 
-                vendor_id: vendor?.id,
+        });
 
-                title,
+        set("dashboardRevenue", revenue + " π");
 
-                description,
-
-                price_pi: price,
-
-                stock,
-
-                image_url: imagePath
-
-            });
-
-        alert("Produit publié.");
-
-        location.reload();
+        set("dashboardPayments", completed);
 
     }
 
@@ -103,101 +103,64 @@ window.saveProduct = async function () {
 
         console.error(err);
 
-        alert("Erreur lors de l'enregistrement.");
-
     }
 
-};
+}
 
-async function loadVendorProducts() {
+async function loadRecentPayments() {
 
-    const container =
-        document.getElementById("vendorProducts");
+    const table = document.getElementById("recentPayments");
 
-    if (!container) return;
+    if (!table) return;
 
-    const saved =
-        JSON.parse(localStorage.getItem("pi_user"));
+    const { data } = await supabase
 
-    if (!saved) return;
-
-    const { data: vendor } =
-        await supabase
-
-        .from("vendors")
-
-        .select("id")
-
-        .eq("profile_id", saved.id)
-
-        .single();
-
-    if (!vendor) return;
-
-    const { data: products } =
-        await supabase
-
-        .from("products")
+        .from("payments")
 
         .select("*")
 
-        .eq("vendor_id", vendor.id)
+        .order("updated_at", {
 
-        .order("created_at", {
             ascending: false
-        });
 
-    container.innerHTML = "";
+        })
 
-    products?.forEach(product => {
+        .limit(10);
 
-        container.innerHTML += `
+    table.innerHTML = "";
 
-        <div class="service-card">
+    data?.forEach(payment => {
 
-            <h3>${product.title}</h3>
+        table.innerHTML += `
 
-            <p>${product.description}</p>
+<tr>
 
-            <strong>${product.price_pi} π</strong>
+<td>${payment.username}</td>
 
-            <br><br>
+<td>${payment.amount} π</td>
 
-            <button
-            onclick="deleteProduct('${product.id}')">
+<td>${payment.status}</td>
 
-            Supprimer
+<td>${new Date(payment.updated_at).toLocaleString()}</td>
 
-            </button>
+</tr>
 
-        </div>
-
-        `;
+`;
 
     });
 
 }
 
-window.deleteProduct = async function(id){
-
-if(!confirm("Supprimer ce produit ?")) return;
-
-await supabase
-
-.from("products")
-
-.delete()
-
-.eq("id",id);
-
-loadVendorProducts();
-
-};
-
 document.addEventListener(
 
-"DOMContentLoaded",
+    "DOMContentLoaded",
 
-loadVendorProducts
+    () => {
+
+        loadDashboard();
+
+        loadRecentPayments();
+
+    }
 
 );
