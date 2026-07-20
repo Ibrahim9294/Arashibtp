@@ -1,28 +1,36 @@
-// ======================================
+// =====================================
 // ARASHI v3.0
-// Pi Network Login
-// ======================================
+// pi.js
+// =====================================
 
 import { supabase } from "./supabase.js";
 
 // Initialisation du SDK Pi
-if (window.Pi) {
+try {
     Pi.init({
         version: "2.0",
-        sandbox: true // Mettre false pour le Mainnet
+        sandbox: true // mettre false lors du passage en Mainnet
     });
-} else {
-    console.error("SDK Pi Network non chargé.");
+} catch (err) {
+    console.error("Erreur Pi.init :", err);
 }
 
-// Fonction de connexion
+// Connexion Pi
 window.loginWithPi = async function () {
 
     try {
 
-        const scopes = ["username", "payments"];
+        const scopes = [
+            "username",
+            "payments"
+        ];
 
-        const auth = await Pi.authenticate(scopes, () => {});
+        const auth = await Pi.authenticate(
+            scopes,
+            function (payment) {
+                console.log("Paiement incomplet :", payment);
+            }
+        );
 
         if (!auth) {
             alert("Connexion Pi annulée.");
@@ -35,35 +43,57 @@ window.loginWithPi = async function () {
             accessToken: auth.accessToken
         };
 
-        // Sauvegarde locale
-        localStorage.setItem("pi_user", JSON.stringify(user));
+        localStorage.setItem(
+            "pi_user",
+            JSON.stringify(user)
+        );
 
-        // Sauvegarde dans Supabase
-        const { error } = await supabase
+        await supabase
             .from("profiles")
             .upsert({
                 pi_uid: user.uid,
                 username: user.username
             });
 
-        if (error) {
-            console.error(error);
-        }
-
-        const status = document.getElementById("userStatus");
+        const status =
+            document.getElementById("userStatus");
 
         if (status) {
-            status.innerHTML = `🟢 @${user.username}`;
+            status.innerHTML =
+                `🟢 @${user.username}`;
         }
 
-        alert("Connexion Pi réussie.");
+        console.log("Utilisateur connecté :", user);
+
+        return user;
 
     } catch (err) {
 
         console.error(err);
 
-        alert("Erreur de connexion Pi.");
+        alert("Connexion Pi impossible.");
 
     }
+
+};
+
+// Déconnexion
+window.logoutPi = function () {
+
+    localStorage.removeItem("pi_user");
+
+    location.reload();
+
+};
+
+// Vérification de la session
+window.getCurrentPiUser = function () {
+
+    const saved =
+        localStorage.getItem("pi_user");
+
+    if (!saved) return null;
+
+    return JSON.parse(saved);
 
 };
