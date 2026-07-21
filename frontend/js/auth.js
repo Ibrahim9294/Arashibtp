@@ -5,73 +5,19 @@
 
 import { supabase } from "./supabase.js";
 
-window.checkAuth = async function () {
+window.getCurrentUser = function () {
 
-    try {
+    const saved = localStorage.getItem("pi_user");
 
-        const saved = localStorage.getItem("pi_user");
+    if (!saved) return null;
 
-        if (!saved) {
+    return JSON.parse(saved);
 
-            console.log("Aucun utilisateur connecté.");
+};
 
-            return null;
+window.isLoggedIn = function () {
 
-        }
-
-        const user = JSON.parse(saved);
-
-        const status =
-            document.getElementById("userStatus");
-
-        if (status) {
-
-            status.innerHTML =
-                `🟢 @${user.username}`;
-
-        }
-
-        const { data, error } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("username", user.username)
-            .single();
-
-        if (error && error.code !== "PGRST116") {
-
-            console.error(error);
-
-            return user;
-
-        }
-
-        if (!data) {
-
-            await supabase
-                .from("profiles")
-                .insert({
-
-                    username: user.username,
-
-                    pi_uid: user.uid,
-
-                    role: "user"
-
-                });
-
-        }
-
-        return user;
-
-    }
-
-    catch (err) {
-
-        console.error(err);
-
-        return null;
-
-    }
+    return localStorage.getItem("pi_user") !== null;
 
 };
 
@@ -79,40 +25,102 @@ window.logout = function () {
 
     localStorage.removeItem("pi_user");
 
-    location.href = "../index.html";
+    window.location.href = "../index.html";
 
 };
 
-window.isAdmin = async function () {
+async function syncProfile() {
 
-    const saved = localStorage.getItem("pi_user");
+    try {
 
-    if (!saved) return false;
+        const user = window.getCurrentUser();
 
-    const user = JSON.parse(saved);
+        if (!user) return;
 
-    const { data } = await supabase
+        const { error } = await supabase
 
-        .from("profiles")
+            .from("profiles")
 
-        .select("role")
+            .upsert({
 
-        .eq("username", user.username)
+                pi_uid: user.uid,
 
-        .single();
+                username: user.username,
 
-    return data?.role === "admin";
+                role: "user"
 
-};
+            });
 
-document.addEventListener(
+        if (error) {
 
-    "DOMContentLoaded",
+            console.error(error);
 
-    async () => {
-
-        await checkAuth();
+        }
 
     }
 
-);
+    catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+async function loadProfile() {
+
+    try {
+
+        const user = window.getCurrentUser();
+
+        if (!user) return;
+
+        const {
+
+            data,
+
+            error
+
+        } = await supabase
+
+            .from("profiles")
+
+            .select("*")
+
+            .eq("pi_uid", user.uid)
+
+            .single();
+
+        if (error) return;
+
+        const status = document.getElementById("userStatus");
+
+        if (status) {
+
+            status.innerHTML = `🟢 @${data.username}`;
+
+        }
+
+        if (data.role === "admin") {
+
+            console.log("Administrateur connecté");
+
+        }
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    await syncProfile();
+
+    await loadProfile();
+
+});
