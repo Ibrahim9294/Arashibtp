@@ -5,163 +5,90 @@
 
 import { supabase, STORAGE_BUCKET } from "./supabase.js";
 
-window.saveProduct = async function () {
+const form = document.getElementById("productForm");
+const productsContainer = document.getElementById("vendorProducts");
 
-    try {
+let currentUser = JSON.parse(localStorage.getItem("pi_user") || "null");
 
-        const title =
-            document.getElementById("title").value.trim();
-
-        const description =
-            document.getElementById("description").value.trim();
-
-        const price =
-            Number(document.getElementById("price").value);
-
-        const stock =
-            Number(document.getElementById("stock").value);
-
-        const image =
-            document.getElementById("image").files[0];
-
-        if (!title || !price) {
-
-            alert("Veuillez remplir les champs obligatoires.");
-
-            return;
-
-        }
-
-        let imagePath = null;
-
-        if (image) {
-
-            imagePath =
-                Date.now() + "_" + image.name;
-
-            const { error: uploadError } =
-                await supabase.storage
-
-                .from(STORAGE_BUCKET)
-
-                .upload(imagePath, image);
-
-            if (uploadError)
-                throw uploadError;
-
-        }
-
-        const savedUser =
-            JSON.parse(localStorage.getItem("pi_user"));
-
-        if (!savedUser) {
-
-            alert("Connectez-vous avec Pi.");
-
-            return;
-
-        }
-
-        const { data: vendor } =
-            await supabase
-
-            .from("vendors")
-
-            .select("id")
-
-            .eq("profile_id", savedUser.id)
-
-            .single();
-
-        await supabase
-
-            .from("products")
-
-            .insert({
-
-                vendor_id: vendor?.id,
-
-                title,
-
-                description,
-
-                price_pi: price,
-
-                stock,
-
-                image_url: imagePath
-
-            });
-
-        alert("Produit publié.");
-
-        location.reload();
-
-    }
-
-    catch (err) {
-
-        console.error(err);
-
-        alert("Erreur lors de l'enregistrement.");
-
-    }
-
-};
+// =========================
+// Charger les produits
+// =========================
 
 async function loadVendorProducts() {
 
-    const container =
-        document.getElementById("vendorProducts");
+    if (!currentUser) return;
 
-    if (!container) return;
-
-    const saved =
-        JSON.parse(localStorage.getItem("pi_user"));
-
-    if (!saved) return;
-
-    const { data: vendor } =
-        await supabase
-
-        .from("vendors")
-
-        .select("id")
-
-        .eq("profile_id", saved.id)
-
-        .single();
-
-    if (!vendor) return;
-
-    const { data: products } =
-        await supabase
-
+    const { data, error } = await supabase
         .from("products")
-
         .select("*")
+        .eq("username", currentUser.username)
+        .order("created_at", { ascending: false });
 
-        .eq("vendor_id", vendor.id)
+    if (error) {
+        console.error(error);
+        return;
+    }
 
-        .order("created_at", {
-            ascending: false
-        });
+    renderProducts(data || []);
+}
 
-    container.innerHTML = "";
+// =========================
+// Affichage
+// =========================
 
-    products?.forEach(product => {
+function renderProducts(products) {
 
-        container.innerHTML += `
+    if (!productsContainer) return;
+
+    if (products.length === 0) {
+
+        productsContainer.innerHTML =
+        "<p>Aucun produit.</p>";
+
+        return;
+
+    }
+
+    productsContainer.innerHTML = "";
+
+    products.forEach(product => {
+
+        let image = "";
+
+        if (product.image_url) {
+
+            image = supabase.storage
+            .from(STORAGE_BUCKET)
+            .getPublicUrl(product.image_url)
+            .data.publicUrl;
+
+        }
+
+        productsContainer.innerHTML += `
 
         <div class="service-card">
+
+            <img
+            src="${image}"
+            style="
+            width:100%;
+            height:180px;
+            object-fit:cover;
+            border-radius:10px;
+            ">
 
             <h3>${product.title}</h3>
 
             <p>${product.description}</p>
 
-            <strong>${product.price_pi} π</strong>
+            <h4>${product.price_pi} π</h4>
 
-            <br><br>
+            <button
+            onclick="editProduct('${product.id}')">
+
+            Modifier
+
+            </button>
 
             <button
             onclick="deleteProduct('${product.id}')">
@@ -178,17 +105,128 @@ async function loadVendorProducts() {
 
 }
 
-window.deleteProduct = async function(id){
+// =========================
+// Ajouter produit
+// =========================
 
-if(!confirm("Supprimer ce produit ?")) return;
+if (form) {
+
+form.addEventListener("submit", async e => {
+
+e.preventDefault();
+
+const title =
+document.getElementById("title").value;
+
+const description =
+document.getElementById("description").value;
+
+const price =
+Number(
+document.getElementById("price").value
+);
+
+const image =
+document.getElementById("image").files[0];
+
+let imagePath = null;
+
+if (image) {
+
+const filename =
+Date.now() + "_" + image.name;
+
+const upload =
+await supabase.storage
+.from(STORAGE_BUCKET)
+.upload(filename, image);
+
+if (!upload.error) {
+
+imagePath = filename;
+
+}
+
+}
+
+const { error } =
+await supabase
+.from("products")
+.insert({
+
+username:
+currentUser.username,
+
+title,
+
+description,
+
+price_pi: price,
+
+image_url: imagePath
+
+});
+
+if (error) {
+
+console.error(error);
+
+alert("Erreur.");
+
+return;
+
+}
+
+alert("Produit ajouté.");
+
+form.reset();
+
+loadVendorProducts();
+
+});
+
+}
+
+// =========================
+// Modifier
+// =========================
+
+window.editProduct =
+async function(id) {
+
+const title =
+prompt("Nouveau titre");
+
+if (!title) return;
 
 await supabase
-
 .from("products")
+.update({
 
+title
+
+})
+.eq("id", id);
+
+loadVendorProducts();
+
+};
+
+// =========================
+// Supprimer
+// =========================
+
+window.deleteProduct =
+async function(id) {
+
+if (!confirm("Supprimer ?"))
+
+return;
+
+await supabase
+.from("products")
 .delete()
-
-.eq("id",id);
+.eq("id", id);
 
 loadVendorProducts();
 
