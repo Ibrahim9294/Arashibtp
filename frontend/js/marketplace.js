@@ -23,19 +23,26 @@ async function loadProducts() {
 
         products = data || [];
 
-        renderProducts(products);
+        displayProducts(products);
 
-    }
-
-    catch (err) {
+    } catch (err) {
 
         console.error(err);
+
+        if (grid) {
+
+            grid.innerHTML = `
+            <div class="product-card-placeholder">
+                Impossible de charger les produits.
+            </div>`;
+
+        }
 
     }
 
 }
 
-function renderProducts(list) {
+function displayProducts(list) {
 
     if (!grid) return;
 
@@ -43,7 +50,7 @@ function renderProducts(list) {
 
         grid.innerHTML = `
         <div class="product-card-placeholder">
-            Aucun produit disponible.
+            Aucun produit trouvé.
         </div>`;
 
         return;
@@ -54,8 +61,7 @@ function renderProducts(list) {
 
     list.forEach(product => {
 
-        let image =
-            "../assets/images/placeholder.jpg";
+        let image = "../assets/images/placeholder.jpg";
 
         if (product.image_url) {
 
@@ -65,10 +71,9 @@ function renderProducts(list) {
 
             } else {
 
-                const { data } =
-                    supabase.storage
-                        .from(STORAGE_BUCKET)
-                        .getPublicUrl(product.image_url);
+                const { data } = supabase.storage
+                    .from(STORAGE_BUCKET)
+                    .getPublicUrl(product.image_url);
 
                 image = data.publicUrl;
 
@@ -86,37 +91,25 @@ function renderProducts(list) {
             width:100%;
             height:180px;
             object-fit:cover;
-            border-radius:10px;
+            border-radius:8px;
             ">
 
             <h3>${product.title}</h3>
 
             <p>${product.description || ""}</p>
 
-            <h4>${product.price_pi} π</h4>
+            <h2 style="color:#0B3D91;">
+            ${product.price_pi} π
+            </h2>
 
-            <div
-            style="
-            display:flex;
-            gap:10px;
-            margin-top:15px;
-            ">
+            <button
+            onclick="buy('${product.title}',${product.price_pi})"
+            class="hero-btn"
+            style="width:100%;margin-top:10px;">
 
-                <button
-                onclick="buyProduct('${product.id}')">
+            Acheter
 
-                Acheter
-
-                </button>
-
-                <button
-                onclick="favoriteProduct('${product.id}')">
-
-                ❤
-
-                </button>
-
-            </div>
+            </button>
 
         </div>
 
@@ -126,85 +119,34 @@ function renderProducts(list) {
 
 }
 
-window.buyProduct = function(id) {
-
-    const product =
-        products.find(p => p.id === id);
-
-    if (!product) return;
-
-    window.createPiPayment(
-
-        product.price_pi,
-
-        product.title,
-
-        product.id
-
-    );
-
-};
-
-window.favoriteProduct = function(id) {
-
-    let favorites =
-        JSON.parse(
-
-            localStorage.getItem("favorites") || "[]"
-
-        );
-
-    if (!favorites.includes(id)) {
-
-        favorites.push(id);
-
-    }
-
-    localStorage.setItem(
-
-        "favorites",
-
-        JSON.stringify(favorites)
-
-    );
-
-    alert("Produit ajouté aux favoris.");
-
-};
-
 if (search) {
 
     search.addEventListener("keyup", e => {
 
-        const value =
-            e.target.value.toLowerCase();
+        const value = e.target.value.toLowerCase();
 
-        renderProducts(
+        const result = products.filter(product =>
 
-            products.filter(product =>
+            (product.title || "")
+            .toLowerCase()
+            .includes(value)
 
-                product.title
-                    .toLowerCase()
-                    .includes(value)
+            ||
 
-                ||
-
-                (product.description || "")
-                    .toLowerCase()
-                    .includes(value)
-
-            )
+            (product.description || "")
+            .toLowerCase()
+            .includes(value)
 
         );
+
+        displayProducts(result);
 
     });
 
 }
 
-document.addEventListener(
+document.addEventListener("DOMContentLoaded", () => {
 
-    "DOMContentLoaded",
+    loadProducts();
 
-    loadProducts
-
-);
+});
