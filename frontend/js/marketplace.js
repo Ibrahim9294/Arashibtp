@@ -5,80 +5,29 @@
 
 import { supabase, STORAGE_BUCKET } from "./supabase.js";
 
-async function loadMarketplace() {
+const grid = document.getElementById("fullProductsGrid");
+const search = document.getElementById("marketSearch");
 
-    const grid = document.getElementById("fullProductsGrid")
-        || document.getElementById("popularProductsGrid");
+let products = [];
 
-    if (!grid) return;
+async function loadProducts() {
 
     try {
 
-        const { data: products, error } = await supabase
+        const { data, error } = await supabase
             .from("products")
             .select("*")
             .order("created_at", { ascending: false });
 
         if (error) throw error;
 
-        if (!products || products.length === 0) {
+        products = data || [];
 
-            grid.innerHTML =
-                "<p>Aucun produit disponible.</p>";
-
-            return;
-
-        }
-
-        grid.innerHTML = "";
-
-        products.forEach(product => {
-
-            let image =
-                "../assets/images/placeholder.jpg";
-
-            if (product.image_url) {
-
-                const { data } =
-                    supabase.storage
-                    .from(STORAGE_BUCKET)
-                    .getPublicUrl(product.image_url);
-
-                image = data.publicUrl;
-
-            }
-
-            grid.innerHTML += `
-
-            <div class="service-card">
-
-                <img
-                src="${image}"
-                style="width:100%;height:180px;object-fit:cover;border-radius:10px;">
-
-                <h3>${product.title}</h3>
-
-                <p>${product.description || ""}</p>
-
-                <h4>${product.price_pi} π</h4>
-
-                <button
-                class="hero-btn"
-                onclick="buy('${product.title.replace(/'/g,"\\'")}',${product.price_pi})">
-
-                Acheter
-
-                </button>
-
-            </div>
-
-            `;
-
-        });
+        renderProducts(products);
 
     }
 
-    catch(err){
+    catch (err) {
 
         console.error(err);
 
@@ -86,25 +35,176 @@ async function loadMarketplace() {
 
 }
 
-const search =
-document.getElementById("marketSearch");
+function renderProducts(list) {
 
-if(search){
+    if (!grid) return;
 
-search.addEventListener("keyup",e=>{
+    if (list.length === 0) {
 
-const value=e.target.value.toLowerCase();
+        grid.innerHTML = `
+        <div class="product-card-placeholder">
+            Aucun produit disponible.
+        </div>`;
 
-document.querySelectorAll(".service-card").forEach(card=>{
+        return;
 
-card.style.display=
-card.innerText.toLowerCase().includes(value)
-?"block":"none";
+    }
 
-});
+    grid.innerHTML = "";
 
-});
+    list.forEach(product => {
+
+        let image =
+            "../assets/images/placeholder.jpg";
+
+        if (product.image_url) {
+
+            if (product.image_url.startsWith("http")) {
+
+                image = product.image_url;
+
+            } else {
+
+                const { data } =
+                    supabase.storage
+                        .from(STORAGE_BUCKET)
+                        .getPublicUrl(product.image_url);
+
+                image = data.publicUrl;
+
+            }
+
+        }
+
+        grid.innerHTML += `
+
+        <div class="service-card">
+
+            <img
+            src="${image}"
+            style="
+            width:100%;
+            height:180px;
+            object-fit:cover;
+            border-radius:10px;
+            ">
+
+            <h3>${product.title}</h3>
+
+            <p>${product.description || ""}</p>
+
+            <h4>${product.price_pi} π</h4>
+
+            <div
+            style="
+            display:flex;
+            gap:10px;
+            margin-top:15px;
+            ">
+
+                <button
+                onclick="buyProduct('${product.id}')">
+
+                Acheter
+
+                </button>
+
+                <button
+                onclick="favoriteProduct('${product.id}')">
+
+                ❤
+
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
 
 }
 
-document.addEventListener("DOMContentLoaded",loadMarketplace);
+window.buyProduct = function(id) {
+
+    const product =
+        products.find(p => p.id === id);
+
+    if (!product) return;
+
+    window.createPiPayment(
+
+        product.price_pi,
+
+        product.title,
+
+        product.id
+
+    );
+
+};
+
+window.favoriteProduct = function(id) {
+
+    let favorites =
+        JSON.parse(
+
+            localStorage.getItem("favorites") || "[]"
+
+        );
+
+    if (!favorites.includes(id)) {
+
+        favorites.push(id);
+
+    }
+
+    localStorage.setItem(
+
+        "favorites",
+
+        JSON.stringify(favorites)
+
+    );
+
+    alert("Produit ajouté aux favoris.");
+
+};
+
+if (search) {
+
+    search.addEventListener("keyup", e => {
+
+        const value =
+            e.target.value.toLowerCase();
+
+        renderProducts(
+
+            products.filter(product =>
+
+                product.title
+                    .toLowerCase()
+                    .includes(value)
+
+                ||
+
+                (product.description || "")
+                    .toLowerCase()
+                    .includes(value)
+
+            )
+
+        );
+
+    });
+
+}
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    loadProducts
+
+);
