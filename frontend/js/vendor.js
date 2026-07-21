@@ -5,23 +5,24 @@
 
 import { supabase, STORAGE_BUCKET } from "./supabase.js";
 
-const form = document.getElementById("productForm");
-const productsContainer = document.getElementById("vendorProducts");
+const user = JSON.parse(localStorage.getItem("pi_user") || "null");
 
-let currentUser = JSON.parse(localStorage.getItem("pi_user") || "null");
-
-// =========================
+// =============================
 // Charger les produits
-// =========================
+// =============================
 
 async function loadVendorProducts() {
 
-    if (!currentUser) return;
+    if (!user) return;
+
+    const container = document.getElementById("vendorProducts");
+
+    if (!container) return;
 
     const { data, error } = await supabase
         .from("products")
         .select("*")
-        .eq("username", currentUser.username)
+        .eq("username", user.username)
         .order("created_at", { ascending: false });
 
     if (error) {
@@ -29,42 +30,22 @@ async function loadVendorProducts() {
         return;
     }
 
-    renderProducts(data || []);
-}
+    container.innerHTML = "";
 
-// =========================
-// Affichage
-// =========================
-
-function renderProducts(products) {
-
-    if (!productsContainer) return;
-
-    if (products.length === 0) {
-
-        productsContainer.innerHTML =
-        "<p>Aucun produit.</p>";
-
-        return;
-
-    }
-
-    productsContainer.innerHTML = "";
-
-    products.forEach(product => {
+    data.forEach(product => {
 
         let image = "";
 
         if (product.image_url) {
 
             image = supabase.storage
-            .from(STORAGE_BUCKET)
-            .getPublicUrl(product.image_url)
-            .data.publicUrl;
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(product.image_url)
+                .data.publicUrl;
 
         }
 
-        productsContainer.innerHTML += `
+        container.innerHTML += `
 
         <div class="service-card">
 
@@ -83,15 +64,13 @@ function renderProducts(products) {
 
             <h4>${product.price_pi} π</h4>
 
-            <button
-            onclick="editProduct('${product.id}')">
+            <button onclick="editProduct('${product.id}')">
 
             Modifier
 
             </button>
 
-            <button
-            onclick="deleteProduct('${product.id}')">
+            <button onclick="deleteProduct('${product.id}')">
 
             Supprimer
 
@@ -105,137 +84,218 @@ function renderProducts(products) {
 
 }
 
-// =========================
-// Ajouter produit
-// =========================
+// =============================
+// Upload image
+// =============================
 
-if (form) {
+window.uploadProduct = async function () {
 
-form.addEventListener("submit", async e => {
+    const file =
+        document.getElementById("productImage").files[0];
 
-e.preventDefault();
+    const title =
+        document.getElementById("productTitle").value;
 
-const title =
-document.getElementById("title").value;
+    const description =
+        document.getElementById("productDescription").value;
 
-const description =
-document.getElementById("description").value;
+    const price =
+        Number(document.getElementById("productPrice").value);
 
-const price =
-Number(
-document.getElementById("price").value
-);
+    if (!file) {
 
-const image =
-document.getElementById("image").files[0];
+        alert("Choisir une image");
 
-let imagePath = null;
+        return;
 
-if (image) {
+    }
 
-const filename =
-Date.now() + "_" + image.name;
+    const filename =
+        Date.now() + "_" + file.name;
 
-const upload =
-await supabase.storage
-.from(STORAGE_BUCKET)
-.upload(filename, image);
+    const upload =
+        await supabase.storage
 
-if (!upload.error) {
+        .from(STORAGE_BUCKET)
 
-imagePath = filename;
+        .upload(filename, file);
 
-}
+    if (upload.error) {
 
-}
+        alert(upload.error.message);
 
-const { error } =
-await supabase
-.from("products")
-.insert({
+        return;
 
-username:
-currentUser.username,
+    }
 
-title,
+    await supabase
 
-description,
+        .from("products")
 
-price_pi: price,
+        .insert({
 
-image_url: imagePath
+            username: user.username,
 
-});
+            title,
 
-if (error) {
+            description,
 
-console.error(error);
+            price_pi: price,
 
-alert("Erreur.");
+            image_url: filename
 
-return;
+        });
 
-}
+    alert("Produit ajouté.");
 
-alert("Produit ajouté.");
+    loadVendorProducts();
 
-form.reset();
+};
 
-loadVendorProducts();
-
-});
-
-}
-
-// =========================
+// =============================
 // Modifier
-// =========================
+// =============================
 
-window.editProduct =
-async function(id) {
+window.editProduct = async function (id) {
 
-const title =
-prompt("Nouveau titre");
+    const title =
+        prompt("Nouveau titre");
 
-if (!title) return;
+    if (!title) return;
 
-await supabase
-.from("products")
-.update({
+    await supabase
 
-title
+        .from("products")
 
-})
-.eq("id", id);
+        .update({
 
-loadVendorProducts();
+            title
+
+        })
+
+        .eq("id", id);
+
+    loadVendorProducts();
 
 };
 
-// =========================
+// =============================
 // Supprimer
-// =========================
+// =============================
 
-window.deleteProduct =
-async function(id) {
+window.deleteProduct = async function (id) {
 
-if (!confirm("Supprimer ?"))
+    if (!confirm("Supprimer ?"))
 
-return;
+        return;
 
-await supabase
-.from("products")
-.delete()
-.eq("id", id);
+    await supabase
 
-loadVendorProducts();
+        .from("products")
+
+        .delete()
+
+        .eq("id", id);
+
+    loadVendorProducts();
 
 };
+
+// =============================
+// Revenus vendeur
+// =============================
+
+async function loadRevenue() {
+
+    const revenue =
+        document.getElementById("vendorRevenue");
+
+    if (!revenue)
+
+        return;
+
+    const { data } =
+        await supabase
+
+        .from("payments")
+
+        .select("*")
+
+        .eq("username", user.username)
+
+        .eq("status", "completed");
+
+    let total = 0;
+
+    data.forEach(payment => {
+
+        total += Number(payment.amount);
+
+    });
+
+    revenue.textContent =
+        total.toFixed(2) + " π";
+
+}
+
+// =============================
+// Commandes
+// =============================
+
+async function loadOrders() {
+
+    const table =
+        document.getElementById("vendorOrders");
+
+    if (!table)
+
+        return;
+
+    const { data } =
+        await supabase
+
+        .from("orders")
+
+        .select("*")
+
+        .eq("vendor_username", user.username);
+
+    table.innerHTML = "";
+
+    data.forEach(order => {
+
+        table.innerHTML += `
+
+        <tr>
+
+        <td>${order.username}</td>
+
+        <td>${order.amount} π</td>
+
+        <td>${order.status}</td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
+
+// =============================
 
 document.addEventListener(
 
 "DOMContentLoaded",
 
-loadVendorProducts
+() => {
+
+    loadVendorProducts();
+
+    loadRevenue();
+
+    loadOrders();
+
+}
 
 );
