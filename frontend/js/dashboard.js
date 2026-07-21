@@ -5,81 +5,60 @@
 
 import { supabase } from "./supabase.js";
 
+const user = JSON.parse(localStorage.getItem("pi_user") || "null");
+
 async function loadDashboard() {
+
+    if (!user) return;
 
     try {
 
         const [
-
-            users,
-
-            vendors,
-
             products,
-
+            orders,
+            payments,
             properties,
-
-            payments
-
+            vendors
         ] = await Promise.all([
 
             supabase
-                .from("profiles")
-                .select("*", {
-                    count: "exact",
-                    head: true
-                }),
-
-            supabase
-                .from("vendors")
-                .select("*", {
-                    count: "exact",
-                    head: true
-                }),
-
-            supabase
                 .from("products")
-                .select("*", {
-                    count: "exact",
-                    head: true
-                }),
+                .select("*")
+                .eq("username", user.username),
 
             supabase
-                .from("properties")
-                .select("*", {
-                    count: "exact",
-                    head: true
-                }),
+                .from("orders")
+                .select("*")
+                .eq("username", user.username),
 
             supabase
                 .from("payments")
                 .select("*")
+                .eq("username", user.username),
+
+            supabase
+                .from("properties")
+                .select("*"),
+
+            supabase
+                .from("vendors")
+                .select("*")
 
         ]);
 
-        const set = (id, value) => {
+        document.getElementById("dashboardProducts").textContent =
+            products.data?.length || 0;
 
-            const el = document.getElementById(id);
+        document.getElementById("dashboardOrders").textContent =
+            orders.data?.length || 0;
 
-            if (el) {
+        document.getElementById("dashboardProperties").textContent =
+            properties.data?.length || 0;
 
-                el.textContent = value;
-
-            }
-
-        };
-
-        set("dashboardUsers", users.count || 0);
-
-        set("dashboardVendors", vendors.count || 0);
-
-        set("dashboardProducts", products.count || 0);
-
-        set("dashboardProperties", properties.count || 0);
+        document.getElementById("dashboardVendors").textContent =
+            vendors.data?.length || 0;
 
         let revenue = 0;
-
-        let completed = 0;
 
         payments.data?.forEach(payment => {
 
@@ -87,15 +66,14 @@ async function loadDashboard() {
 
                 revenue += Number(payment.amount);
 
-                completed++;
-
             }
 
         });
 
-        set("dashboardRevenue", revenue + " π");
+        document.getElementById("dashboardRevenue").textContent =
+            revenue.toFixed(2) + " π";
 
-        set("dashboardPayments", completed);
+        renderRecentPayments(payments.data || []);
 
     }
 
@@ -107,45 +85,33 @@ async function loadDashboard() {
 
 }
 
-async function loadRecentPayments() {
+function renderRecentPayments(payments) {
 
-    const table = document.getElementById("recentPayments");
+    const table =
+        document.getElementById("recentPayments");
 
     if (!table) return;
 
-    const { data } = await supabase
-
-        .from("payments")
-
-        .select("*")
-
-        .order("updated_at", {
-
-            ascending: false
-
-        })
-
-        .limit(10);
-
     table.innerHTML = "";
 
-    data?.forEach(payment => {
+    payments.slice(0,10).forEach(payment => {
 
         table.innerHTML += `
 
-<tr>
+        <tr>
 
-<td>${payment.username}</td>
+            <td>${payment.pi_payment_id}</td>
 
-<td>${payment.amount} π</td>
+            <td>${payment.amount} π</td>
 
-<td>${payment.status}</td>
+            <td>${payment.status}</td>
 
-<td>${new Date(payment.updated_at).toLocaleString()}</td>
+            <td>${new Date(payment.updated_at)
+                .toLocaleString()}</td>
 
-</tr>
+        </tr>
 
-`;
+        `;
 
     });
 
@@ -155,12 +121,6 @@ document.addEventListener(
 
     "DOMContentLoaded",
 
-    () => {
-
-        loadDashboard();
-
-        loadRecentPayments();
-
-    }
+    loadDashboard
 
 );
