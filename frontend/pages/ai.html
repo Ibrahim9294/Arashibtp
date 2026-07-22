@@ -1,1 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARASHI AI | Entreprise ARASHI</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</head>
+
+<body>
+
+<button class="menu-toggle" id="menuToggle">
+☰ Menu
+</button>
+
+<aside class="sidebar" id="sidebar">
+
+<div class="logo">
+
+<h2>ARASHI</h2>
+
+<p>v3.0 Pi Ecosystem</p>
+
+</div>
+
+<nav>
+
+<a href="../index.html">🏠 Accueil</a>
+
+<a href="dashboard.html">📊 Dashboard</a>
+
+<a href="immobilier.html">🏡 Immobilier</a>
+
+<a href="topographie.html">📐 Topographie</a>
+
+<a href="construction.html">🏗️ Construction</a>
+
+<a href="marketplace.html">🛒 Marketplace</a>
+
+<a href="vendor.html">🛍️ Vendor</a>
+
+<a href="admin.html">👑 Admin</a>
+
+<a href="ai.html" class="active">🤖 ARASHI AI</a>
+
+</nav>
+
+</aside>
+
+<div class="content">
+
+<header class="topbar">
+
+<h1>🤖 ARASHI AI</h1>
+
+<div>
+
+<span id="userStatus"></span>
+
+</div>
+
+</header>
+
+<section class="hero">
+
+<h2>Bienvenue sur ARASHI AI</h2>
+
+<p>
+
+Assistant intelligent de l'écosystème ARASHI.
+
+Posez vos questions sur :
+
+</p>
+
+<div class="hero-tags">
+
+<span>🏗️ Construction</span>
+
+<span>🏡 Immobilier</span>
+
+<span>📐 Topographie</span>
+
+<span>🛒 Marketplace</span>
+
+<span>💳 Pi Network</span>
+
+</div>
+
+</section>
+
+<section class="main-services">
+
+<h2>Assistant IA</h2>
+
+<div class="card">
+
+<textarea
+id="aiPrompt"
+rows="8"
+placeholder="Écrivez votre question..."></textarea>
+
+<br><br>
+
+<button
+class="btn btn-primary"
+id="askAI">
+
+Envoyer
+
+</button>
+
+</div>
+
+</section>
+
+<section class="main-services">
+
+<h2>Réponse</h2>
+
+<div
+class="card"
+id="aiResponse">
+
+Aucune réponse pour le moment.
+
+</div>
+
+</section>
+
+<footer>
+
+<p>
+
+© 2026 Entreprise ARASHI
+
+</p>
+
+<p>
+
+Powered by Pi Network • Supabase • Render • Vercel
+
+</p>
+
+</footer>
+
+</div>
+
+<script type="module" src="../js/supabase.js"></script>
+<script type="module" src="../js/auth.js"></script>
+<script type="module" src="../js/pi.js"></script>
+<script type="module" src="../js/app.js"></script>
 <script type="module" src="../js/ai.js"></script>
+
+</body>
+  </html>
