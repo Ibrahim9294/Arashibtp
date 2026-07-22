@@ -8,11 +8,6 @@ import "./supabase.js";
 import "./pi.js";
 import "./pi-payments.js";
 import "./auth.js";
-import "./marketplace.js";
-import "./vendor.js";
-import "./dashboard.js";
-import "./admin.js";
-import "./ai.js";
 
 // Initialisation globale
 document.addEventListener("DOMContentLoaded", () => {
