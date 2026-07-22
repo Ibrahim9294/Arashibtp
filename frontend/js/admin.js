@@ -212,41 +212,24 @@ async function loadPayments() {
 async function loadStatistics() {
 
     const [
-
         users,
-
         vendors,
-
         products,
-
         payments
-
     ] = await Promise.all([
 
-        supabase.from("profiles").select("*",{count:"exact",head:true}),
-
-        supabase.from("vendors").select("*",{count:"exact",head:true}),
-
-        supabase.from("products").select("*",{count:"exact",head:true}),
-
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase.from("vendors").select("*", { count: "exact", head: true }),
+        supabase.from("products").select("*", { count: "exact", head: true }),
         supabase.from("payments").select("*")
 
     ]);
 
-    document.getElementById("statUsers").textContent =
-        users.count || 0;
-
-    document.getElementById("statVendors").textContent =
-        vendors.count || 0;
-
-    document.getElementById("statProducts").textContent =
-        products.count || 0;
-
     let revenue = 0;
 
-    payments.data?.forEach(p=>{
+    payments.data?.forEach(p => {
 
-        if(p.status==="completed"){
+        if (p.status === "completed") {
 
             revenue += Number(p.amount);
 
@@ -254,11 +237,17 @@ async function loadStatistics() {
 
     });
 
-    document.getElementById("statRevenue").textContent =
-        revenue.toFixed(2)+" π";
+    const statUsers = document.getElementById("statUsers");
+    const statVendors = document.getElementById("statVendors");
+    const statProducts = document.getElementById("statProducts");
+    const statRevenue = document.getElementById("statRevenue");
+
+    if (statUsers) statUsers.textContent = users.count || 0;
+    if (statVendors) statVendors.textContent = vendors.count || 0;
+    if (statProducts) statProducts.textContent = products.count || 0;
+    if (statRevenue) statRevenue.textContent = revenue.toFixed(2) + " π";
 
 }
-
 // ============================
 // ACTIONS ADMIN
 // ============================
