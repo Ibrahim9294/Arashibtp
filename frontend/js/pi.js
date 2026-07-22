@@ -5,7 +5,7 @@
 
 import { supabase } from "./supabase.js";
 
-const SANDBOX = true;
+const SANDBOX = false;
 
 if (window.Pi) {
 
