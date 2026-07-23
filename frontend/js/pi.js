@@ -160,4 +160,4 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutBtn.style.display = "inline-block";
     }
 
-});
+}); 
