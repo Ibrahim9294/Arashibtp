@@ -66,3 +66,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+// ===========================
+// Bouton Connexion Pi
+// ===========================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const loginBtn = document.getElementById("piLogin");
+
+    if (loginBtn) {
+
+        loginBtn.addEventListener("click", () => {
+
+            if (window.loginWithPi) {
+                window.loginWithPi();
+            } else {
+                alert("Le module Pi n'est pas chargé.");
+            }
+
+        });
+
+    }
+
+});
