@@ -46,33 +46,30 @@ async function loadDashboard() {
 
         ]);
 
-        document.getElementById("dashboardProducts").textContent =
-            products.data?.length || 0;
+const dashboardProducts = document.getElementById("dashboardProducts");
+if (dashboardProducts) {
+    dashboardProducts.textContent = products.data?.length || 0;
+}
 
-        document.getElementById("dashboardOrders").textContent =
-            orders.data?.length || 0;
+const dashboardOrders = document.getElementById("dashboardOrders");
+if (dashboardOrders) {
+    dashboardOrders.textContent = orders.data?.length || 0;
+}
 
-        document.getElementById("dashboardProperties").textContent =
-            properties.data?.length || 0;
+const dashboardProperties = document.getElementById("dashboardProperties");
+if (dashboardProperties) {
+    dashboardProperties.textContent = properties.data?.length || 0;
+}
 
-        document.getElementById("dashboardVendors").textContent =
-            vendors.data?.length || 0;
+const dashboardVendors = document.getElementById("dashboardVendors");
+if (dashboardVendors) {
+    dashboardVendors.textContent = vendors.data?.length || 0;
+}
 
-        let revenue = 0;
-
-        payments.data?.forEach(payment => {
-
-            if (payment.status === "completed") {
-
-                revenue += Number(payment.amount);
-
-            }
-
-        });
-
-        document.getElementById("dashboardRevenue").textContent =
-            revenue.toFixed(2) + " π";
-
+const dashboardRevenue = document.getElementById("dashboardRevenue");
+if (dashboardRevenue) {
+    dashboardRevenue.textContent = revenue.toFixed(2) + " π";
+}
         renderRecentPayments(payments.data || []);
 
     }
@@ -91,6 +88,10 @@ function renderRecentPayments(payments) {
         document.getElementById("recentPayments");
 
     if (!table) return;
+const status = document.getElementById("userStatus");
+if (status) {
+    status.innerHTML = "🟢 @" + user.username;
+}
 
     table.innerHTML = "";
 
@@ -100,7 +101,11 @@ function renderRecentPayments(payments) {
 
         <tr>
 
-            <td>${payment.pi_payment_id}</td>
+            <td>${
+    payment.updated_at
+        ? new Date(payment.updated_at).toLocaleString()
+        : "-"
+}</td>
 
             <td>${payment.amount} π</td>
 
