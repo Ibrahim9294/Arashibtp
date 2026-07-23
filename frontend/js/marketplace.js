@@ -61,7 +61,7 @@ function displayProducts(list) {
 
     list.forEach(product => {
 
-        let image = "../assets/images/placeholder.jpg";
+        let image = "https://placehold.co/600x400?text=ARASHI";
 
         if (product.image_url) {
 
@@ -75,7 +75,7 @@ function displayProducts(list) {
                     .from(STORAGE_BUCKET)
                     .getPublicUrl(product.image_url);
 
-                image = data.publicUrl;
+                image = data?.publicUrl || "https://placehold.co/600x400?text=ARASHI";
 
             }
 
@@ -103,7 +103,7 @@ function displayProducts(list) {
             </h2>
 
             <button
-            onclick="buy('${product.title}',${product.price_pi})"
+            onclick="createPiPayment(${product.price_pi}, 'Achat ${product.title}', '${product.id}')"
             class="hero-btn"
             style="width:100%;margin-top:10px;">
 
@@ -150,3 +150,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadProducts();
 
 });
+window.refreshMarketplace = function () {
+    loadProducts();
+};
