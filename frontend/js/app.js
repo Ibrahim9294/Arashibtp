@@ -36,3 +36,33 @@ window.logout = function () {
 window.testPayment = function () {
   window.createPiPayment(1, "Test Paiement ARASHI v3.0", "test-001");
 };
+// ===========================
+// MENU MOBILE
+// ===========================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const menuToggle = document.getElementById("menuToggle");
+    const sidebar = document.getElementById("sidebar");
+
+    if (menuToggle && sidebar) {
+
+        menuToggle.addEventListener("click", () => {
+            sidebar.classList.toggle("active");
+        });
+
+        document.addEventListener("click", (e) => {
+
+            if (
+                window.innerWidth <= 900 &&
+                !sidebar.contains(e.target) &&
+                !menuToggle.contains(e.target)
+            ) {
+                sidebar.classList.remove("active");
+            }
+
+        });
+
+    }
+
+});
