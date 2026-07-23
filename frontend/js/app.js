@@ -89,3 +89,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener("click", () => {
+
+        if (window.logoutPi) {
+            window.logoutPi();
+        }
+
+    });
+
+}
