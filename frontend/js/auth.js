@@ -25,6 +25,21 @@ window.logout = function () {
 
     localStorage.removeItem("pi_user");
 
+    const status = document.getElementById("userStatus");
+    if (status) {
+        status.innerHTML = "";
+    }
+
+    const loginBtn = document.getElementById("piLogin");
+    if (loginBtn) {
+        loginBtn.style.display = "inline-block";
+    }
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.style.display = "none";
+    }
+
     window.location.href = "../index.html";
 
 };
@@ -91,13 +106,27 @@ async function loadProfile() {
 
             .single();
 
-        if (error) return;
+        if (error) {
+
+    console.error(error);
+
+    return;
+
+}
 
         const status = document.getElementById("userStatus");
 
         if (status) {
 
-            status.innerHTML = `🟢 @${data.username}`;
+            const loginBtn = document.getElementById("piLogin");
+if (loginBtn) {
+    loginBtn.style.display = "none";
+}
+
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+    logoutBtn.style.display = "inline-block";
+}
 
         }
 
