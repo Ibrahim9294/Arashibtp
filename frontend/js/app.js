@@ -1,15 +1,18 @@
 // =====================================
 // Entreprise ARASHI v3.0
-// js/app.js - Application Principal & Modules
+// js/app.js - Application Principale & Modules
 // =====================================
 
 // 1. IMPORTS (Obligatoirement tout en haut du fichier)
-import { loginWithPi } from "./pi-payments.js";
+import { loginWithPi, createPiPayment } from "./pi-payments.js";
 import { supabase } from "./supabase.js";
+
+// Attachement global pour assurer le fonctionnement des onclick Inline dans le HTML
+window.createPiPayment = createPiPayment;
 
 // 2. INITIALISATION ET ÉCOUTEURS DOM
 document.addEventListener("DOMContentLoaded", () => {
-    
+
     // Initialisation du bouton de connexion Pi Network
     const piLoginBtn = document.getElementById("piLogin");
     if (piLoginBtn) {
