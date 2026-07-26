@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -12,6 +13,7 @@ content="Entreprise ARASHI Construction Immobilier Topographie Marketplace Pi Ne
 
 <link rel="stylesheet" href="css/style.css">
 
+<!-- SDK Officiel Pi Network -->
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
 </head>
@@ -164,6 +166,7 @@ Explorer le Marketplace
 </button>
 
 </section>
+
 <!-- ==========================================
 RECHERCHE
 ========================================== -->
@@ -220,7 +223,7 @@ TABLEAU DE BORD RAPIDE
 </section>
 
 <!-- ==========================================
-NOS DOMAINES D'ACTIVITÉ
+NOS DOMAINES D'ACTIVITÉ (Version Unique & Nettoyée)
 ========================================== -->
 
 <section class="main-services">
@@ -237,10 +240,10 @@ NOS DOMAINES D'ACTIVITÉ
 
 <img src="assets/villas/villa-moderne.jpg" class="product-image" alt="Villa Moderne">
 
-<h3>Immobilier Premium</h3>
+<h3>Villa Moderne Niamey</h3>
 
 <p>
-Achat, vente et location de villas et terrains sécurisés payables en Pi.
+5 chambres • Piscine • Jardin
 </p>
 
 <a href="pages/immobilier.html" class="service-link">
@@ -255,9 +258,32 @@ Acheter avec Pi
 
 </div>
 
+<div class="service-card">
+
+<img src="assets/terrains/terrain.jpg" class="product-image" alt="Terrain">
+
+<h3>Terrain Résidentiel</h3>
+
+<p>
+Lot résidentiel sécurisé
+</p>
+
+<a href="pages/immobilier.html" class="service-link">
+Consulter les biens →
+</a>
+
+<h2>0.5 π</h2>
+
+<button class="hero-btn" onclick="buy('Terrain Résidentiel',0.5)">
+Acheter avec Pi
+</button>
+
+</div>
+
 </div>
 
 </section>
+
 <section id="topographie">
 
 <h2>📐 Topographie</h2>
@@ -268,10 +294,10 @@ Acheter avec Pi
 
 <img src="assets/topographie/gnss-rtk.jpg" class="product-image" alt="GNSS">
 
-<h3>Topographie & GNSS</h3>
+<h3>GNSS RTK Professionnel</h3>
 
 <p>
-Levés topographiques, implantation et matériel GNSS professionnel.
+GPS • GLONASS • BeiDou
 </p>
 
 <a href="pages/topographie.html" class="service-link">
@@ -286,9 +312,32 @@ Acheter
 
 </div>
 
+<div class="service-card">
+
+<img src="assets/topographie/station-totale.jpg" class="product-image" alt="Station Totale">
+
+<h3>Station Totale</h3>
+
+<p>
+Haute précision
+</p>
+
+<a href="pages/topographie.html" class="service-link">
+Demander un levé →
+</a>
+
+<h2>0.01 π</h2>
+
+<button class="hero-btn" onclick="buy('Station Totale',0.01)">
+Acheter
+</button>
+
+</div>
+
 </div>
 
 </section>
+
 <section id="construction">
 
 <h2>🏗️ Construction</h2>
@@ -299,10 +348,10 @@ Acheter
 
 <img src="assets/construction/betonniere.jpg" class="product-image" alt="Bétonnière">
 
-<h3>Construction & BTP</h3>
+<h3>Bétonnière Professionnelle</h3>
 
 <p>
-Gestion de chantier, études techniques et plans architecturaux.
+Matériel de chantier & BTP
 </p>
 
 <a href="pages/construction.html" class="service-link">
@@ -320,21 +369,20 @@ Acheter
 </div>
 
 </section>
+
+</section>
+
 <!-- ==========================================
 OPPORTUNITÉS POPULAIRES
 ========================================== -->
 
-<section
-class="popular-products"
-id="popularSection">
+<section class="popular-products" id="popularSection">
 
 <div class="section-header">
 
 <h2>🔥 Opportunités Populaires</h2>
 
-<a
-href="pages/marketplace.html"
-class="see-all">
+<a href="pages/marketplace.html" class="see-all">
 
 Tout voir →
 
@@ -342,9 +390,7 @@ Tout voir →
 
 </div>
 
-<div
-class="products-grid"
-id="popularProductsGrid">
+<div class="products-grid" id="popularProductsGrid">
 
 <div class="product-card-placeholder">
 
@@ -359,6 +405,7 @@ Chargement des opportunités en cours...
 </div>
 
 </section>
+
 <!-- ==========================================
 STATISTIQUES
 ========================================== -->
@@ -656,9 +703,9 @@ FONCTION ACHAT PI
 
 window.buy = async function(title, price){
 
-if(!window.createPiPayment){
+if(typeof window.createPiPayment !== "function"){
 
-alert("Paiement Pi en cours de chargement...");
+alert("Connexion aux paiements Pi en cours... Veuillez réessayer dans un instant.");
 
 return;
 
@@ -670,7 +717,7 @@ Number(price),
 
 title,
 
-title.replace(/\s+/g,"-")
+title.toLowerCase().replace(/\s+/g,"-")
 
 );
 
