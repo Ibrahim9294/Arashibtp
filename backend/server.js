@@ -1,6 +1,6 @@
 // =====================================
 // ARASHI v3.0
-// server.js (Version Finale Sécurisée)
+// server.js (Version Corrigée Pi Network)
 // =====================================
 
 import express from "express";
@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(helmet());
 app.use(compression());
 
-// Configuration Supabase avec valeurs de secours pour éviter les crashs Render
+// Configuration Supabase
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://cjmunzphzqazivbkgrdq.supabase.co";
 const SUPABASE_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_ANON_KEY || "sb_publishable_-7GJRL8TW81oHvjt-N17ZQ_OS8qD-cu";
 
@@ -48,33 +48,39 @@ app.get("/", (req, res) => {
 });
 
 // ==============================
-// APPROVE PAYMENT
+// APPROVE PAYMENT (/api/pi/approve)
 // ==============================
-app.post("/approve", async (req, res) => {
+app.post("/api/pi/approve", async (req, res) => {
     try {
-        const { paymentId } = req.body;
+        const { paymentId, user } = req.body;
 
         if (!paymentId) {
             return res.status(400).json({ error: "paymentId manquant" });
         }
 
-        // 1. Appel de l'API Pi Network (si PI_API_KEY est configurée)
+        console.log(`[APPROVE] Traitement du paiement: ${paymentId}`);
+
+        // 1. Validation obligatoire auprès de l'API Pi Network
         if (PI_API_KEY) {
             await axios.post(
                 `${PI_API_URL}/${paymentId}/approve`,
                 {},
                 { headers: { Authorization: `Key ${PI_API_KEY}` } }
             );
+            console.log(`[APPROVE] Paiement ${paymentId} approuvé sur l'API Pi.`);
+        } else {
+            console.warn("⚠️ PI_API_KEY non configurée dans les variables d'environnement.");
         }
 
-        // 2. Mise à jour dans Supabase
+        // 2. Sauvegarde ou mise à jour dans Supabase (upsert)
         await supabase
             .from("payments")
-            .update({
+            .upsert({
+                pi_payment_id: paymentId,
+                username: user?.username || "Anonyme",
                 status: "approved",
                 updated_at: new Date().toISOString()
-            })
-            .eq("pi_payment_id", paymentId);
+            }, { onConflict: "pi_payment_id" });
 
         return res.json({
             success: true,
@@ -82,7 +88,7 @@ app.post("/approve", async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Erreur /approve :", err.response?.data || err.message);
+        console.error("Erreur /api/pi/approve :", err.response?.data || err.message);
         return res.status(500).json({
             error: err.response?.data || err.message
         });
@@ -90,9 +96,9 @@ app.post("/approve", async (req, res) => {
 });
 
 // ==============================
-// COMPLETE PAYMENT
+// COMPLETE PAYMENT (/api/pi/complete)
 // ==============================
-app.post("/complete", async (req, res) => {
+app.post("/api/pi/complete", async (req, res) => {
     try {
         const { paymentId, txid } = req.body;
 
@@ -102,13 +108,16 @@ app.post("/complete", async (req, res) => {
             });
         }
 
-        // 1. Validation auprès de Pi Network (si PI_API_KEY est configurée)
+        console.log(`[COMPLETE] Finalisation transaction ${paymentId} avec TXID: ${txid}`);
+
+        // 1. Finalisation auprès de l'API Pi Network
         if (PI_API_KEY) {
             await axios.post(
                 `${PI_API_URL}/${paymentId}/complete`,
                 { txid },
                 { headers: { Authorization: `Key ${PI_API_KEY}` } }
             );
+            console.log(`[COMPLETE] Paiement ${paymentId} finalisé sur l'API Pi.`);
         }
 
         // 2. Mise à jour de la transaction dans Supabase
@@ -128,7 +137,7 @@ app.post("/complete", async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Erreur /complete :", err.response?.data || err.message);
+        console.error("Erreur /api/pi/complete :", err.response?.data || err.message);
         return res.status(500).json({
             error: err.response?.data || err.message
         });
@@ -136,9 +145,9 @@ app.post("/complete", async (req, res) => {
 });
 
 // ==============================
-// VERIFY PAYMENT
+// VERIFY PAYMENT (/api/pi/verify)
 // ==============================
-app.post("/verify", async (req, res) => {
+app.post("/api/pi/verify", async (req, res) => {
     try {
         const { paymentId } = req.body;
 
@@ -165,15 +174,15 @@ app.post("/verify", async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Erreur /verify :", err);
+        console.error("Erreur /api/pi/verify :", err);
         return res.status(500).json({ error: err.message });
     }
 });
 
 // ==============================
-// WEBHOOK PI
+// WEBHOOK PI (/api/pi/webhook)
 // ==============================
-app.post("/webhook", async (req, res) => {
+app.post("/api/pi/webhook", async (req, res) => {
     try {
         console.log("🔔 Webhook Pi reçu :", req.body);
         return res.status(200).json({ success: true });
