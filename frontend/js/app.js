@@ -6,14 +6,17 @@
 import { createPiPayment, loginWithPi } from './pi-payments.js';
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Bouton de connexion Pi
+    // Bouton de connexion Pi avec capture détaillée des erreurs
     const piLoginBtn = document.getElementById("piLogin");
     if (piLoginBtn) {
         piLoginBtn.addEventListener("click", async () => {
             try {
                 await loginWithPi();
             } catch (err) {
-                alert("Échec de la connexion Pi Network.");
+                console.error("Détail de l'erreur Pi :", err);
+                // Affiche la véritable raison renvoyée par le SDK Pi
+                const detail = err?.message || (typeof err === "object" ? JSON.stringify(err) : String(err));
+                alert("Échec de la connexion Pi : " + detail);
             }
         });
     }
