@@ -223,7 +223,7 @@ TABLEAU DE BORD RAPIDE
 </section>
 
 <!-- ==========================================
-NOS DOMAINES D'ACTIVITÉ (Version Unique & Nettoyée)
+NOS DOMAINES D'ACTIVITÉ
 ========================================== -->
 
 <section class="main-services">
@@ -701,15 +701,15 @@ FONCTION ACHAT PI
 
 <script>
 
-window.buy = async function(title, price){
+window.buy = async function(title, price) {
 
-if(typeof window.createPiPayment !== "function"){
+if (typeof window.createPiPayment !== "function") {
 
-alert("Connexion aux paiements Pi en cours... Veuillez réessayer dans un instant.");
-
-return;
+await new Promise(resolve => setTimeout(resolve, 500));
 
 }
+
+if (typeof window.createPiPayment === "function") {
 
 await window.createPiPayment(
 
@@ -717,9 +717,15 @@ Number(price),
 
 title,
 
-title.toLowerCase().replace(/\s+/g,"-")
+title.toLowerCase().replace(/\s+/g, "-")
 
 );
+
+} else {
+
+alert("Initialisation du système Pi en cours... Veuillez réessayez dans un instant.");
+
+}
 
 };
 
