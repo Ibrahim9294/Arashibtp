@@ -3,283 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entreprise ARASHI v3.0 | Écosystème Global B2B & B2C Pi Network</title>
-    <!-- Lien vers le fichier CSS fusionné et optimisé -->
+    <title>ARASHI v3.0 - Boutique Pi Network</title>
+    <!-- Vos styles CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- SDK Officiel Pi Network -->
+    
+    <!-- SDK Pi Network obligatoire -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 
-    <!-- Menu Toggle pour mobile -->
-    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
-
-    <!-- Sidebar : Architecture v3.0 -->
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">
-            <h2>ARASHI</h2>
-            <p>v3.0 Pi Ecosystem</p>
+    <!-- En-tête de votre site -->
+    <header>
+        <h1>ARASHI v3.0</h1>
+        <div id="user-info">
+            <!-- Le statut de connexion s'affichera ici -->
+            <button id="login-btn" class="btn">Se connecter avec Pi</button>
         </div>
-        <nav>
-            <a href="index.html" class="active">🏠 Accueil</a>
-            <a href="pages/dashboard.html">📊 Dashboard</a>
-            <a href="pages/immobilier.html">🏡 Immobilier</a>
-            <a href="pages/topographie.html">📐 Topographie</a>
-            <a href="pages/construction.html">🏗️ Construction</a>
-            <a href="pages/materiaux.html">🧱 Matériaux</a>
-            <a href="pages/marketplace.html">🛒 Marketplace</a>
-            <a href="pages/vendor.html">🛍️ Vendor Center</a>
-            <a href="pages/partnership.html">🤝 Partnership</a>
-            <a href="pages/orders.html">📦 Commandes</a>
-            <a href="pages/admin.html">👑 Admin</a>
-            <a href="pages/ai.html">🤖 ARASHI AI</a>
-        </nav>
-    </aside>
+    </header>
 
-    <!-- Contenu Principal -->
-    <div class="content">
-        <header class="topbar">
-            <h1>Entreprise ARASHI Portal</h1>
-           
-       <div class="auth-area">
-
-<button class="btn btn-primary" id="piLogin">
-🪙 Connexion Pi
-</button>
-
-<span id="userStatus"></span>
-
-<button class="btn" id="logoutBtn">
-Déconnexion
-</button>
-
-</div>
-
-        </header>
-
-        <!-- Section Hero (Bannière d'accueil) -->
-        <section class="hero">
-            <div class="hero-content">
-                <h2>Bienvenue sur Entreprise ARASHI v3.0</h2>
-                <p>La plateforme Web3 de référence pour l'immobilier, la construction et le commerce en Pi.</p>
-                <div class="hero-tags">
-                    <span>🏗️ Construction</span>
-                    <span>🏡 Immobilier</span>
-                    <span>📐 Topographie</span>
-                    <span>🛒 Marketplace</span>
-                </div>
-                <button class="hero-btn" onclick="scrollToPopular()">Explorer l'écosystème</button>
-            </div>
-        </section>
-
-<section class="upper-dashboard">
-
-<div class="upper-item">
-<div class="icon">🏠</div>
-<div class="label">Immobilier</div>
-</div>
-
-<div class="upper-item">
-<div class="icon">🛒</div>
-<div class="label">Marketplace</div>
-</div>
-
-<div class="upper-item">
-<div class="icon">📐</div>
-<div class="label">Topographie</div>
-</div>
-
-<div class="upper-item">
-<div class="icon">🏗️</div>
-<div class="label">Construction</div>
-</div>
-
-<div class="upper-item">
-<div class="icon">🧱</div>
-<div class="label">Matériaux</div>
-</div>
-
-<div class="upper-item">
-<div class="icon">🤖</div>
-<div class="label">ARASHI AI</div>
-</div>
-
-</section>
-
-        <!-- Barre de recherche globale v3.0 -->
-        <div class="search-container">
-            <div class="search-box">
-                <input type="search" id="globalSearch" placeholder="🔎 Rechercher des villas, récepteurs GNSS, ciment, chantiers...">
-            </div>
-        </div>
-
-        <!-- Section des Services Majeurs (Grille de Présentation) -->
-        <section class="main-services">
-            <h2>💼 Nos Domaines d'Activité</h2>
-            <div class="services-grid">
-                <!-- Service 1 : Immobilier -->
-                <div class="service-card">
-                    <span class="service-icon">🏡</span>
-                    <h3>Immobilier Premium</h3>
-                    <p>Achat, vente et location de villas et de terrains sécurisés en Afrique, payables en monnaie Pi.</p>
-                    <a href="pages/immobilier.html" class="service-link">Consulter les biens →</a>
-                </div>
-
-                <!-- Service 2 : Topographie -->
-                <div class="service-card">
-                    <span class="service-icon">📐</span>
-                    <h3>Topographie & GNSS</h3>
-                    <p>Levés topographiques professionnels, implantations et fourniture de matériel GNSS de haute précision.</p>
-                    <a href="pages/topographie.html" class="service-link">Demander un levé →</a>
-                </div>
-
-                <!-- Service 3 : Construction -->
-                <div class="service-card">
-                    <span class="service-icon">🏗️</span>
-                    <h3>Construction & BTP</h3>
-                    <p>Suivi de chantiers de A à Z, plans architecturaux 2D/3D et gestion de vos projets immobiliers.</p>
-                    <a href="pages/construction.html" class="service-link">Voir nos projets →</a>
-                </div>
-
-                <!-- Service 4 : Marketplace -->
-                <div class="service-card">
-                    <span class="service-icon">🛒</span>
-                    <h3>Marketplace Globale</h3>
-                    <p>Achat de matériaux de construction (ciment, fer, gravier) et d'équipements divers en Pi.</p>
-                    <a href="pages/marketplace.html" class="service-link">Accéder à la boutique →</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section Marketplace (Opportunités Populaires) -->
-        <section class="popular-products" id="popularSection">
-            <div class="section-header">
-                <h2>🔥 Opportunités Populaires</h2>
-                <a href="pages/marketplace.html" class="see-all">Tout voir →</a>
-            </div>
-            <!-- La grille suivante sera alimentée dynamiquement par supabase.js / marketplace.js -->
-            <div class="products-grid" id="popularProductsGrid">
-                <!-- Exemple de carte produit qui sera générée en JS -->
-                <div class="product-card-placeholder">
-                    <p>Chargement des opportunités en cours...</p>
-                </div>
-            </div>
-        </section>
-        <!-- Section Statistiques Réelles -->
-        <section class="stats">
-            <h2>📊 Statistiques de la Plateforme</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-icon">👥</span>
-                    <div>
-                        <strong id="totalUsers">0</strong>
-                        <p>Membres actifs</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-icon">🏪</span>
-                    <div>
-                        <strong id="totalVendors">0</strong>
-                        <p>Boutiques vérifiées</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-icon">🏠</span>
-                    <div>
-                        <strong id="totalProperties">0</strong>
-                        <p>Biens répertoriés</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-icon">💳</span>
-                    <div>
-                        <strong id="totalPayments">0 π</strong>
-                        <p>Transactions Pi</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-<section class="quick-actions">
-
-<h2>Actions rapides</h2>
-
-<div class="actions-grid">
-
-<a href="pages/vendor.html" class="action-btn">
-➕ Publier un produit
-</a>
-
-<a href="pages/immobilier.html" class="action-btn">
-🏠 Publier un terrain
-</a>
-
-<a href="pages/topographie.html" class="action-btn">
-📐 Demander un levé
-</a>
-
-<a href="pages/construction.html" class="action-btn">
-🏗️ Nouveau chantier
-</a>
-
-<a href="pages/marketplace.html" class="action-btn highlight">
-🛒 Acheter
-</a>
-
-</div>
-
-</section>
-
-        <!-- Section Actions Rapides -->
-        <section class="quick-actions">
-            <h2>⚡ Raccourcis & Actions Rapides</h2>
-            <div class="actions-grid">
-                <a href="pages/immobilier.html?action=add" class="action-btn">🏡 Soumettre un bien</a>
-                <a href="pages/vendor.html?action=add_product" class="action-btn">➕ Vendre un article</a>
-                <a href="pages/topographie.html?action=new_survey" class="action-btn">📐 Commander un levé</a>
-                <a href="pages/construction.html?action=new_project" class="action-btn">🏗️ Ouvrir un projet</a>
-                <a href="pages/partnership.html?action=apply" class="action-btn">🤝 Devenir partenaire</a>
-                <a href="pages/vendor.html?action=create_shop" class="action-btn highlight">🛍️ Créer ma boutique</a>
-            </div>
-        </section>
-
-        <!-- Section Écosystème & Partenariats -->
-        <section class="ecosystem-news">
-            <h2>📢 Actualités & Partenariats Pi Network</h2>
-            <div class="news-grid">
-                <div class="news-card">
-                    <h3>Paiements Pi Network Sécurisés</h3>
-                    <p>Notre système utilise le SDK officiel Pi pour garantir des paiements sécurisés et directs d'un portefeuille à un autre via l'API blockchain Pi.</p>
-                </div>
-                <div class="news-card">
-                    <h3>Expansions et Chantiers BTP</h3>
-                    <p>Découvrez comment l'entreprise ARASHI utilise la puissance de la monnaie Pi pour révolutionner l'accès au logement et aux matériaux de construction en Afrique.</p>
-                </div>
-            </div>
-        </section>
+    <!-- Corps de la page / Liste des produits -->
+    <main>
+        <h2>Nos offres disponibles</h2>
         
-        <!-- Footer de l'écosystème -->
-        <footer>
-           
-<p>
+        <div class="products-container">
+            <!-- EXEMPLE DE CARTE PRODUIT -->
+            <div class="product-card" style="border: 1px solid #ccc; padding: 20px; border-radius: 8px; max-width: 300px;">
+                <h3>Villa Moderne Niamey</h3>
+                <p>Superbe villa avec 5 chambres et piscine.</p>
+                <p><strong>Prix : 2 Pi (π)</strong></p>
+                
+                <!-- C'est ici que se trouve le bouton d'achat "buy" -->
+                <!-- Il appelle directement la fonction globale createPiPayment -->
+                <button class="btn btn-primary" onclick="createPiPayment(2, 'Achat Villa Moderne Niamey', 'villa_001')">
+                    Acheter avec Pi
+                </button>
+            </div>
+        </div>
+    </main>
 
-© 2026 Entreprise ARASHI
-
-</p>
-
-<p>
-
-Powered by
-
-Pi Network • Supabase • Render • Vercel
-
-</p>
-</footer>
-
-    <!-- ==========================================
-         CHARGEMENT DES MODULES JAVASCRIPT v3.0
-         ========================================== -->
+    <!-- Scripts JavaScript du projet -->
+    <!-- On charge d'abord le fichier de paiement qui crée la fonction globalement -->
+    <script src="js/pi-payments.js"></script>
+    
+    <!-- On charge ensuite le fichier principal de l'application -->
     <script type="module" src="js/app.js"></script>
 </body>
 </html>
