@@ -1,47 +1,54 @@
-// Réveil du serveur Render en arrière-plan
-fetch("https://entreprise-arashi-backend.onrender.com/api/pi/approve", { method: "OPTIONS" })
-    .catch(() => {});
-
 // =====================================
 // Entreprise ARASHI v3.0
-// js/pi-payments.js - Intégration Paiements Pi
+// js/pi-payments.js - Gestion Pi SDK & Paiements
 // =====================================
 
 let currentPiUser = null;
 let isSdkInitialized = false;
 
-// Initialisation explicite du SDK Pi
+// Réveil préventif du serveur Render (Free Tier)
+fetch("https://entreprise-arashi-backend.onrender.com/", { method: "GET" }).catch(() => {});
+
 export function initPiSdk() {
     if (isSdkInitialized) return;
 
     if (typeof Pi !== "undefined") {
         try {
-            // Passer sandbox: false si votre application est déjà validée sur le Mainnet Pi
+            // Passez sandbox: false si votre application est configurée sur le Mainnet Pi
             Pi.init({ version: "2.0", sandbox: true });
             isSdkInitialized = true;
-            console.log("SDK Pi initialisé avec succès.");
+            console.log("SDK Pi initialisé.");
         } catch (e) {
-            console.error("Erreur lors de l'initialisation du SDK Pi :", e);
+            console.error("Erreur init Pi SDK :", e);
         }
     } else {
-        console.error("Le SDK Pi n'est pas disponible (script non chargé).");
+        console.warn("Le script du SDK Pi n'est pas encore chargé.");
     }
 }
 
-// Authentification via le SDK Pi
+// Traitement des paiements incomplets pour éviter que les transactions n'expirent
+function onIncompletePaymentFound(payment) {
+    console.log("Paiement incomplet détecté :", payment);
+    if (payment && payment.identifier) {
+        fetch("https://entreprise-arashi-backend.onrender.com/api/pi/complete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction?.txid || "incomplete_resolved" })
+        }).catch(err => console.error("Erreur résolution paiement incomplet :", err));
+    }
+}
+
 export async function loginWithPi() {
-    // S'assurer que le SDK est initialisé avant d'appeler authenticate
     initPiSdk();
+
+    if (typeof Pi === "undefined") {
+        throw new Error("SDK Pi introuvable. Ouvrez l'application dans Pi Browser.");
+    }
 
     try {
         const auth = await Pi.authenticate(["username", "payments"], onIncompletePaymentFound);
         currentPiUser = auth.user;
         localStorage.setItem("pi_user", JSON.stringify(auth.user));
-        
-        const userStatusEl = document.getElementById("userStatus");
-        if (userStatusEl) {
-            userStatusEl.innerText = `@${auth.user.username}`;
-        }
         return auth.user;
     } catch (error) {
         console.error("Erreur d'authentification Pi :", error);
@@ -49,19 +56,13 @@ export async function loginWithPi() {
     }
 }
 
-// Déclenchement de la transaction Pi
 export async function createPiPayment(amount, memo, productId) {
-    // S'assurer que le SDK est initialisé avant d'appeler createPayment
     initPiSdk();
 
     if (!currentPiUser) {
         const saved = localStorage.getItem("pi_user");
         if (saved) {
-            try { 
-                currentPiUser = JSON.parse(saved); 
-            } catch (e) {
-                console.error("Erreur de lecture pi_user :", e);
-            }
+            try { currentPiUser = JSON.parse(saved); } catch (e) {}
         }
     }
 
@@ -69,68 +70,67 @@ export async function createPiPayment(amount, memo, productId) {
         try {
             currentPiUser = await loginWithPi();
         } catch (e) {
-            alert("Veuillez vous connecter avec Pi d'abord.");
+            alert("Veuillez vous connecter avec Pi avant d'effectuer un achat.");
             return;
         }
     }
 
     const paymentData = {
         amount: Number(amount),
-        memo: memo,
-        metadata: { 
-            productId: productId, 
-            uid: currentPiUser.uid || currentPiUser.username 
-        }
+        memo: memo || "Achat Entreprise ARASHI",
+        metadata: { productId: productId || "default", uid: currentPiUser.uid || currentPiUser.username }
     };
 
     const callbacks = {
         onReadyForServerApproval: async (paymentId) => {
+            console.log("Demande d'approbation serveur pour :", paymentId);
             try {
-                await fetch("https://entreprise-arashi-backend.onrender.com/api/pi/approve", {
+                const res = await fetch("https://entreprise-arashi-backend.onrender.com/api/pi/approve", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ paymentId, user: currentPiUser })
                 });
+                
+                if (!res.ok) {
+                    const errData = await res.json();
+                    console.error("Échec approbation backend :", errData);
+                }
             } catch (err) {
-                console.error("Erreur d'approbation serveur :", err);
+                console.error("Erreur réseau approbation :", err);
             }
         },
         onReadyForServerCompletion: async (paymentId, txid) => {
+            console.log("Demande de finalisation serveur pour :", paymentId);
             try {
                 await fetch("https://entreprise-arashi-backend.onrender.com/api/pi/complete", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ paymentId, txid, user: currentPiUser })
                 });
-                alert("🎉 Paiement réussi ! Votre commande a été enregistrée.");
+                alert("🎉 Paiement effectué et confirmé avec succès !");
             } catch (err) {
-                console.error("Erreur de finalisation serveur :", err);
+                console.error("Erreur réseau finalisation :", err);
             }
         },
         onCancel: (paymentId) => {
-            console.log("Paiement annulé :", paymentId);
+            console.log("Paiement annulé par l'utilisateur :", paymentId);
         },
         onError: (error) => {
-            console.error("Erreur paiement Pi :", error);
-            alert("Erreur lors du paiement : " + (error.message || "Échec de l'opération"));
+            console.error("Erreur SDK Paiement :", error);
+            alert("Erreur lors du paiement : " + (error.message || "Échec"));
         }
     };
 
     try {
         await Pi.createPayment(paymentData, callbacks);
     } catch (err) {
-        console.error("Erreur lancement createPayment :", err);
+        console.error("Erreur déclenchement createPayment :", err);
     }
 }
 
-// Lancement automatique de l'initialisation dès le chargement du fichier
+// Initialisation au chargement
 initPiSdk();
 
-// Exposition dans le contexte global window
 window.createPiPayment = createPiPayment;
 window.loginWithPi = loginWithPi;
 window.initPiSdk = initPiSdk;
-
-function onIncompletePaymentFound(payment) {
-    console.log("Paiement incomplet détecté :", payment);
-}
