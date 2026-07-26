@@ -1,250 +1,104 @@
 // =====================================
-// ARASHI v3.0
-// pi-payments.js
-// Version Finale
+// Entreprise ARASHI v3.0
+// js/pi-payments.js - Intégration Paiements Pi
 // =====================================
 
-import { supabase } from "./supabase.js";
+let currentPiUser = null;
 
-const API_URL = "https://entreprise-arashi.onrender.com".replace(/\/$/, "");
-
-// Initialisation du SDK Pi
-if (window.Pi) {
-Pi.init({
-version: "2.0",
-sandbox: false // mettre false en Mainnet
-});
-} else {
-console.error("SDK Pi non chargé.");
+// Authentification Pi Network
+export async function loginWithPi() {
+    try {
+        const auth = await Pi.authenticate(["username", "payments"], onIncompletePaymentFound);
+        currentPiUser = auth.user;
+        localStorage.setItem("pi_user", JSON.stringify(auth.user));
+        
+        const userStatusEl = document.getElementById("userStatus");
+        if (userStatusEl) {
+            userStatusEl.innerText = `@${auth.user.username}`;
+        }
+        return auth.user;
+    } catch (error) {
+        console.error("Erreur d'authentification Pi :", error);
+        throw error;
+    }
 }
 
-window.createPiPayment = async function (
-amount,
-memo,
-productId = null
-) {
-
-try {  
-
-    const savedUser = localStorage.getItem("pi_user");  
-
-    if (!savedUser) {  
-        alert("Veuillez vous connecter avec Pi.");  
-        return;  
-    }  
-
-    if (!window.Pi) {  
-        alert("SDK Pi indisponible.");  
-        return;  
-    }  
-
-    const user = JSON.parse(savedUser);  
-
-    if (!user.uid || !user.username) {  
-        alert("Utilisateur Pi invalide.");  
-        return;  
-    }  
-
-    amount = Number(amount);  
-
-    if (isNaN(amount) || amount <= 0) {  
-        alert("Montant invalide.");  
-        return;  
-    }  
-
-    document.body.style.cursor = "wait";  
-
-    const payment = await Pi.createPayment(  
-
-        {  
-            amount,  
-            memo,  
-            metadata: {  
-                productId  
-            }  
-        },  
-
-        {  
-
-            onReadyForServerApproval: async (paymentId) => {  
-
-                try {  
-
-                    await supabase  
-                        .from("payments")  
-                        .upsert({  
-                            pi_payment_id: paymentId,  
-                            username: user.username,  
-                            amount: amount,  
-                            status: "initialized"  
-                        });  
-
-                    const response = await fetch(`${API_URL}/approve`, {  
-                        method: "POST",  
-                        headers: {  
-                            "Content-Type": "application/json"  
-                        },  
-                        credentials: "include",  
-                        body: JSON.stringify({
-    paymentId,
-    username: user.username,
-    amount,
-    productId
-})  
-                    });  
-
-                    if (!response.ok) {  
-                        throw new Error("Erreur serveur APPROVE");  
-                    }  
-
-                    console.log(await response.json());  
-
-                } catch (err) {  
-
-                    console.error(err);  
-
-                    alert("Impossible d'approuver le paiement.");  
-
-                }  
-
-            },  
-
-            onReadyForServerCompletion: async (  
-                paymentId,  
-                txid  
-            ) => {  
-
-                try {  
-
-                    const response = await fetch(`${API_URL}/complete`, {  
-
-                        method: "POST",  
-
-                        headers: {  
-                            "Content-Type": "application/json"  
-                        },  
-
-                        credentials: "include",  
-
-                        body: JSON.stringify({
-    paymentId,
-    txid,
-    username: user.username
-})  
-
-                    });  
-
-                    if (!response.ok) {  
-                        throw new Error("Erreur serveur COMPLETE");  
-                    }  
-
-                    console.log(await response.json());  
-
-                    await supabase  
-                        .from("payments")  
-                        .update({  
-
-                            blockchain_txid: txid,  
-
-                            status: "completed",  
-
-                            updated_at: new Date().toISOString()  
-
-                        })  
-
-                        .eq("pi_payment_id", paymentId);  
-
-                    console.log({  
-                        paymentId,  
-                        txid,  
-                        amount,  
-                        username: user.username  
-                    });  
-
-                    document.body.style.cursor = "default";  
-
-                    alert("✅ Paiement effectué avec succès.");  
-
-                } catch (err) {  
-
-                    console.error(err);  
-
-                    document.body.style.cursor = "default";  
-
-                    alert("Erreur lors de la finalisation du paiement.");  
-
-                }  
-
-            },  
-
-            onCancel: async (paymentId) => {  
-
-                document.body.style.cursor = "default";  
-
-                console.log("Paiement annulé :", paymentId);  
-
-                await supabase  
-
-                    .from("payments")  
-
-                    .update({  
-
-                        status: "cancelled",  
-
-                        updated_at: new Date().toISOString()  
-
-                    })  
-
-                    .eq("pi_payment_id", paymentId);  
-
-                alert("Paiement annulé.");  
-
-            },  
-
-            onError: async (error, payment) => {  
-
-                document.body.style.cursor = "default";  
-
-                console.error(error);  
-
-                if (payment?.identifier) {  
-
-                    await supabase  
-
-                        .from("payments")  
-
-                        .update({  
-
-                            status: "error",  
-
-                            updated_at: new Date().toISOString()  
-
-                        })  
-
-                        .eq("pi_payment_id", payment.identifier);  
-
-                }  
-
-                alert("Une erreur est survenue pendant le paiement.");  
-
-            }  
-
-        }  
-
-    );  
-
-    return payment;  
-
-}  
-
-catch (err) {  
-
-    document.body.style.cursor = "default";  
-
-    console.error(err);  
-
-    alert("Impossible de lancer le paiement Pi.");  
-
+// Fonction de création de paiement Pi
+export async function createPiPayment(amount, memo, productId) {
+    // 1. Récupération de l'utilisateur depuis la mémoire ou le localStorage
+    if (!currentPiUser) {
+        const saved = localStorage.getItem("pi_user");
+        if (saved) {
+            try { 
+                currentPiUser = JSON.parse(saved); 
+            } catch (e) {
+                console.error("Erreur de lecture pi_user:", e);
+            }
+        }
+    }
+
+    // 2. Si l'utilisateur n'est toujours pas identifié, on relance la connexion
+    if (!currentPiUser) {
+        try {
+            currentPiUser = await loginWithPi();
+        } catch (e) {
+            alert("Veuillez vous connecter avec Pi d'abord.");
+            return;
+        }
+    }
+
+    // 3. Préparation des données de paiement
+    const paymentData = {
+        amount: Number(amount),
+        memo: memo,
+        metadata: { 
+            productId: productId, 
+            uid: currentPiUser.uid || currentPiUser.username 
+        }
+    };
+
+    const callbacks = {
+        onReadyForServerApproval: async (paymentId) => {
+            console.log("Approbation serveur pour paymentId :", paymentId);
+            try {
+                await fetch("https://entreprise-arashi-backend.onrender.com/api/pi/approve", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ paymentId, user: currentPiUser })
+                });
+            } catch (err) {
+                console.error("Erreur lors de l'approbation backend:", err);
+            }
+        },
+        onReadyForServerCompletion: async (paymentId, txid) => {
+            console.log("Validation finale txid :", txid);
+            try {
+                await fetch("https://entreprise-arashi-backend.onrender.com/api/pi/complete", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ paymentId, txid, user: currentPiUser })
+                });
+                alert("🎉 Paiement réussi ! Merci pour votre achat.");
+            } catch (err) {
+                console.error("Erreur lors de la finalisation backend:", err);
+            }
+        },
+        onCancel: (paymentId) => {
+            console.log("Paiement annulé :", paymentId);
+        },
+        onError: (error, payment) => {
+            console.error("Erreur de paiement Pi :", error);
+            alert("Erreur lors du paiement : " + (error.message || "Échec"));
+        }
+    };
+
+    try {
+        await Pi.createPayment(paymentData, callbacks);
+    } catch (err) {
+        console.error("Erreur createPayment :", err);
+    }
 }
 
-};
+function onIncompletePaymentFound(payment) {
+    console.log("Paiement incomplet trouvé :", payment);
+}
