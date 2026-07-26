@@ -5,7 +5,7 @@
 
 let currentPiUser = null;
 
-// Authentification Pi Network
+// Authentification via le SDK Pi
 export async function loginWithPi() {
     try {
         const auth = await Pi.authenticate(["username", "payments"], onIncompletePaymentFound);
@@ -23,21 +23,19 @@ export async function loginWithPi() {
     }
 }
 
-// Fonction de création de paiement Pi
+// Déclenchement de la transaction Pi
 export async function createPiPayment(amount, memo, productId) {
-    // 1. Récupération de l'utilisateur depuis la mémoire ou le localStorage
     if (!currentPiUser) {
         const saved = localStorage.getItem("pi_user");
         if (saved) {
             try { 
                 currentPiUser = JSON.parse(saved); 
             } catch (e) {
-                console.error("Erreur de lecture pi_user:", e);
+                console.error("Erreur de lecture pi_user :", e);
             }
         }
     }
 
-    // 2. Si l'utilisateur n'est toujours pas identifié, on relance la connexion
     if (!currentPiUser) {
         try {
             currentPiUser = await loginWithPi();
@@ -47,7 +45,6 @@ export async function createPiPayment(amount, memo, productId) {
         }
     }
 
-    // 3. Préparation des données de paiement
     const paymentData = {
         amount: Number(amount),
         memo: memo,
@@ -59,7 +56,6 @@ export async function createPiPayment(amount, memo, productId) {
 
     const callbacks = {
         onReadyForServerApproval: async (paymentId) => {
-            console.log("Approbation serveur pour paymentId :", paymentId);
             try {
                 await fetch("https://entreprise-arashi-backend.onrender.com/api/pi/approve", {
                     method: "POST",
@@ -67,38 +63,41 @@ export async function createPiPayment(amount, memo, productId) {
                     body: JSON.stringify({ paymentId, user: currentPiUser })
                 });
             } catch (err) {
-                console.error("Erreur lors de l'approbation backend:", err);
+                console.error("Erreur d'approbation serveur :", err);
             }
         },
         onReadyForServerCompletion: async (paymentId, txid) => {
-            console.log("Validation finale txid :", txid);
             try {
                 await fetch("https://entreprise-arashi-backend.onrender.com/api/pi/complete", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ paymentId, txid, user: currentPiUser })
                 });
-                alert("🎉 Paiement réussi ! Merci pour votre achat.");
+                alert("🎉 Paiement réussi ! Votre commande a été enregistrée.");
             } catch (err) {
-                console.error("Erreur lors de la finalisation backend:", err);
+                console.error("Erreur de finalisation serveur :", err);
             }
         },
         onCancel: (paymentId) => {
             console.log("Paiement annulé :", paymentId);
         },
-        onError: (error, payment) => {
-            console.error("Erreur de paiement Pi :", error);
-            alert("Erreur lors du paiement : " + (error.message || "Échec"));
+        onError: (error) => {
+            console.error("Erreur paiement Pi :", error);
+            alert("Erreur lors du paiement : " + (error.message || "Échec de l'opération"));
         }
     };
 
     try {
         await Pi.createPayment(paymentData, callbacks);
     } catch (err) {
-        console.error("Erreur createPayment :", err);
+        console.error("Erreur lancement createPayment :", err);
     }
 }
 
+// Exposition immédiate dans le contexte global window
+window.createPiPayment = createPiPayment;
+window.loginWithPi = loginWithPi;
+
 function onIncompletePaymentFound(payment) {
-    console.log("Paiement incomplet trouvé :", payment);
+    console.log("Paiement incomplet détecté :", payment);
 }
