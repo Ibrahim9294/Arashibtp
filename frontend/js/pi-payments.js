@@ -4,9 +4,31 @@
 // =====================================
 
 let currentPiUser = null;
+let isSdkInitialized = false;
+
+// Initialisation explicite du SDK Pi
+export function initPiSdk() {
+    if (isSdkInitialized) return;
+
+    if (typeof Pi !== "undefined") {
+        try {
+            // Passer sandbox: false si votre application est déjà validée sur le Mainnet Pi
+            Pi.init({ version: "2.0", sandbox: true });
+            isSdkInitialized = true;
+            console.log("SDK Pi initialisé avec succès.");
+        } catch (e) {
+            console.error("Erreur lors de l'initialisation du SDK Pi :", e);
+        }
+    } else {
+        console.error("Le SDK Pi n'est pas disponible (script non chargé).");
+    }
+}
 
 // Authentification via le SDK Pi
 export async function loginWithPi() {
+    // S'assurer que le SDK est initialisé avant d'appeler authenticate
+    initPiSdk();
+
     try {
         const auth = await Pi.authenticate(["username", "payments"], onIncompletePaymentFound);
         currentPiUser = auth.user;
@@ -25,6 +47,9 @@ export async function loginWithPi() {
 
 // Déclenchement de la transaction Pi
 export async function createPiPayment(amount, memo, productId) {
+    // S'assurer que le SDK est initialisé avant d'appeler createPayment
+    initPiSdk();
+
     if (!currentPiUser) {
         const saved = localStorage.getItem("pi_user");
         if (saved) {
@@ -94,9 +119,13 @@ export async function createPiPayment(amount, memo, productId) {
     }
 }
 
-// Exposition immédiate dans le contexte global window
+// Lancement automatique de l'initialisation dès le chargement du fichier
+initPiSdk();
+
+// Exposition dans le contexte global window
 window.createPiPayment = createPiPayment;
 window.loginWithPi = loginWithPi;
+window.initPiSdk = initPiSdk;
 
 function onIncompletePaymentFound(payment) {
     console.log("Paiement incomplet détecté :", payment);
