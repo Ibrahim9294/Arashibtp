@@ -1,93 +1,93 @@
 // ==========================================
-// ENTREPRISE ARASHI v2.0
-// Script principal
+// ENTREPRISE ARASHI v3.0 - Script Principal
 // ==========================================
 
-// Initialisation
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ ARASHI v2.0 démarré");
+// 1. IMPORTS DES MODULES (Obligatoire au début)
+import { loginWithPi } from "./pi-payments.js";
 
-    initPi();
+// 2. INITIALISATION AU CHARGEMENT DU DOM
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ ARASHI v3.0 démarré");
+
+    initPiLogin();
     updateDateTime();
+    checkSavedUser();
 });
 
 // ================================
-// PI NETWORK
+// GESTION DU PI NETWORK & AUTH
 // ================================
 
-async function initPi() {
-
-    if (!window.Pi) {
-        console.log("Pi SDK non détecté.");
-        return;
-    }
-
-    Pi.init({
-        version: "2.0",
-        sandbox: true
-    });
-
+function initPiLogin() {
     const btn = document.getElementById("piLogin");
 
     if (!btn) return;
 
     btn.addEventListener("click", async () => {
-
         try {
-
-            const auth = await Pi.authenticate(
-                ["username", "payments"],
-                () => {}
-            );
-
-            btn.innerHTML = "🟢 " + auth.user.username;
-
+            // Appel de la fonction de connexion issue de pi-payments.js
+            const user = await loginWithPi();
+            if (user) {
+                btn.innerHTML = "🟢 @" + user.username;
+            }
         } catch (e) {
-
-            alert("Connexion Pi annulée.");
-
+            console.error("Erreur de connexion Pi :", e);
         }
-
     });
-
 }
 
-// ================================
-// DATE
-// ================================
+// Restaure le nom d'utilisateur dans le bouton si déjà connecté
+function checkSavedUser() {
+    const savedUser = localStorage.getItem("pi_user");
+    const btn = document.getElementById("piLogin");
 
-function updateDateTime() {
-
-    console.log(new Date().toLocaleString());
-
-}
-
-// ================================
-// MENU
-// ================================
-
-function openMenu() {
-
-    document.querySelector(".sidebar").classList.toggle("active");
-
-}
-
-// ================================
-// RECHERCHE
-// ================================
-
-function searchModule(text) {
-
-    console.log("Recherche :", text);
-
-}
-
-// ================================
-// NOTIFICATIONS
-// ================================
-
-function showNotification(message) {
-
-    alert(message);
-
+    if (savedUser && btn) {
+        try {
+            const user = JSON.parse(savedUser);
+            if (user && user.username) {
+                btn.innerHTML = "🟢 @" + user.username;
+            }
+        } catch (e) {
+            console.error("Erreur lecture pi_user :", e);
         }
+    }
+}
+
+// ================================
+// FONCTIONNALITÉS DE L'INTERFACE (UI)
+// ================================
+
+// Mise à jour / Affichage de la Date
+function updateDateTime() {
+    const now = new Date();
+    console.log("Horodateur :", now.toLocaleString());
+    
+    // Si vous avez un élément HTML pour afficher l'heure :
+    const dateEl = document.getElementById("currentDate");
+    if (dateEl) {
+        dateEl.innerText = now.toLocaleDateString("fr-FR", {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+}
+
+// Ouverture / Fermeture du Menu Sidebar (Mobile)
+window.openMenu = function () {
+    const sidebar = document.querySelector(".sidebar");
+    if (sidebar) {
+        sidebar.classList.toggle("active");
+    }
+};
+
+// Module de Recherche
+window.searchModule = function (text) {
+    console.log("Recherche lancée pour :", text);
+};
+
+// Notifications Globales
+window.showNotification = function (message) {
+    alert(message);
+};
