@@ -4,13 +4,12 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Entreprise ARASHI v3.0</title>
+<title>Entreprise ARASHI v3.0 | Pi Marketplace</title>
 
 <meta name="description"
-content="Entreprise ARASHI Construction Immobilier Marketplace Pi Network">
+content="Entreprise ARASHI Construction Immobilier Topographie Marketplace Pi Network">
 
 <link rel="stylesheet" href="css/style.css">
 
@@ -100,7 +99,7 @@ content="Entreprise ARASHI Construction Immobilier Marketplace Pi Network">
 🏗️ Entreprise ARASHI
 </h1>
 
-<div>
+<div class="auth-area">
 
 <button
 id="piLogin"
@@ -113,7 +112,9 @@ class="btn btn-primary">
 <span
 id="userStatus"
 style="margin-left:15px;font-weight:bold;">
+
 Non connecté
+
 </span>
 
 <button
@@ -128,11 +129,12 @@ Déconnexion
 </div>
 
 </header>
-<!-- HERO -->
 
 <section class="hero">
 
-<h2>Bienvenue sur Entreprise ARASHI v3.0</h2>
+<h2>
+Bienvenue sur Entreprise ARASHI v3.0
+</h2>
 
 <p>
 
@@ -154,7 +156,8 @@ Construction • Immobilier • Topographie • Marketplace • Paiements Pi Net
 
 </div>
 
-<button class="hero-btn"
+<button
+class="hero-btn"
 onclick="location.href='pages/marketplace.html'">
 
 Explorer le Marketplace
@@ -162,221 +165,286 @@ Explorer le Marketplace
 </button>
 
 </section>
-
-<!-- RECHERCHE -->
+<!-- ==========================================
+RECHERCHE
+========================================== -->
 
 <section class="search-container">
 
 <div class="search-box">
 
 <input
-type="text"
-id="marketSearch"
-placeholder="Rechercher un terrain, une villa, un GNSS, un matériau...">
+type="search"
+id="globalSearch"
+placeholder="🔎 Rechercher des villas, récepteurs GNSS, ciment, chantiers...">
 
 </div>
 
 </section>
 
-<!-- DASHBOARD RAPIDE -->
+<!-- ==========================================
+TABLEAU DE BORD RAPIDE
+========================================== -->
 
 <section class="upper-dashboard">
 
 <div class="upper-item">
-
-<div class="icon">🏡</div>
-
+<div class="icon">🏠</div>
 <div class="label">Immobilier</div>
-
 </div>
 
 <div class="upper-item">
-
 <div class="icon">🛒</div>
-
 <div class="label">Marketplace</div>
-
 </div>
 
 <div class="upper-item">
-
 <div class="icon">📐</div>
-
 <div class="label">Topographie</div>
-
 </div>
 
 <div class="upper-item">
-
 <div class="icon">🏗️</div>
-
 <div class="label">Construction</div>
-
 </div>
 
 <div class="upper-item">
-
 <div class="icon">🧱</div>
-
 <div class="label">Matériaux</div>
-
 </div>
 
 <div class="upper-item">
-
 <div class="icon">🤖</div>
-
 <div class="label">ARASHI AI</div>
+</div>
+
+</section>
+
+<!-- ==========================================
+NOS DOMAINES D'ACTIVITÉ
+========================================== -->
+
+<section class="main-services">
+
+<h2>💼 Nos Domaines d'Activité</h2>
+
+<div class="services-grid">
+
+<div class="service-card">
+
+<span class="service-icon">🏡</span>
+
+<h3>Immobilier Premium</h3>
+
+<p>
+
+Achat, vente et location de villas et terrains sécurisés payables en Pi.
+
+</p>
+
+<a href="pages/immobilier.html"
+class="service-link">
+
+Consulter les biens →
+
+</a>
+
+</div>
+
+<div class="service-card">
+
+<span class="service-icon">📐</span>
+
+<h3>Topographie & GNSS</h3>
+
+<p>
+
+Levés topographiques, implantation et matériel GNSS professionnel.
+
+</p>
+
+<a href="pages/topographie.html"
+class="service-link">
+
+Demander un levé →
+
+</a>
+
+</div>
+
+<div class="service-card">
+
+<span class="service-icon">🏗️</span>
+
+<h3>Construction & BTP</h3>
+
+<p>
+
+Gestion de chantier, études techniques et plans architecturaux.
+
+</p>
+
+<a href="pages/construction.html"
+class="service-link">
+
+Voir les projets →
+
+</a>
+
+</div>
+
+<div class="service-card">
+
+<span class="service-icon">🛒</span>
+
+<h3>Marketplace Pi</h3>
+
+<p>
+
+Achetez vos matériaux, équipements et services avec Pi Network.
+
+</p>
+
+<a href="pages/marketplace.html"
+class="service-link">
+
+Accéder à la boutique →
+
+</a>
+
+</div>
 
 </div>
 
 </section>
 
-<!-- STATISTIQUES -->
+<!-- ==========================================
+OPPORTUNITÉS POPULAIRES
+========================================== -->
+
+<section
+class="popular-products"
+id="popularSection">
+
+<div class="section-header">
+
+<h2>🔥 Opportunités Populaires</h2>
+
+<a
+href="pages/marketplace.html"
+class="see-all">
+
+Tout voir →
+
+</a>
+
+</div>
+
+<div
+class="products-grid"
+id="popularProductsGrid">
+
+<div class="product-card-placeholder">
+
+<p>
+
+Chargement des opportunités en cours...
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+<!-- ==========================================
+STATISTIQUES
+========================================== -->
 
 <section class="stats">
 
-<h2>Statistiques</h2>
+<h2>📊 Statistiques de la plateforme</h2>
 
 <div class="stats-grid">
 
 <div class="stat-card">
-
-<div class="stat-icon">📦</div>
-
+<span class="stat-icon">👥</span>
 <div>
-
-<strong id="dashboardProducts">
-
-0
-
-</strong>
-
-<p>Produits</p>
-
+<strong id="totalUsers">0</strong>
+<p>Membres</p>
 </div>
-
 </div>
 
 <div class="stat-card">
-
-<div class="stat-icon">🛍️</div>
-
+<span class="stat-icon">🏪</span>
 <div>
-
-<strong id="dashboardOrders">
-
-0
-
-</strong>
-
-<p>Commandes</p>
-
-</div>
-
-</div>
-
-<div class="stat-card">
-
-<div class="stat-icon">🏠</div>
-
-<div>
-
-<strong id="dashboardProperties">
-
-0
-
-</strong>
-
-<p>Biens</p>
-
-</div>
-
-</div>
-
-<div class="stat-card">
-
-<div class="stat-icon">🏪</div>
-
-<div>
-
-<strong id="dashboardVendors">
-
-0
-
-</strong>
-
+<strong id="totalVendors">0</strong>
 <p>Vendeurs</p>
-
 </div>
-
 </div>
 
 <div class="stat-card">
-
-<div class="stat-icon">🪙</div>
-
+<span class="stat-icon">🏠</span>
 <div>
-
-<strong id="dashboardRevenue">
-
-0 π
-
-</strong>
-
-<p>Revenus Pi</p>
-
+<strong id="totalProperties">0</strong>
+<p>Biens</p>
+</div>
 </div>
 
+<div class="stat-card">
+<span class="stat-icon">📦</span>
+<div>
+<strong id="dashboardProducts">0</strong>
+<p>Produits</p>
+</div>
+</div>
+
+<div class="stat-card">
+<span class="stat-icon">💳</span>
+<div>
+<strong id="dashboardRevenue">0 π</strong>
+<p>Paiements Pi</p>
+</div>
 </div>
 
 </div>
 
 </section>
 
-<!-- ACTIONS RAPIDES -->
+<!-- ==========================================
+ACTIONS RAPIDES
+========================================== -->
 
 <section class="quick-actions">
 
-<h2>Actions rapides</h2>
+<h2>⚡ Actions rapides</h2>
 
 <div class="actions-grid">
 
 <a href="pages/vendor.html" class="action-btn">
-
 ➕ Ajouter un produit
-
 </a>
 
 <a href="pages/immobilier.html" class="action-btn">
-
 🏡 Publier un bien
-
 </a>
 
 <a href="pages/topographie.html" class="action-btn">
-
 📐 Nouveau levé
-
 </a>
 
 <a href="pages/construction.html" class="action-btn">
-
 🏗️ Nouveau chantier
-
 </a>
 
-<a href="pages/marketplace.html"
-
-class="action-btn highlight">
-
-🛒 Acheter
-
+<a href="pages/marketplace.html" class="action-btn highlight">
+🛒 Acheter avec Pi
 </a>
 
 </div>
 
 </section>
+
 <!-- ==========================================
 IMMOBILIER
 ========================================== -->
@@ -389,9 +457,10 @@ IMMOBILIER
 
 <div class="service-card">
 
-<img src="assets/villas/villa-moderne.jpg"
+<img
+src="assets/villas/villa-moderne.jpg"
 class="product-image"
-alt="Villa">
+alt="Villa Moderne">
 
 <h3>Villa Moderne Niamey</h3>
 
@@ -399,7 +468,8 @@ alt="Villa">
 
 <h2>2 π</h2>
 
-<button class="hero-btn"
+<button
+class="hero-btn"
 onclick="buy('Villa Moderne Niamey',2)">
 
 Acheter avec Pi
@@ -410,17 +480,19 @@ Acheter avec Pi
 
 <div class="service-card">
 
-<img src="assets/terrains/terrain.jpg"
+<img
+src="assets/terrains/terrain.jpg"
 class="product-image"
 alt="Terrain">
 
 <h3>Terrain Résidentiel</h3>
 
-<p>1 m² Lotissement</p>
+<p>Lot résidentiel sécurisé</p>
 
 <h2>0.5 π</h2>
 
-<button class="hero-btn"
+<button
+class="hero-btn"
 onclick="buy('Terrain Résidentiel',0.5)">
 
 Acheter avec Pi
@@ -439,23 +511,25 @@ TOPOGRAPHIE
 
 <section id="topographie">
 
-<h2>📐 Matériel Topographique</h2>
+<h2>📐 Topographie</h2>
 
 <div class="products-grid">
 
 <div class="service-card">
 
-<img src="assets/topographie/gnss-rtk.jpg"
+<img
+src="assets/topographie/gnss-rtk.jpg"
 class="product-image"
 alt="GNSS">
 
 <h3>GNSS RTK Professionnel</h3>
 
-<p>GPS • BDS • GLONASS</p>
+<p>GPS • GLONASS • BeiDou</p>
 
 <h2>0.1 π</h2>
 
-<button class="hero-btn"
+<button
+class="hero-btn"
 onclick="buy('GNSS RTK',0.1)">
 
 Acheter
@@ -466,17 +540,19 @@ Acheter
 
 <div class="service-card">
 
-<img src="assets/topographie/station-totale.jpg"
+<img
+src="assets/topographie/station-totale.jpg"
 class="product-image"
 alt="Station Totale">
 
 <h3>Station Totale</h3>
 
-<p>Mesure angles et distances</p>
+<p>Haute précision</p>
 
 <h2>0.01 π</h2>
 
-<button class="hero-btn"
+<button
+class="hero-btn"
 onclick="buy('Station Totale',0.01)">
 
 Acheter
@@ -495,23 +571,25 @@ CONSTRUCTION
 
 <section id="construction">
 
-<h2>🏗️ Machines Construction</h2>
+<h2>🏗️ Construction</h2>
 
 <div class="products-grid">
 
 <div class="service-card">
 
-<img src="assets/construction/betonniere.jpg"
+<img
+src="assets/construction/betonniere.jpg"
 class="product-image"
 alt="Bétonnière">
 
-<h3>Bétonnière</h3>
+<h3>Bétonnière Professionnelle</h3>
 
-<p>Matériel chantier</p>
+<p>Matériel de chantier</p>
 
 <h2>0.2 π</h2>
 
-<button class="hero-btn"
+<button
+class="hero-btn"
 onclick="buy('Bétonnière',0.2)">
 
 Acheter
@@ -529,12 +607,11 @@ MARKETPLACE
 
 <section class="popular-products">
 
-<div class="section-header">
-
 <h2>🛒 Marketplace Pi</h2>
 
-<a href="pages/marketplace.html"
-class="see-all">
+<div class="section-header">
+
+<a href="pages/marketplace.html" class="see-all">
 
 Voir tout →
 
@@ -542,9 +619,7 @@ Voir tout →
 
 </div>
 
-<div
-class="products-grid"
-id="fullProductsGrid">
+<div class="products-grid" id="fullProductsGrid">
 
 <div class="product-card-placeholder">
 
@@ -573,19 +648,12 @@ PANIER
 <h3>
 
 Total :
-
-<span id="cartTotal">
-
-0 π
-
-</span>
+<span id="cartTotal">0 π</span>
 
 </h3>
 
 <button
-
 class="hero-btn"
-
 onclick="checkout()">
 
 Payer avec Pi
@@ -600,12 +668,10 @@ FAVORIS
 
 <section class="popular-products">
 
-<h2>❤️ Favoris</h2>
+<h2>❤️ Mes Favoris</h2>
 
 <div
-
 class="products-grid"
-
 id="favoriteList">
 
 <p>Aucun favori.</p>
@@ -646,7 +712,7 @@ DERNIERS PAIEMENTS
 
 <td colspan="4">
 
-Aucun paiement
+Aucun paiement enregistré
 
 </td>
 
@@ -659,49 +725,6 @@ Aucun paiement
 </section>
 
 <!-- ==========================================
-ACHAT PI
-========================================== -->
-
-<script>
-
-window.buy = async function(
-
-title,
-
-price
-
-){
-
-if(
-
-!window.createPiPayment
-
-){
-
-alert(
-
-"Paiement Pi indisponible."
-
-);
-
-return;
-
-}
-
-await window.createPiPayment(
-
-Number(price),
-
-title,
-
-title.replace(/\s+/g,"-")
-
-);
-
-};
-
-</script>
-<!-- ==========================================
 ACTUALITÉS
 ========================================== -->
 
@@ -713,11 +736,11 @@ ACTUALITÉS
 
 <div class="news-card">
 
-<h3>Pi Network</h3>
+<h3>🪙 Pi Network</h3>
 
 <p>
 
-Les paiements Pi sont entièrement sécurisés grâce au SDK officiel.
+Les paiements sont sécurisés grâce au SDK officiel Pi Network.
 
 </p>
 
@@ -725,11 +748,11 @@ Les paiements Pi sont entièrement sécurisés grâce au SDK officiel.
 
 <div class="news-card">
 
-<h3>Marketplace</h3>
+<h3>🏗️ Construction</h3>
 
 <p>
 
-Achetez des terrains, maisons, matériaux et équipements directement en Pi.
+Suivez vos projets de construction et vos commandes en temps réel.
 
 </p>
 
@@ -737,11 +760,11 @@ Achetez des terrains, maisons, matériaux et équipements directement en Pi.
 
 <div class="news-card">
 
-<h3>Construction</h3>
+<h3>🏡 Marketplace Immobilier</h3>
 
 <p>
 
-Suivez vos chantiers et vos projets depuis votre tableau de bord.
+Achetez des terrains, villas et matériaux directement en Pi.
 
 </p>
 
@@ -765,7 +788,7 @@ FOOTER
 
 <p>
 
-Powered by Pi Network • Supabase • Render
+Powered by Pi Network • Supabase • Render • Vercel
 
 </p>
 
@@ -774,21 +797,45 @@ Powered by Pi Network • Supabase • Render
 </div>
 
 <!-- ==========================================
+FONCTION ACHAT PI
+========================================== -->
+
+<script>
+
+window.buy = async function(title, price){
+
+if(!window.createPiPayment){
+
+alert("Paiement Pi indisponible.");
+
+return;
+
+}
+
+await window.createPiPayment(
+
+Number(price),
+
+title,
+
+title.replace(/\s+/g,"-")
+
+);
+
+};
+
+</script>
+
+<!-- ==========================================
 MODULES JAVASCRIPT
 ========================================== -->
 
 <script type="module" src="js/supabase.js"></script>
-
 <script type="module" src="js/auth.js"></script>
-
 <script type="module" src="js/pi.js"></script>
-
 <script type="module" src="js/pi-payments.js"></script>
-
 <script type="module" src="js/marketplace.js"></script>
-
 <script type="module" src="js/dashboard.js"></script>
-
 <script type="module" src="js/app.js"></script>
 
 <!-- ==========================================
@@ -797,17 +844,16 @@ MENU RESPONSIVE
 
 <script>
 
-const menuButton=document.getElementById("menuToggle");
+const menuButton = document.getElementById("menuToggle");
+const sidebar = document.getElementById("sidebar");
 
-const sidebar=document.getElementById("sidebar");
+if(menuButton && sidebar){
 
-if(menuButton){
-
-menuButton.onclick=function(){
+menuButton.addEventListener("click", () => {
 
 sidebar.classList.toggle("active");
 
-};
+});
 
 }
 
