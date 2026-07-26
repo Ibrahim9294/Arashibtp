@@ -1,46 +1,25 @@
 // =====================================
-// ARASHI v3.0 - App Principal
+// ARASHI v3.0
 // app.js
 // =====================================
 
 // Import des modules
 import "./supabase.js";
+import "./auth.js";
 import "./pi.js";
 import "./pi-payments.js";
-import "./auth.js";
 
-// Initialisation globale
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("🚀 ARASHI v3.0 initialisée avec succès");
-
-  // Vérification connexion Pi
-  if (window.Pi) {
-    console.log("Pi SDK détecté");
-  }
-
-  // Mise à jour du statut utilisateur
-  const status = document.getElementById("userStatus");
-  if (status && localStorage.getItem("pi_user")) {
-    const user = JSON.parse(localStorage.getItem("pi_user"));
-    status.innerHTML = `🟢 @${user.username}`;
-  }
-});
-
-// Fonction globale de déconnexion
-window.logout = function () {
-  localStorage.removeItem("pi_user");
-  window.location.href = "index.html";
-};
-
-// Fonction globale de test paiement
-window.testPayment = function () {
-  window.createPiPayment(1, "Test Paiement ARASHI v3.0", "test-001");
-};
-// ===========================
-// MENU MOBILE
-// ===========================
+// =====================================
+// INITIALISATION
+// =====================================
 
 document.addEventListener("DOMContentLoaded", () => {
+
+    console.log("🚀 ARASHI v3.0 chargé");
+
+    // ==========================
+    // Menu Mobile
+    // ==========================
 
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
@@ -48,40 +27,85 @@ document.addEventListener("DOMContentLoaded", () => {
     if (menuToggle && sidebar) {
 
         menuToggle.addEventListener("click", () => {
+
             sidebar.classList.toggle("active");
+
         });
 
         document.addEventListener("click", (e) => {
 
             if (
+
                 window.innerWidth <= 900 &&
+
                 !sidebar.contains(e.target) &&
+
                 !menuToggle.contains(e.target)
+
             ) {
+
                 sidebar.classList.remove("active");
+
             }
 
         });
 
     }
 
-});
-// ===========================
-// Bouton Connexion Pi
-// ===========================
+    // ==========================
+    // Affichage utilisateur
+    // ==========================
 
-document.addEventListener("DOMContentLoaded", () => {
+    const status = document.getElementById("userStatus");
+
+    const savedUser = localStorage.getItem("pi_user");
+
+    if (status && savedUser) {
+
+        const user = JSON.parse(savedUser);
+
+        status.innerHTML = `🟢 @${user.username}`;
+
+    }
+
+    // ==========================
+    // Connexion Pi
+    // ==========================
 
     const loginBtn = document.getElementById("piLogin");
 
     if (loginBtn) {
 
-        loginBtn.addEventListener("click", () => {
+        loginBtn.addEventListener("click", async () => {
 
             if (window.loginWithPi) {
-                window.loginWithPi();
+
+                await window.loginWithPi();
+
             } else {
-                alert("Le module Pi n'est pas chargé.");
+
+                alert("Module Pi non chargé.");
+
+            }
+
+        });
+
+    }
+
+    // ==========================
+    // Déconnexion
+    // ==========================
+
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener("click", () => {
+
+            if (window.logoutPi) {
+
+                window.logoutPi();
+
             }
 
         });
@@ -89,16 +113,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
-const logoutBtn = document.getElementById("logoutBtn");
 
-if (logoutBtn) {
+// =====================================
+// Déconnexion Globale
+// =====================================
 
-    logoutBtn.addEventListener("click", () => {
+window.logout = function () {
 
-        if (window.logoutPi) {
-            window.logoutPi();
-        }
+    localStorage.removeItem("pi_user");
 
-    });
+    location.href = "../index.html";
 
-}
+};
+
+// =====================================
+// Test Paiement Pi
+// =====================================
+
+window.testPayment = async function () {
+
+    if (!window.createPiPayment) {
+
+        alert("Paiement Pi indisponible.");
+
+        return;
+
+    }
+
+    await window.createPiPayment(
+
+        1,
+
+        "Test Paiement ARASHI",
+
+        "test-001"
+
+    );
+
+};
