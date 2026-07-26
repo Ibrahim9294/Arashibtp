@@ -15,7 +15,7 @@ export function initPiSdk() {
     if (typeof Pi !== "undefined") {
         try {
             // Passez sandbox: false si votre application est configurée sur le Mainnet Pi
-            Pi.init({ version: "2.0", sandbox: true });
+            Pi.init({ version: "2.0", sandbox: false });
             isSdkInitialized = true;
             console.log("SDK Pi initialisé.");
         } catch (e) {
