@@ -1,51 +1,672 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARASHI v3.0 - Boutique Pi Network</title>
-    <!-- Vos styles CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    
-    <!-- SDK Pi Network obligatoire -->
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Entreprise ARASHI v3.0</title>
+
+<meta name="description"
+content="Entreprise ARASHI Construction Immobilier Marketplace Pi Network">
+
+<link rel="stylesheet" href="css/style.css">
+
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
 </head>
+
 <body>
 
-    <!-- En-tête de votre site -->
-    <header>
-        <h1>ARASHI v3.0</h1>
-        <div id="user-info">
-            <!-- Le statut de connexion s'affichera ici -->
-            <button id="login-btn" class="btn">Se connecter avec Pi</button>
-        </div>
-    </header>
+<button id="menuToggle" class="menu-toggle">
+☰
+</button>
 
-    <!-- Corps de la page / Liste des produits -->
-    <main>
-        <h2>Nos offres disponibles</h2>
-        
-        <div class="products-container">
-            <!-- EXEMPLE DE CARTE PRODUIT -->
-            <div class="product-card" style="border: 1px solid #ccc; padding: 20px; border-radius: 8px; max-width: 300px;">
-                <h3>Villa Moderne Niamey</h3>
-                <p>Superbe villa avec 5 chambres et piscine.</p>
-                <p><strong>Prix : 2 Pi (π)</strong></p>
-                
-                <!-- C'est ici que se trouve le bouton d'achat "buy" -->
-                <!-- Il appelle directement la fonction globale createPiPayment -->
-                <button class="btn btn-primary" onclick="createPiPayment(2, 'Achat Villa Moderne Niamey', 'villa_001')">
-                    Acheter avec Pi
-                </button>
-            </div>
-        </div>
-    </main>
+<aside class="sidebar" id="sidebar">
 
-    <!-- Scripts JavaScript du projet -->
-    <!-- On charge d'abord le fichier de paiement qui crée la fonction globalement -->
-    <script src="js/pi-payments.js"></script>
-    
-    <!-- On charge ensuite le fichier principal de l'application -->
-    <script type="module" src="js/app.js"></script>
+<div class="logo">
+
+<h2>ARASHI</h2>
+
+<p>Construction • Immobilier • Pi Network</p>
+
+</div>
+
+<nav>
+
+<a href="index.html" class="active">
+🏠 Accueil
+</a>
+
+<a href="pages/dashboard.html">
+📊 Dashboard
+</a>
+
+<a href="pages/immobilier.html">
+🏡 Immobilier
+</a>
+
+<a href="pages/topographie.html">
+📐 Topographie
+</a>
+
+<a href="pages/construction.html">
+🏗️ Construction
+</a>
+
+<a href="pages/materiaux.html">
+🧱 Matériaux
+</a>
+
+<a href="pages/marketplace.html">
+🛒 Marketplace
+</a>
+
+<a href="pages/vendor.html">
+🛍️ Vendor Center
+</a>
+
+<a href="pages/orders.html">
+📦 Commandes
+</a>
+
+<a href="pages/payments.html">
+💳 Paiements Pi
+</a>
+
+<a href="pages/profile.html">
+👤 Profil
+</a>
+
+<a href="pages/settings.html">
+⚙️ Paramètres
+</a>
+
+<a href="pages/admin.html">
+👑 Admin
+</a>
+
+</nav>
+
+</aside>
+
+<div class="content">
+
+<header class="topbar">
+
+<h1>
+🏗️ Entreprise ARASHI
+</h1>
+
+<div>
+
+<button
+id="piLogin"
+class="btn btn-primary">
+
+🪙 Connexion Pi
+
+</button>
+
+<span
+id="userStatus"
+style="margin-left:15px;font-weight:bold;">
+Non connecté
+</span>
+
+<button
+id="logoutBtn"
+class="btn btn-danger"
+style="margin-left:10px;">
+
+Déconnexion
+
+</button>
+
+</div>
+
+</header>
+<!-- HERO -->
+
+<section class="hero">
+
+<h2>Bienvenue sur Entreprise ARASHI v3.0</h2>
+
+<p>
+
+Construction • Immobilier • Topographie • Marketplace • Paiements Pi Network
+
+</p>
+
+<div class="hero-tags">
+
+<span>🏗️ Construction</span>
+
+<span>🏡 Immobilier</span>
+
+<span>📐 Topographie</span>
+
+<span>🛒 Marketplace</span>
+
+<span>🪙 Pi Network</span>
+
+</div>
+
+<button class="hero-btn"
+onclick="location.href='pages/marketplace.html'">
+
+Explorer le Marketplace
+
+</button>
+
+</section>
+
+<!-- RECHERCHE -->
+
+<section class="search-container">
+
+<div class="search-box">
+
+<input
+type="text"
+id="marketSearch"
+placeholder="Rechercher un terrain, une villa, un GNSS, un matériau...">
+
+</div>
+
+</section>
+
+<!-- DASHBOARD RAPIDE -->
+
+<section class="upper-dashboard">
+
+<div class="upper-item">
+
+<div class="icon">🏡</div>
+
+<div class="label">Immobilier</div>
+
+</div>
+
+<div class="upper-item">
+
+<div class="icon">🛒</div>
+
+<div class="label">Marketplace</div>
+
+</div>
+
+<div class="upper-item">
+
+<div class="icon">📐</div>
+
+<div class="label">Topographie</div>
+
+</div>
+
+<div class="upper-item">
+
+<div class="icon">🏗️</div>
+
+<div class="label">Construction</div>
+
+</div>
+
+<div class="upper-item">
+
+<div class="icon">🧱</div>
+
+<div class="label">Matériaux</div>
+
+</div>
+
+<div class="upper-item">
+
+<div class="icon">🤖</div>
+
+<div class="label">ARASHI AI</div>
+
+</div>
+
+</section>
+
+<!-- STATISTIQUES -->
+
+<section class="stats">
+
+<h2>Statistiques</h2>
+
+<div class="stats-grid">
+
+<div class="stat-card">
+
+<div class="stat-icon">📦</div>
+
+<div>
+
+<strong id="dashboardProducts">
+
+0
+
+</strong>
+
+<p>Produits</p>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-icon">🛍️</div>
+
+<div>
+
+<strong id="dashboardOrders">
+
+0
+
+</strong>
+
+<p>Commandes</p>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-icon">🏠</div>
+
+<div>
+
+<strong id="dashboardProperties">
+
+0
+
+</strong>
+
+<p>Biens</p>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-icon">🏪</div>
+
+<div>
+
+<strong id="dashboardVendors">
+
+0
+
+</strong>
+
+<p>Vendeurs</p>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div class="stat-icon">🪙</div>
+
+<div>
+
+<strong id="dashboardRevenue">
+
+0 π
+
+</strong>
+
+<p>Revenus Pi</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ACTIONS RAPIDES -->
+
+<section class="quick-actions">
+
+<h2>Actions rapides</h2>
+
+<div class="actions-grid">
+
+<a href="pages/vendor.html" class="action-btn">
+
+➕ Ajouter un produit
+
+</a>
+
+<a href="pages/immobilier.html" class="action-btn">
+
+🏡 Publier un bien
+
+</a>
+
+<a href="pages/topographie.html" class="action-btn">
+
+📐 Nouveau levé
+
+</a>
+
+<a href="pages/construction.html" class="action-btn">
+
+🏗️ Nouveau chantier
+
+</a>
+
+<a href="pages/marketplace.html"
+
+class="action-btn highlight">
+
+🛒 Acheter
+
+</a>
+
+</div>
+
+</section>
+<!-- ==========================================
+MARKETPLACE
+========================================== -->
+
+<section class="popular-products">
+
+<div class="section-header">
+
+<h2>🛒 Marketplace Pi</h2>
+
+<a href="pages/marketplace.html"
+class="see-all">
+
+Voir tout →
+
+</a>
+
+</div>
+
+<div
+class="products-grid"
+id="fullProductsGrid">
+
+<div class="product-card-placeholder">
+
+Chargement des produits...
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ==========================================
+PANIER
+========================================== -->
+
+<section class="quick-actions">
+
+<h2>🛒 Mon Panier</h2>
+
+<div id="cartList">
+
+<p>Votre panier est vide.</p>
+
+</div>
+
+<h3>
+
+Total :
+
+<span id="cartTotal">
+
+0 π
+
+</span>
+
+</h3>
+
+<button
+
+class="hero-btn"
+
+onclick="checkout()">
+
+Payer avec Pi
+
+</button>
+
+</section>
+
+<!-- ==========================================
+FAVORIS
+========================================== -->
+
+<section class="popular-products">
+
+<h2>❤️ Favoris</h2>
+
+<div
+
+class="products-grid"
+
+id="favoriteList">
+
+<p>Aucun favori.</p>
+
+</div>
+
+</section>
+
+<!-- ==========================================
+DERNIERS PAIEMENTS
+========================================== -->
+
+<section class="stats">
+
+<h2>💳 Derniers Paiements</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Montant</th>
+
+<th>Statut</th>
+
+<th>Date</th>
+
+</tr>
+
+</thead>
+
+<tbody id="recentPayments">
+
+<tr>
+
+<td colspan="4">
+
+Aucun paiement
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+<!-- ==========================================
+ACHAT PI
+========================================== -->
+
+<script>
+
+window.buy = async function(
+
+title,
+
+price
+
+){
+
+if(
+
+!window.createPiPayment
+
+){
+
+alert(
+
+"Paiement Pi indisponible."
+
+);
+
+return;
+
+}
+
+await window.createPiPayment(
+
+Number(price),
+
+title,
+
+title.replace(/\s+/g,"-")
+
+);
+
+};
+
+</script>
+<!-- ==========================================
+ACTUALITÉS
+========================================== -->
+
+<section class="ecosystem-news">
+
+<h2>📢 Actualités ARASHI</h2>
+
+<div class="news-grid">
+
+<div class="news-card">
+
+<h3>Pi Network</h3>
+
+<p>
+
+Les paiements Pi sont entièrement sécurisés grâce au SDK officiel.
+
+</p>
+
+</div>
+
+<div class="news-card">
+
+<h3>Marketplace</h3>
+
+<p>
+
+Achetez des terrains, maisons, matériaux et équipements directement en Pi.
+
+</p>
+
+</div>
+
+<div class="news-card">
+
+<h3>Construction</h3>
+
+<p>
+
+Suivez vos chantiers et vos projets depuis votre tableau de bord.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ==========================================
+FOOTER
+========================================== -->
+
+<footer>
+
+<p>
+
+© 2026 Entreprise ARASHI
+
+</p>
+
+<p>
+
+Powered by Pi Network • Supabase • Render
+
+</p>
+
+</footer>
+
+</div>
+
+<!-- ==========================================
+MODULES JAVASCRIPT
+========================================== -->
+
+<script type="module" src="js/supabase.js"></script>
+
+<script type="module" src="js/auth.js"></script>
+
+<script type="module" src="js/pi.js"></script>
+
+<script type="module" src="js/pi-payments.js"></script>
+
+<script type="module" src="js/marketplace.js"></script>
+
+<script type="module" src="js/dashboard.js"></script>
+
+<script type="module" src="js/app.js"></script>
+
+<!-- ==========================================
+MENU RESPONSIVE
+========================================== -->
+
+<script>
+
+const menuButton=document.getElementById("menuToggle");
+
+const sidebar=document.getElementById("sidebar");
+
+if(menuButton){
+
+menuButton.onclick=function(){
+
+sidebar.classList.toggle("active");
+
+};
+
+}
+
+</script>
+
 </body>
+
 </html>
