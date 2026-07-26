@@ -1,3 +1,7 @@
+// Réveil du serveur Render en arrière-plan
+fetch("https://entreprise-arashi-backend.onrender.com/api/pi/approve", { method: "OPTIONS" })
+    .catch(() => {});
+
 // =====================================
 // Entreprise ARASHI v3.0
 // js/pi-payments.js - Intégration Paiements Pi
