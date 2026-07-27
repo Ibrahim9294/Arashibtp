@@ -7,7 +7,7 @@ let currentPiUser = null;
 let isSdkInitialized = false;
 
 // Réveil préventif du serveur Render (Free Tier)
-fetch("https://entreprise-arashi-backend.onrender.com/", { method: "GET" }).catch(() => {});
+fetch("https://entreprise-arashi.onrender.com/", { method: "GET" }).catch(() => {});
 
 export function initPiSdk() {
     if (isSdkInitialized) return;
@@ -85,7 +85,7 @@ export async function createPiPayment(amount, memo, productId) {
         onReadyForServerApproval: async (paymentId) => {
             console.log("Demande d'approbation serveur pour :", paymentId);
             try {
-                const res = await fetch("https://entreprise-arashi-backend.onrender.com/api/pi/approve", {
+                const res = await fetch("https://entreprise-arashi.onrender.com/api/pi/approve", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ paymentId, user: currentPiUser })
