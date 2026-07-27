@@ -1,88 +1,74 @@
-<!DOCTYPE html>
-<html lang="fr">
+// =====================================
+// Entreprise ARASHI v3.0
+// js/cart.js - Gestion du Panier et Checkout
+// =====================================
 
-<head>
+let cart = JSON.parse(localStorage.getItem("arashi_cart")) || [];
 
-<meta charset="UTF-8">
+export function updateCartUI() {
+    const cartListEl = document.getElementById("cartList");
+    const cartTotalEl = document.getElementById("cartTotal");
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    if (!cartListEl) return;
 
-<title>Mon Panier | Entreprise ARASHI</title>
+    if (cart.length === 0) {
+        cartListEl.innerHTML = `<p>Votre panier est vide.</p>`;
+        if (cartTotalEl) cartTotalEl.innerText = "0 π";
+        return;
+    }
 
-<link rel="stylesheet" href="../style.css">
+    let total = 0;
+    cartListEl.innerHTML = cart.map((item, index) => {
+        total += item.price;
+        return `
+            <div style="display:flex; justify-between; align-items:center; border-bottom: 1px solid #eee; padding: 8px 0;">
+                <span><strong>${item.title}</strong> - ${item.price} π</span>
+                <button onclick="removeFromCart(${index})" style="background:#ff4d4d; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">❌</button>
+            </div>
+        `;
+    }).join("");
 
-</head>
+    if (cartTotalEl) cartTotalEl.innerText = `${total.toFixed(4)} π`;
+}
 
+window.addToCart = function(title, price) {
+    cart.push({ title, price: Number(price) });
+    localStorage.setItem("arashi_cart", JSON.stringify(cart));
+    updateCartUI();
+    alert(`🛒 "${title}" ajouté au panier !`);
+};
 
-<body>
+window.removeFromCart = function(index) {
+    cart.splice(index, 1);
+    localStorage.setItem("arashi_cart", JSON.stringify(cart));
+    updateCartUI();
+};
 
+window.checkout = async function() {
+    if (cart.length === 0) {
+        alert("Votre panier est vide !");
+        return;
+    }
 
-<header class="header">
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    const orderTitle = `Commande Panier (${cart.length} articles)`;
+    const memo = `Paiement groupé ARASHI (${cart.length} articles)`;
 
-<h1>🛒 Mon Panier</h1>
+    if (typeof window.createPiPayment === "function") {
+        try {
+            await window.createPiPayment(total, memo, "checkout-panier");
+            // Vider le panier après initiation réussie
+            cart = [];
+            localStorage.removeItem("arashi_cart");
+            updateCartUI();
+        } catch (e) {
+            console.error("Erreur Checkout:", e);
+        }
+    } else {
+        alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
+    }
+};
 
-<p>Retrouvez vos produits sélectionnés.</p>
-
-</header>
-
-
-
-<section>
-
-<h2>Produits</h2>
-
-
-<div id="cartList">
-
-<p>Votre panier est vide.</p>
-
-</div>
-
-
-<h3>
-
-Total :
-
-<span id="cartTotal">
-0 π
-</span>
-
-</h3>
-
-
-
-<button onclick="checkout()">
-
-💳 Payer avec Pi
-
-</button>
-
-
-<button onclick="clearCart()">
-
-🗑️ Vider le panier
-
-</button>
-
-
-</section>
-
-
-
-<br>
-
-
-<a href="../index.html">
-
-⬅ Retour à l'accueil
-
-</a>
-
-
-
-<script src="../js/cart.js"></script>
-
-
-</body>
-
-</html>
+document.addEventListener("DOMContentLoaded", () => {
+    updateCartUI();
+});
