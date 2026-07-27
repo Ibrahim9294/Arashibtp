@@ -1,87 +1,142 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Construction ARASHI</title>
-
-<link rel="stylesheet" href="../style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entreprise ARASHI | Construction & BTP</title>
+    <!-- Lien vers le fichier CSS global -->
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- SDK Pi Network requis pour les transactions -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
-
-
 <body>
 
+    <!-- Menu Toggle pour mobile -->
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-<header class="header">
+    <!-- Sidebar : Architecture v3.0 -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p>Construction & BTP</p>
+        </div>
+        <nav>
+            <a href="../index.html">🏠 Accueil</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="immobilier.html">🏡 Immobilier</a>
+            <a href="topographie.html">📐 Topographie</a>
+            <a href="construction.html" class="active">🏗️ Construction</a>
+            <a href="marketplace.html">🛒 Marketplace</a>
+            <a href="vendor.html">🛍️ Vendor Center</a>
+            <a href="orders.html">📦 Mes Commandes</a>
+            <a href="admin.html">👑 Admin</a>
+        </nav>
+    </aside>
 
-<h1>🏗️ Construction ARASHI</h1>
+    <!-- Contenu Principal -->
+    <div class="content">
+        <header class="topbar">
+            <h1>🏗️ Services de Construction & Génie Civil</h1>
+            <div class="auth-area">
+                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
+                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+            </div>
+        </header>
 
-<p>
-Bâtiments, travaux et équipements.
-</p>
+        <!-- Section Hero -->
+        <section class="hero" style="background: linear-gradient(135deg, #0B3D91 0%, #d97706 100%);">
+            <h2>Construisez votre Avenir avec Pi Network</h2>
+            <p>De la conception de plans à la remise des clés : nous réalisons vos projets de bâtiments, villas et ouvrages BTP au Niger.</p>
+        </section>
 
-</header>
+        <!-- Formulaire de demande de projet / Devis -->
+        <section class="quick-actions" style="background: var(--bg-card, #fff); padding: 20px; border-radius: 8px; margin-top: 25px;">
+            <h2>📋 Demande de Devis BTP / Construction</h2>
+            <form id="constructionForm" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin-top: 15px;">
+                <div>
+                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Type de Projet :</label>
+                    <select id="projectType" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <option value="Construction de Villa / Maison">Construction de Villa / Maison</option>
+                        <option value="Rénovation / Extension">Rénovation / Extension</option>
+                        <option value="Gros Œuvre & Structure">Gros Œuvre & Structure</option>
+                        <option value="Plan Architecturale & Structurale">Plan Architecturale & Structurale</option>
+                        <option value="Clôture et Aménagement">Clôture et Aménagement</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Localisation des Travaux :</label>
+                    <input type="text" id="projectLocation" placeholder="Ex: Niamey, Dosso, Maradi..." required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                </div>
+                <div>
+                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Budget Approximatif (en Pi ou FCFA) :</label>
+                    <input type="text" id="projectBudget" placeholder="Ex: 500 π ou 5 000 000 FCFA" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                </div>
+                <div>
+                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Description du projet :</label>
+                    <textarea id="projectDetails" rows="4" placeholder="Nombre de pièces, surface, contraintes particulières..." style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;"></textarea>
+                </div>
+                <button type="submit" class="hero-btn" style="cursor:pointer;">🚀 Soumettre ma demande de devis</button>
+            </form>
+            <p id="constructionMsg" style="margin-top:15px; font-weight:bold;"></p>
+        </section>
 
+        <!-- Grille des Offres & Forfaits BTP -->
+        <section class="popular-products" style="margin-top: 30px;">
+            <div class="section-header">
+                <h2>🏗️ Nos Forfaits & Services Standards</h2>
+            </div>
 
+            <div class="products-grid" id="fullProductsGrid">
+                <div class="product-card-placeholder">
+                    <p>⏳ Chargement des forfaits de construction...</p>
+                </div>
+            </div>
+        </section>
 
-<section>
+        <!-- Footer -->
+        <footer>
+            <p>© 2026 Entreprise ARASHI • BTP & Construction</p>
+        </footer>
+    </div>
 
+    <!-- Script du formulaire de demande -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("constructionForm");
+            if (form) {
+                form.addEventListener("submit", (e) => {
+                    e.preventDefault();
+                    const type = document.getElementById("projectType").value;
+                    const location = document.getElementById("projectLocation").value;
+                    const msg = document.getElementById("constructionMsg");
 
-<h2>Nos services</h2>
+                    msg.style.color = "green";
+                    msg.innerText = `✅ Demande enregistrée avec succès pour "${type}" à "${location}". Notre équipe BTP prendra contact avec vous rapidement.`;
+                    form.reset();
+                });
+            }
+        });
+    </script>
 
+    <!-- ==========================================
+    MODULES JAVASCRIPT ARASHI (Placement tout en bas)
+    ========================================== -->
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/marketplace.js"></script>
+    <script type="module" src="../js/cart.js"></script>
 
-<div class="product-card">
-
-
-<h3>Construction bâtiment</h3>
-
-<p>
-Étude - Conception - Réalisation
-</p>
-
-
-<button>
-Contacter ARASHI
-</button>
-
-
-</div>
-
-
-
-<div class="product-card">
-
-
-<h3>Matériel chantier</h3>
-
-<p>
-Bétonnière, machines et outils
-</p>
-
-
-<button>
-Voir matériels
-</button>
-
-
-</div>
-
-
-
-</section>
-
-
-
-<a href="../index.html">
-⬅ Retour accueil
-</a>
-
-
+    <!-- Gestion du bouton d'achat direct -->
+    <script>
+        window.buy = async function(title, price) {
+            if (typeof window.addToCart === "function") {
+                window.addToCart(title, price);
+            } else if (typeof window.createPiPayment === "function") {
+                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
+            } else {
+                alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
+            }
+        };
+    </script>
 </body>
-
 </html>
+
