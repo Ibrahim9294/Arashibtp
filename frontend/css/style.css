@@ -707,12 +707,7 @@ th, td {
    ============================================================ */
 @media (max-width: 768px) {
     
-    /* 1. Force un espace en haut de la page pour les boutons */
-    .content {
-        padding-top: 70px !important;
-    }
-
-    /* 2. Repositionne la topbar de façon fluide */
+ /* 2. Repositionne la topbar de façon fluide */
     .topbar {
         display: flex !important;
         flex-direction: column !important;
