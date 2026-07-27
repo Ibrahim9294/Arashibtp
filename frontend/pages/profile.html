@@ -1,116 +1,86 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Mon Profil | Entreprise ARASHI</title>
-
-<link rel="stylesheet" href="../style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil | Entreprise ARASHI v3.0</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
-
 <body>
 
-<header>
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-<h1>👤 Mon Profil</h1>
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p>Mon Profil</p>
+        </div>
+        <nav>
+            <a href="../index.html">🏠 Accueil</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="marketplace.html">🛒 Marketplace</a>
+            <a href="profile.html" class="active">👤 Profil</a>
+            <a href="orders.html">📦 Mes Commandes</a>
+            <a href="settings.html">⚙️ Paramètres</a>
+            <a href="admin.html">👑 Admin</a>
+        </nav>
+    </aside>
 
-<p>Gérez vos informations personnelles.</p>
+    <div class="content">
+        <header class="topbar">
+            <h1>👤 Profil Utilisateur</h1>
+            <div class="auth-area">
+                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
+                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+            </div>
+        </header>
 
-</header>
+        <section class="hero" style="background: linear-gradient(135deg, #0B3D91 0%, #2e7d32 100%);">
+            <h2>Espace Membre Pi Network</h2>
+            <p>Gérez vos informations personnelles et le statut de votre compte certifié.</p>
+        </section>
 
-<section>
+        <section class="quick-actions" style="background: var(--bg-card, #fff); padding: 25px; border-radius: 8px; margin-top: 25px; max-width: 600px;">
+            <h2>📋 Vos Informations Pi Network</h2>
+            <div id="profileDetails" style="display:flex; flex-direction:column; gap:15px; margin-top:20px;">
+                <div style="border-bottom:1px solid #eee; padding-bottom:10px;">
+                    <strong>Nom d'utilisateur Pi :</strong>
+                    <p id="profUsername" style="color:#0B3D91; font-size:18px; margin-top:5px;">Chargement...</p>
+                </div>
+                <div style="border-bottom:1px solid #eee; padding-bottom:10px;">
+                    <strong>UID Pi Network :</strong>
+                    <p id="profUid" style="color:#666; font-size:14px; font-family:monospace; margin-top:5px;">Chargement...</p>
+                </div>
+                <div style="border-bottom:1px solid #eee; padding-bottom:10px;">
+                    <strong>Statut du Compte :</strong>
+                    <p style="color:green; font-weight:bold; margin-top:5px;">🟢 Compte Vérifié Pi Browser</p>
+                </div>
+            </div>
+        </section>
 
-<h2>Informations personnelles</h2>
+        <footer>
+            <p>© 2026 Entreprise ARASHI • Profil Utilisateur</p>
+        </footer>
+    </div>
 
-<img src="../assets/logos/user.png" alt="Photo de profil" width="120">
+    <!-- MODULES JS (Bas de page) -->
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/cart.js"></script>
 
-<br><br>
-
-<input type="text" placeholder="Nom complet">
-
-<input type="email" placeholder="Email">
-
-<input type="text" placeholder="Nom d'utilisateur Pi">
-
-<input type="text" placeholder="Pays">
-
-<input type="tel" placeholder="Téléphone">
-
-<textarea placeholder="Adresse"></textarea>
-
-<br><br>
-
-<button>💾 Enregistrer</button>
-
-</section>
-
-<section>
-
-<h2>Compte Pi</h2>
-
-<p>Nom Pi : <strong id="piUsername">Non connecté</strong></p>
-
-<p>KYC : <strong>En attente</strong></p>
-
-<button id="piLogin">
-π Connecter Pi Network
-</button>
-
-</section>
-
-<section>
-
-<h2>Mes statistiques</h2>
-
-<div class="dashboard-grid">
-
-<div class="card">
-
-<h3>📦 Commandes</h3>
-
-<p>0</p>
-
-</div>
-
-<div class="card">
-
-<h3>❤️ Favoris</h3>
-
-<p>0</p>
-
-</div>
-
-<div class="card">
-
-<h3>🛒 Produits publiés</h3>
-
-<p>0</p>
-
-</div>
-
-<div class="card">
-
-<h3>💰 Paiements Pi</h3>
-
-<p>0 π</p>
-
-</div>
-
-</div>
-
-</section>
-
-<br>
-
-<a href="../index.html">⬅ Retour à l'accueil</a>
-
-<script src="../script.js"></script>
-
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedUser = localStorage.getItem("pi_user");
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                document.getElementById("profUsername").innerText = `@${user.username || 'Inconnu'}`;
+                document.getElementById("profUid").innerText = user.uid || 'Non disponible';
+            } else {
+                document.getElementById("profUsername").innerText = "Non connecté";
+                document.getElementById("profUid").innerText = "Veuillez cliquer sur 'Connexion Pi'";
+            }
+        });
+    </script>
 </body>
+</html>
 
-  </html>
