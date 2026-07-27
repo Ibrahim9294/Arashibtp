@@ -701,13 +701,3 @@ th, td {
     background: #f8d7da;
     color: #721c24;
 }
-
-/* ============================================================
-   CORRECTION SPECIFIQUE MOBILE (Anti-chevauchement des menus)
-   ============================================================
-
-/* 6. Réduit légèrement le bouton jaune Connexion Pi sur mobile */
-    .auth-area .btn, #piLogin {
-        padding: 6px 10px !important;
-        font-size: 11px !important;
-    }
