@@ -1,62 +1,72 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Mes Commandes | Entreprise ARASHI</title>
-
-<link rel="stylesheet" href="../style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Commandes | Entreprise ARASHI v3.0</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
-
 <body>
 
-<header>
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-<h1>📦 Mes Commandes</h1>
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p>Commandes</p>
+        </div>
+        <nav>
+            <a href="../index.html">🏠 Accueil</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="immobilier.html">🏡 Immobilier</a>
+            <a href="marketplace.html">🛒 Marketplace</a>
+            <a href="orders.html" class="active">📦 Mes Commandes</a>
+            <a href="admin.html">👑 Admin</a>
+        </nav>
+    </aside>
 
-<p>Suivez toutes vos commandes.</p>
+    <div class="content">
+        <header class="topbar">
+            <h1>📦 Suivi des Commandes</h1>
+            <div class="auth-area">
+                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
+                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+            </div>
+        </header>
 
-</header>
+        <section class="hero" style="background: linear-gradient(135deg, #F4B400 0%, #0B3D91 100%);">
+            <h2>Vos Achats et Réservations</h2>
+            <p>Retrouvez l'historique complet de vos commandes d'articles, matériaux et prestations.</p>
+        </section>
 
-<section>
+        <section class="stats" style="margin-top: 20px;">
+            <h2>📋 Liste de vos commandes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Transaction</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="recentPayments">
+                    <tr>
+                        <td colspan="4" style="text-align:center;">Chargement de vos commandes...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
 
-<h2>Commandes</h2>
+        <footer>
+            <p>© 2026 Entreprise ARASHI • Mes Commandes</p>
+        </footer>
+    </div>
 
-<div class="card">
-
-<h3>Commande #0001</h3>
-
-<p>Produit : Aucun</p>
-
-<p>Statut : En attente</p>
-
-<button>Voir les détails</button>
-
-</div>
-
-<div class="card">
-
-<h3>Historique</h3>
-
-<p>Aucune commande enregistrée.</p>
-
-</div>
-
-</section>
-
-<br>
-
-<a href="../index.html">
-
-⬅ Retour à l'accueil
-
-</a>
-
+    <!-- MODULES JS (Bas de page) -->
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/dashboard.js"></script>
+    <script type="module" src="../js/cart.js"></script>
 </body>
-
 </html>
