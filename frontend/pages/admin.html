@@ -43,14 +43,14 @@
                 <div class="stat-card">
                     <span class="stat-icon">💰</span>
                     <div>
-                        <strong id="adminTotalRevenue">0 π</strong>
+                        <strong id="dashboardRevenue">0 π</strong>
                         <p>Revenus Totaux Pi</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <span class="stat-icon">📦</span>
                     <div>
-                        <strong id="adminTotalProducts">0</strong>
+                        <strong id="totalProperties">0</strong>
                         <p>Produits / Biens</p>
                     </div>
                 </div>
@@ -64,15 +64,14 @@
                 <thead>
                     <tr>
                         <th>ID Paiement</th>
-                        <th>Utilisateur</th>
                         <th>Montant</th>
                         <th>Statut</th>
                         <th>Date</th>
                     </tr>
                 </thead>
-                <tbody id="adminPaymentsList">
+                <tbody id="recentPayments">
                     <tr>
-                        <td colspan="5" style="text-align:center;">Chargement des transactions...</td>
+                        <td colspan="4" style="text-align:center;">Chargement des transactions...</td>
                     </tr>
                 </tbody>
             </table>
@@ -83,13 +82,12 @@
         </footer>
     </div>
 
+    <!-- ==========================================
+    MODULES JAVASCRIPT À INSTALLER (Tout en bas)
+    ========================================== -->
     <script type="module" src="../js/app.js"></script>
-    <script type="module">
-        import { loadDashboardData } from '../js/dashboard.js';
-        // Script spécifique pour l'admin si besoin de charger plus de détails
-        document.addEventListener("DOMContentLoaded", async () => {
-            // Le dashboard gère déjà l'affichage des paiements, on peut l'appeler ici aussi
-        });
-    </script>
+    <script type="module" src="../js/dashboard.js"></script>
+    <script type="module" src="../js/cart.js"></script>
+
 </body>
 </html>
