@@ -3,54 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Immobilier & BTP | Entreprise ARASHI v3.0</title>
-    <!-- Lien vers le fichier CSS global de la racine -->
+    <title>Immobilier | Entreprise ARASHI v3.0</title>
     <link rel="stylesheet" href="../css/style.css">
-    <style>
-        .property-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-        .filter-bar {
-            background: var(--white);
-            padding: 15px 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 25px;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .filter-bar select, .filter-bar input {
-            padding: 10px 15px;
-            border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 8px;
-            outline: none;
-            font-family: 'Poppins', sans-serif;
-        }
-        .badge-status {
-            background: #e1f5fe;
-            color: #0288d1;
-            padding: 4px 10px;
-            border-radius: 50px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-    </style>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 
-    <!-- Menu Toggle pour mobile -->
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-    <!-- Sidebar : Architecture v3.0 -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
-            <p>v3.0 Immobilier</p>
+            <p>Immobilier</p>
         </div>
         <nav>
             <a href="../index.html">🏠 Accueil</a>
@@ -58,128 +22,59 @@
             <a href="immobilier.html" class="active">🏡 Immobilier</a>
             <a href="topographie.html">📐 Topographie</a>
             <a href="construction.html">🏗️ Construction</a>
-            <a href="materiaux.html">🧱 Matériaux</a>
             <a href="marketplace.html">🛒 Marketplace</a>
             <a href="vendor.html">🛍️ Vendor Center</a>
-            <a href="partnership.html">🤝 Partnership</a>
             <a href="orders.html">📦 Mes Commandes</a>
             <a href="admin.html">👑 Admin</a>
-            <a href="ai.html">🤖 ARASHI AI</a>
         </nav>
     </aside>
 
-    <!-- Contenu Principal -->
     <div class="content">
         <header class="topbar">
-            <h1>Pôle Immobilier & BTP</h1>
+            <h1>🏡 Offres Immobilières Pi Network</h1>
             <div class="auth-area">
-                <span id="userStatus">🟢 Chargement...</span>
+                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
+                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
             </div>
         </header>
 
-        <!-- Section Hero -->
-        <section class="hero" style="background: linear-gradient(135deg, #0B3D91 0%, #154fae 100%);">
-            <h2>Terrains & Logements en Monnaie Pi</h2>
-            <p>Devenez propriétaire en toute sécurité. Tous nos biens et levés topographiques sont certifiés par l'Entreprise ARASHI.</p>
-            <div class="hero-tags">
-                <span>📍 Terrains Titrés</span>
-                <span>🔑 Villas Clés en Main</span>
-                <span>📐 Levés Topographiques</span>
-            </div>
+        <section class="hero" style="background: linear-gradient(135deg, #2e7d32 0%, #0B3D91 100%);">
+            <h2>Terrains, Parcels & Maisons</h2>
+            <p>Découvrez nos opportunités foncières certifiées payables directement en Pi au Niger.</p>
         </section>
 
-        <!-- Barre de Filtres et Recherche -->
-        <section class="search-container" style="margin: 20px 40px 0 40px;">
-            <div class="filter-bar">
-                <input type="text" id="searchProperty" placeholder="Rechercher une ville, un quartier..." style="flex: 1; min-width: 200px;">
-                <select id="filterType">
-                    <option value="all">Tous les types</option>
-                    <option value="terrain">Terrains</option>
-                    <option value="villa">Villas & Maisons</option>
-                    <option value="appartement">Appartements</option>
-                </select>
-                <select id="filterPrice">
-                    <option value="all">Tous les prix</option>
-                    <option value="asc">Prix croissants</option>
-                    <option value="desc">Prix décroissants</option>
-                </select>
+        <section class="popular-products" style="margin-top: 20px;">
+            <div class="section-header">
+                <h2>🏡 Catalogue des biens immobiliers</h2>
             </div>
-        </section>
 
-        <!-- Grille des Biens Immobiliers -->
-        <section class="main-services">
-            <h2>🏡 Biens disponibles & Opportunités</h2>
-            <div class="property-grid" id="propertyGrid">
-                <!-- Les cartes immobilières dynamiques s'injecteront ici via Supabase -->
+            <div class="products-grid" id="fullProductsGrid">
                 <div class="product-card-placeholder">
-                    <p>⏳ Connexion à la base de données ARASHI en cours...</p>
+                    <p>⏳ Chargement des biens immobiliers...</p>
                 </div>
             </div>
         </section>
 
-        <!-- Footer -->
         <footer>
-            <p>© 2026 Entreprise ARASHI v3.0 - Tous droits réservés.</p>
+            <p>© 2026 Entreprise ARASHI • Immobilier & Foncier</p>
         </footer>
     </div>
 
-    <!-- 1. Chargement du SDK Pi officiel -->
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    
-    <!-- 2. Chargement de TON script principal de production qui contient la fonction buy() -->
-    <script src="../js/app.js"></script>
+    <!-- MODULES JS (Bas de page) -->
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/marketplace.js"></script>
+    <script type="module" src="../js/cart.js"></script>
 
-    <!-- 3. Connexion Supabase et injection des biens immobiliers -->
-    <script type="module">
-        import { supabase } from '../js/supabase.js';
-
-        async function loadProperties() {
-            try {
-                const { data, error } = await supabase
-                    .from('properties')
-                    .select('*');
-
-                if (error) throw error;
-
-                const grid = document.getElementById('propertyGrid');
-                if (!grid) return;
-
-                if (!data || data.length === 0) {
-                    grid.innerHTML = "<p style='grid-column: 1/-1; text-align: center;'>Aucun bien disponible pour le moment.</p>";
-                    return;
-                }
-
-                // Utilisation directe de ta fonction globale buy() présente dans app.js
-                grid.innerHTML = data.map(item => `
-                    <div class="service-card" style="background: var(--white); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between;">
-                        <div>
-                            <span class="badge-status">${item.type ? item.type.toUpperCase() : 'IMMO'}</span>
-                            <h3 style="margin: 10px 0 5px 0; color: var(--dark-blue); font-size: 1.2rem;">${item.title}</h3>
-                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">${item.description || ''}</p>
-                            <p style="font-size: 0.95rem; margin-bottom: 15px;">📍 <b>${item.location || 'Non spécifiée'}</b></p>
-                        </div>
-                        <div style="border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px; display: flex; align-items: center; justify-content: space-between;">
-                            <span style="font-size: 1.3rem; font-weight: 700; color: #f5a623;">${item.price_pi || 0} 𝝅</span>
-                            
-                            <!-- ICI : On appelle proprement ta fonction native buy() -->
-                            <button class="btn" onclick="buy('${item.title.replace(/'/g, "\\'")}', ${item.price_pi || 0})" style="background: var(--dark-blue); color: var(--white); padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                                🔑 Réserver / Acheter
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-
-            } catch (err) {
-                console.error("Erreur Supabase:", err);
-                const grid = document.getElementById('propertyGrid');
-                if (grid) grid.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: red;'>❌ Erreur de base de données.</p>";
+    <script>
+        window.buy = async function(title, price) {
+            if (typeof window.addToCart === "function") {
+                window.addToCart(title, price);
+            } else if (typeof window.createPiPayment === "function") {
+                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
+            } else {
+                alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
             }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            loadProperties();
-        });
+        };
     </script>
 </body>
-                    </html>
-            
+</html>
