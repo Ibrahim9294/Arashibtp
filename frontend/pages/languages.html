@@ -1,60 +1,100 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Choisir une langue | Entreprise ARASHI</title>
-
-<link rel="stylesheet" href="../style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Langues | Entreprise ARASHI v3.0</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
-
 <body>
 
-<header>
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-<h1>🌍 Choisir une langue</h1>
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p>Langue & Région</p>
+        </div>
+        <nav>
+            <a href="../index.html">🏠 Accueil</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="marketplace.html">🛒 Marketplace</a>
+            <a href="profile.html">👤 Profil</a>
+            <a href="settings.html">⚙️ Paramètres</a>
+            <a href="language.html" class="active">🌐 Langues</a>
+            <a href="partnership.html">🤝 Partnership</a>
+            <a href="admin.html">👑 Admin</a>
+        </nav>
+    </aside>
 
-<p>Sélectionnez la langue de votre choix.</p>
+    <div class="content">
+        <header class="topbar">
+            <h1>🌐 Choix de la Langue</h1>
+            <div class="auth-area">
+                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
+                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+            </div>
+        </header>
 
-</header>
+        <section class="hero" style="background: linear-gradient(135deg, #0B3D91 0%, #1e52a4 100%);">
+            <h2>Préférences Linguistiques</h2>
+            <p>Sélectionnez la langue d'affichage de la plateforme ARASHI.</p>
+        </section>
 
-<section>
+        <section class="quick-actions" style="background: var(--bg-card, #fff); padding: 25px; border-radius: 8px; margin-top: 25px; max-width: 600px;">
+            <h2>🗣️ Sélectionner une langue</h2>
+            <form id="langForm" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                <div>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer;">
+                        <input type="radio" name="appLang" value="fr" checked> 🇫🇷 Français (Par défaut)
+                    </label>
+                </div>
+                <div>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer;">
+                        <input type="radio" name="appLang" value="en"> 🇬🇧 English
+                    </label>
+                </div>
+                <div>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer;">
+                        <input type="radio" name="appLang" value="ha"> 🇳🇪 Hausa
+                    </label>
+                </div>
+                <div>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer;">
+                        <input type="radio" name="appLang" value="zarma"> 🇳🇪 Zarma
+                    </label>
+                </div>
+                <button type="submit" class="hero-btn" style="cursor:pointer; margin-top:10px;">💾 Enregistrer la préférence</button>
+            </form>
+            <p id="langMsg" style="margin-top:15px; font-weight:bold;"></p>
+        </section>
 
-<h2>Langues disponibles</h2>
+        <footer>
+            <p>© 2026 Entreprise ARASHI • Paramètres Linguistiques</p>
+        </footer>
+    </div>
 
-<button onclick="changeLanguage('fr')">🇫🇷 Français</button><br><br>
+    <!-- MODULES JS (Bas de page) -->
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/cart.js"></script>
 
-<button onclick="changeLanguage('en')">🇬🇧 English</button><br><br>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentLang = localStorage.getItem("arashi_lang") || "fr";
+            const radio = document.querySelector(`input[name="appLang"][value="${currentLang}"]`);
+            if (radio) radio.checked = true;
 
-<button onclick="changeLanguage('ha')">🇳🇪 Hausa</button><br><br>
-
-<button onclick="changeLanguage('ar')">🇸🇦 العربية</button><br><br>
-
-<button onclick="changeLanguage('es')">🇪🇸 Español</button><br><br>
-
-<button onclick="changeLanguage('pt')">🇵🇹 Português</button><br><br>
-
-<button onclick="changeLanguage('zh')">🇨🇳 中文</button><br><br>
-
-<button onclick="changeLanguage('de')">🇩🇪 Deutsch</button><br><br>
-
-<button onclick="changeLanguage('ru')">🇷🇺 Русский</button><br><br>
-
-<button onclick="changeLanguage('tr')">🇹🇷 Türkçe</button>
-
-</section>
-
-<br>
-
-<a href="../index.html">⬅ Retour à l'accueil</a>
-
-<script src="../js/language.js"></script>
-
+            document.getElementById("langForm")?.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const selected = document.querySelector('input[name="appLang"]:checked').value;
+                localStorage.setItem("arashi_lang", selected);
+                const msg = document.getElementById("langMsg");
+                msg.style.color = "green";
+                msg.innerText = "✅ Langue mise à jour avec succès !";
+            });
+        });
+    </script>
 </body>
+</html>
 
-  </html>
