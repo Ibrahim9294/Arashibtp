@@ -1,67 +1,87 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Topographie ARASHI</title>
-
-<link rel="stylesheet" href="../style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entreprise ARASHI | Topographie & GNSS</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
-
-
 <body>
 
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p>Topographie & BTP</p>
+        </div>
+        <nav>
+            <a href="../index.html">🏠 Accueil</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="immobilier.html">🏡 Immobilier</a>
+            <a href="topographie.html" class="active">📐 Topographie</a>
+            <a href="construction.html">🏗️ Construction</a>
+            <a href="marketplace.html">🛒 Marketplace</a>
+            <a href="admin.html">👑 Admin</a>
+        </nav>
+    </aside>
 
-<header class="header">
+    <div class="content">
+        <header class="topbar">
+            <h1>📐 Services de Topographie & GNSS</h1>
+            <div class="auth-area">
+                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
+                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+            </div>
+        </header>
 
-<h1>📐 Topographie</h1>
+        <section class="hero">
+            <h2>Expertise et Haute Précision</h2>
+            <p>Commandez vos levés topographiques, implantations et géolocalisation par Récepteurs GNSS RTK à Niamey et partout au Niger.</p>
+        </section>
 
-<p>
-Services et matériels topographiques.
-</p>
+        <!-- Formulaire de demande de levé -->
+        <section class="quick-actions" style="background: var(--bg-card, #fff); padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+            <h2>📋 Demander un Devis ou un Levé Topographique</h2>
+            <form id="topoForm" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin-top: 20px;">
+                <div>
+                    <label for="topoType" style="display: block; margin-bottom: 5px; font-weight: bold;">Type de prestation :</label>
+                    <select id="topoType" class="form-control" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                        <option value="Levé planimétrique et altimétrique">Levé planimétrique et altimétrique</option>
+                        <option value="Implantation de bâtiment / terrain">Implantation de bâtiment / terrain</option>
+                        <option value="Location GNSS RTK avec opérateur">Location GNSS RTK avec opérateur</option>
+                        <option value="Bornage et Morcellement">Bornage et Morcellement</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="topoLocation" style="display: block; margin-bottom: 5px; font-weight: bold;">Localisation du site (Ex: Niamey, Quartier...) :</label>
+                    <input type="text" id="topoLocation" placeholder="Précisez la ville et le quartier" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                </div>
+                <div>
+                    <label for="topoDetails" style="display: block; margin-bottom: 5px; font-weight: bold;">Détails / Superficie estimée :</label>
+                    <textarea id="topoDetails" rows="4" placeholder="Décrivez votre projet..." style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
+                </div>
+                <button type="submit" class="hero-btn" style="cursor: pointer;">Envoyer la demande de devis</button>
+            </form>
+            <p id="topoMsg" style="margin-top: 15px; font-weight: bold;"></p>
+        </section>
 
-</header>
+        <footer>
+            <p>© 2026 Entreprise ARASHI • Topographie</p>
+        </footer>
+    </div>
 
-
-
-<section>
-
-
-<h2>Services</h2>
-
-
-<div class="product-card">
-
-
-<h3>Levé topographique</h3>
-
-<p>
-Station totale - GNSS RTK - Implantation
-</p>
-
-
-<button>
-Demander un devis
-</button>
-
-
-</div>
-
-
-</section>
-
-
-
-<a href="../index.html">
-⬅ Retour accueil
-</a>
-
-
+    <script type="module" src="../js/app.js"></script>
+    <script>
+        document.getElementById("topoForm").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const type = document.getElementById("topoType").value;
+            const location = document.getElementById("topoLocation").value;
+            const msg = document.getElementById("topoMsg");
+            
+            msg.style.color = "green";
+            msg.innerText = `✅ Demande enregistrée pour "${type}" à "${location}". Un topographe d'ARASHI vous contactera.`;
+            document.getElementById("topoForm").reset();
+        });
+    </script>
 </body>
-
 </html>
