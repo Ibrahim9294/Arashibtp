@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entreprise ARASHI | Topographie & GNSS</title>
+    <!-- Lien vers le fichier CSS global -->
     <link rel="stylesheet" href="../css/style.css">
+    <!-- SDK Pi Network requis pour les fonctionnalités Pi -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 
+    <!-- Sidebar : Architecture v3.0 -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
@@ -25,6 +28,7 @@
         </nav>
     </aside>
 
+    <!-- Contenu Principal -->
     <div class="content">
         <header class="topbar">
             <h1>📐 Services de Topographie & GNSS</h1>
@@ -70,18 +74,42 @@
         </footer>
     </div>
 
-    <script type="module" src="../js/app.js"></script>
+    <!-- Script spécifique au formulaire -->
     <script>
-        document.getElementById("topoForm").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const type = document.getElementById("topoType").value;
-            const location = document.getElementById("topoLocation").value;
-            const msg = document.getElementById("topoMsg");
-            
-            msg.style.color = "green";
-            msg.innerText = `✅ Demande enregistrée pour "${type}" à "${location}". Un topographe d'ARASHI vous contactera.`;
-            document.getElementById("topoForm").reset();
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("topoForm");
+            if (form) {
+                form.addEventListener("submit", (e) => {
+                    e.preventDefault();
+                    const type = document.getElementById("topoType").value;
+                    const location = document.getElementById("topoLocation").value;
+                    const msg = document.getElementById("topoMsg");
+
+                    msg.style.color = "green";
+                    msg.innerText = `✅ Demande enregistrée pour "${type}" à "${location}". Un topographe d'ARASHI vous contactera.`;
+                    form.reset();
+                });
+            }
         });
+    </script>
+
+    <!-- ==========================================
+    MODULES JAVASCRIPT ARASHI (Placement tout en bas)
+    ========================================== -->
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/cart.js"></script>
+
+    <!-- Gestion du bouton d'achat direct (au cas où) -->
+    <script>
+        window.buy = async function(title, price) {
+            if (typeof window.addToCart === "function") {
+                window.addToCart(title, price);
+            } else if (typeof window.createPiPayment === "function") {
+                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
+            } else {
+                alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
+            }
+        };
     </script>
 </body>
 </html>
