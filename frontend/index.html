@@ -500,27 +500,18 @@ MARKETPLACE
 
 <section class="popular-products">
 
-<h2>🛒 Marketplace Pi</h2>
+  <h2>🛒 Marketplace Pi</h2>
 
-<div class="section-header">
+  <div class="section-header">
+    <a href="pages/marketplace.html" class="see-all">Voir tout →</a>
+  </div>
 
-<a href="pages/marketplace.html" class="see-all">
-
-Voir tout →
-
-</a>
-
-</div>
-
-<div class="products-grid" id="fullProductsGrid">
-
-<div class="product-card-placeholder">
-
-Chargement des produits...
-
-</div>
-
-</div>
+  <!-- Le conteneur dynamique où marketplace.js injectera les cartes -->
+  <div class="products-grid" id="marketplaceContainer">
+    <div class="product-card-placeholder">
+      Chargement des produits en cours...
+    </div>
+  </div>
 
 </section>
 
@@ -694,6 +685,7 @@ MODULE JS PRINCIPAL
 ========================================== -->
 
 <script type="module" src="js/app.js"></script>
+<script type="module" src="js/marketplace.js"></script>
 
 <!-- ==========================================
 FONCTION ACHAT PI
