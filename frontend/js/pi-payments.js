@@ -30,7 +30,7 @@ export function initPiSdk() {
 function onIncompletePaymentFound(payment) {
     console.log("Paiement incomplet détecté :", payment);
     if (payment && payment.identifier) {
-        fetch("https://entreprise-arashi-backend.onrender.com/api/pi/complete", {
+        fetch("https://entreprise-arashi.onrender.com/api/pi/complete", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction?.txid || "incomplete_resolved" })
@@ -102,7 +102,7 @@ export async function createPiPayment(amount, memo, productId) {
         onReadyForServerCompletion: async (paymentId, txid) => {
             console.log("Demande de finalisation serveur pour :", paymentId);
             try {
-                await fetch("https://entreprise-arashi-backend.onrender.com/api/pi/complete", {
+                await fetch("https://entreprise-arashi.onrender.com/api/pi/complete", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ paymentId, txid, user: currentPiUser })
