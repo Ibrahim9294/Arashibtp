@@ -706,16 +706,6 @@ th, td {
    CORRECTION SPECIFIQUE MOBILE (Anti-chevauchement des menus)
    ============================================================
 
-    /* 4. Fixe le bouton "☰ Menu" tout en haut à gauche */
-    .menu-toggle {
-        position: absolute !important;
-        top: 12px !important;
-        left: 12px !important;
-        z-index: 9999 !important;
-        padding: 6px 12px !important;
-        font-size: 13px !important;
-    }
-
     /* 5. Fixe la zone de connexion Pi tout en haut à droite */
     .auth-area {
         position: absolute !important;
