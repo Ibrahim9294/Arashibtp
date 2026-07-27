@@ -703,15 +703,6 @@ th, td {
 }
 
 
-/* Taille de la Sidebar pour Ordinateur */
-.sidebar {
-    width: 250px; /* <--- Modifiez cette valeur (ex: 220px ou 280px) */
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-}
-
 /* Taille de la Sidebar pour Mobile */
 @media (max-width: 768px) {
     .sidebar {
