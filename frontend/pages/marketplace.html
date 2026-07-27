@@ -6,6 +6,8 @@
     <title>Marketplace | Entreprise ARASHI v3.0</title>
     <!-- Lien vers le fichier CSS global -->
     <link rel="stylesheet" href="../css/style.css">
+    <!-- SDK Pi Network requis pour les transactions -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 
@@ -61,7 +63,7 @@
             <div class="section-header">
                 <h2>🛍️ Toutes les offres disponibles</h2>
             </div>
-            
+
             <div class="products-grid" id="fullProductsGrid">
                 <!-- Les articles de la boutique s'injecteront dynamiquement ici -->
                 <div class="product-card-placeholder">
@@ -75,9 +77,6 @@
             <p>© 2026 Entreprise ARASHI v3.0 - Tous droits réservés.</p>
         </footer>
     </div>
-
-    <!-- Chargement des modules JS -->
-    <script type="module" src="../js/marketplace.js"></script>
 
     <!-- Script de liaison dynamique pour la Marketplace complète -->
     <script type="module">
@@ -134,19 +133,22 @@
                     card.className = "service-card";
                     card.style.borderTop = "4px solid #F4B400";
 
+                    const productTitle = product.title || product.name || 'Produit';
+                    const productPrice = product.price_pi || product.price_fcfa || product.price || 0;
+
                     const priceDisplay = product.price_pi 
                         ? `🪙 <strong>${product.price_pi} π</strong>` 
                         : `💵 <strong>${product.price_fcfa || product.price} FCFA</strong>`;
 
                     card.innerHTML = `
                         <div style="text-align:center; margin-bottom:15px;">
-                            <img src="${imageUrl}" alt="${product.title}" style="max-width:100%; height:140px; object-fit:cover; border-radius:8px;">
+                            <img src="${imageUrl}" alt="${productTitle}" style="max-width:100%; height:140px; object-fit:cover; border-radius:8px;">
                         </div>
-                        <h3>${product.title || product.name}</h3>
+                        <h3>${productTitle}</h3>
                         <p style="font-size:13px; color:#666; height:40px; overflow:hidden;">${product.description || ''}</p>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:10px; border-top:1px solid #f5f5f5;">
                             <span style="font-size:16px; color:#0B3D91;">${priceDisplay}</span>
-                            <button onclick="window.createPiPayment(${product.price_pi || 0}, 'Achat : ${product.title || product.name}', '${product.id}')" 
+                            <button onclick="window.buy('${productTitle.replace(/'/g, "\\'")}', ${productPrice})" 
                                     style="background:#0B3D91; color:white; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600;">
                                 Acheter
                             </button>
@@ -163,7 +165,26 @@
                     </div>`;
             }
         }
+    </script>
 
-        <script type="module" src="../js/marketplace.js"></script>
+    <!-- ==========================================
+    MODULES JAVASCRIPT ARASHI (Placement tout en bas)
+    ========================================== -->
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/marketplace.js"></script>
+    <script type="module" src="../js/cart.js"></script>
+
+    <!-- Gestion du bouton d'achat direct -->
+    <script>
+        window.buy = async function(title, price) {
+            if (typeof window.addToCart === "function") {
+                window.addToCart(title, price);
+            } else if (typeof window.createPiPayment === "function") {
+                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
+            } else {
+                alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
+            }
+        };
+    </script>
 </body>
 </html>
