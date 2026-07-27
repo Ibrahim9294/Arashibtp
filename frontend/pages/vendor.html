@@ -3,133 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARASHI Vendor Center | Espace Vendeur Web3</title>
-    
-    <!-- Style Unifié -->
+    <title>Entreprise ARASHI | Vendor Center</title>
     <link rel="stylesheet" href="../css/style.css">
-    
-    <!-- SDK Supabase requis pour l'envoi des données -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 
-    <!-- BOUTON MENU MOBILE -->
-    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
-
-    <!-- SIDEBAR ARASHI (Cohérence visuelle) -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
-            <p>v2.0 Pi Ecosystem</p>
+            <p>Espace Vendeur</p>
         </div>
         <nav>
             <a href="../index.html">🏠 Accueil</a>
             <a href="dashboard.html">📊 Dashboard</a>
-            <a href="immobilier.html">🏡 Immobilier</a>
-            <a href="topographie.html">📐 Topographie</a>
-            <a href="construction.html">🏗️ Construction</a>
-            <a href="materiaux.html">🧱 Matériaux</a>
             <a href="marketplace.html">🛒 Marketplace</a>
             <a href="vendor.html" class="active">🛍️ Vendor Center</a>
-            <a href="partnership.html">🤝 Partnership</a>
-            <a href="orders.html">📦 Commandes</a>
-            <a href="ai.html">🤖 ARASHI AI</a>
+            <a href="admin.html">👑 Admin</a>
         </nav>
     </aside>
 
-    <!-- ZONE DE CONTENU PRINCIPAL -->
     <div class="content">
-        
-        <!-- BARRE SUPÉRIEURE -->
         <header class="topbar">
             <h1>🛍️ Vendor Center</h1>
             <div class="auth-area">
-                <span id="userStatus">Connecté en tant que Vendor</span>
+                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
+                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
             </div>
         </header>
 
-        <!-- FORMULAIRE DE PUBLICATION -->
-        <main class="main-form-container" style="padding: 40px; max-width: 800px; margin: 0 auto; width: 100%;">
-            <div class="form-header" style="margin-bottom: 30px;">
-                <h2>Publier une nouvelle annonce</h2>
-                <p style="color: var(--text-muted);">Remplissez le formulaire ci-dessous pour ajouter votre bien ou matériel sur la plateforme ARASHI.</p>
-            </div>
+        <section class="hero">
+            <h2>Mettez vos biens en vente sur le réseau Pi</h2>
+            <p>Ajoutez des terrains, villas, équipements ou matériaux BTP pour les proposer à la communauté Pi Network.</p>
+        </section>
 
-            <form id="vendorForm" style="background: white; padding: 30px; border-radius: 16px; box-shadow: var(--shadow-premium); display: flex; flex-direction: column; gap: 20px;">
-                
-                <!-- Nom du produit -->
-                <div class="form-group">
-                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">Nom de l'article / du bien *</label>
-                    <input type="text" id="title" placeholder="Ex: Villa duplex 5 pièces, Récepteur GPS GNSS RTK..." required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+        <!-- Formulaire d'ajout de produit -->
+        <section class="quick-actions" style="background: var(--bg-card, #fff); padding: 25px; border-radius: 8px; max-width: 650px;">
+            <h2>➕ Publier une nouvelle offre</h2>
+            
+            <form id="addPropertyForm" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Titre de l'annonce :</label>
+                    <input type="text" id="propTitle" placeholder="Ex: Terrain 500m² Niamey / Bétonnière 350L" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
                 </div>
 
-                <!-- Catégorie (Alignée avec tes tables Supabase) -->
-                <div class="form-group">
-                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">Catégorie *</label>
-                    <select id="category" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-                        <option value="villa">🏠 Villa (Immobilier)</option>
-                        <option value="terrain">🌍 Terrain (Immobilier)</option>
-                        <option value="topographie">📐 Matériel Topographique</option>
-                        <option value="construction">🏗️ Engins / Machines de construction</option>
-                        <option value="materiaux">🧱 Matériaux de construction (Ciment, fer...)</option>
-                        <option value="vehicules">🚛 Véhicules professionnels</option>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Prix en Pi (π) :</label>
+                    <input type="number" step="0.001" id="propPrice" placeholder="Ex: 0.15" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                </div>
+
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Catégorie :</label>
+                    <select id="propCategory" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                        <option value="immobilier">Immobilier</option>
+                        <option value="topographie">Topographie</option>
+                        <option value="construction">Construction & Matériaux</option>
+                        <option value="autre">Autre Marketplace</option>
                     </select>
                 </div>
 
-                <!-- Description -->
-                <div class="form-group">
-                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">Description détaillée</label>
-                    <textarea id="description" placeholder="Décrivez l'état, les caractéristiques, la localisation exacte..." rows="5" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;"></textarea>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">URL de l'image (Lien d'hébergement) :</label>
+                    <input type="url" id="propImage" placeholder="https://..." style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
                 </div>
 
-                <!-- Double Grille pour les prix -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Prix en Pi (π) *</label>
-                        <input type="number" id="price_pi" step="0.0001" placeholder="Ex: 150" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-                    </div>
-                    <div class="form-group">
-                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Prix équivalent en FCFA *</label>
-                        <input type="number" id="price_fcfa" placeholder="Ex: 150000" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-                    </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Description :</label>
+                    <textarea id="propDesc" rows="4" placeholder="Caractéristiques principales..." style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
                 </div>
 
-                <!-- Stock & Pays -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Stock disponible</label>
-                        <input type="number" id="stock" value="1" min="1" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-                    </div>
-                    <div class="form-group">
-                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Pays de localisation *</label>
-                        <input type="text" id="country" placeholder="Ex: Côte d'Ivoire, Sénégal..." required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-                    </div>
-                </div>
-
-                <!-- Images multiples -->
-                <div class="form-group">
-                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">Photos du produit (Une ou plusieurs)</label>
-                    <input type="file" id="images" accept="image/*" multiple style="width: 100%; padding: 10px 0;">
-                    <small style="color: var(--text-muted); display: block; margin-top: 5px;">Vous pouvez sélectionner plusieurs photos à la fois.</small>
-                </div>
-
-                <!-- Bouton de publication premium -->
-                <button type="submit" class="hero-btn" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 10px;">
-                    🚀 Publier sur ARASHI
-                </button>
+                <button type="submit" class="hero-btn" style="cursor: pointer;">🚀 Publier l'annonce</button>
             </form>
+            <p id="vendorMsg" style="margin-top: 15px; font-weight: bold;"></p>
+        </section>
 
-            <!-- Statut de l'envoi -->
-            <div id="status" style="margin-top: 20px; text-align: center; font-weight: bold; padding: 15px; border-radius: 8px; display: none;"></div>
-        </main>
-
-        <footer style="text-align: center; padding: 30px 0;">
-            <p>© 2026 Entreprise ARASHI v2.0 - Tous droits réservés.</p>
+        <footer>
+            <p>© 2026 Entreprise ARASHI • Vendor Center</p>
         </footer>
     </div>
 
-    <!-- Moteur JS pour faire fonctionner cette page -->
-    <script type="module" src="../js/supabase.js"></script>
-    <script type="module" src="../js/vendor.js"></script>
+    <script type="module" src="../js/app.js"></script>
+    <script type="module">
+        const SUPABASE_URL = "https://cjmunzphzqazivbkgrdq.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_-7GJRL8TW81oHvjt-N17ZQ_OS8qD-cu";
+
+        document.getElementById("addPropertyForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById("vendorMsg");
+            msg.style.color = "blue";
+            msg.innerText = "⏳ Publication de votre annonce en cours...";
+
+            const newProperty = {
+                title: document.getElementById("propTitle").value,
+                price: parseFloat(document.getElementById("propPrice").value),
+                category: document.getElementById("propCategory").value,
+                image_url: document.getElementById("propImage").value || "assets/villas/villa-moderne.jpg",
+                description: document.getElementById("propDesc").value
+            };
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/properties`, {
+                    method: "POST",
+                    headers: {
+                        "apikey": SUPABASE_ANON_KEY,
+                        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+                        "Content-Type": "application/json",
+                        "Prefer": "return=minimal"
+                    },
+                    body: JSON.stringify(newProperty)
+                });
+
+                if (res.ok) {
+                    msg.style.color = "green";
+                    msg.innerText = "✅ Annonce ajoutée avec succès sur Supabase ! Elle sera visible immédiatement sur la Marketplace.";
+                    document.getElementById("addPropertyForm").reset();
+                } else {
+                    throw new Error("Erreur de publication");
+                }
+            } catch (err) {
+                msg.style.color = "red";
+                msg.innerText = "❌ Impossible de publier l'annonce pour le moment. Vérifiez la connexion Supabase.";
+            }
+        });
+    </script>
 </body>
-                </html>
+</html>
