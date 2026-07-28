@@ -27,30 +27,26 @@
             <p>Construction • Immobilier • Pi Network</p>
         </div>
 
-        <nav>
-
-<!-- ==========================================
-MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
-========================================== -->
-<nav class="sidebar" style="padding: 15px; background: #0f172a; color: white;">
-    <!-- Liens de Navigation -->
-    <a href="index.html" data-lang="home" style="display: block; padding: 10px; color: white; text-decoration: none;">🏠 Accueil</a>
-    <a href="pages/dashboard.html" data-lang="dashboard" style="display: block; padding: 10px; color: white; text-decoration: none;">📊 Dashboard</a>
-    <a href="pages/immobilier.html" data-lang="realestate" style="display: block; padding: 10px; color: white; text-decoration: none;">🏡 Immobilier</a>
-    <a href="pages/parcelles.html" data-lang="plots" style="display: block; padding: 10px; color: white; text-decoration: none;">📍 Parcelles</a>
-    <a href="pages/marketplace.html" data-lang="marketplace" style="display: block; padding: 10px; color: white; text-decoration: none;">🛒 Marketplace</a>
-    <a href="pages/vendor.html" data-lang="vendor" style="display: block; padding: 10px; color: white; text-decoration: none;">🛍️ Vendor Center</a>
-    <a href="pages/paiement.html" data-lang="payment" style="display: block; padding: 10px; color: white; text-decoration: none;">💳 Paiement Pi</a>
-    <a href="pages/admin.html" data-lang="admin" style="display: block; padding: 10px; color: white; text-decoration: none;">👑 Admin</a>
-    <!-- Sélecteur de Langue (Dans le menu) -->
-    <div class="lang-selector" style="padding: 12px 10px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.15); background: #1e293b; border-radius: 6px;">
-        <label for="sidebarLanguageSelect" style="font-size: 0.85em; color: #94a3b8; display: block; margin-bottom: 6px;">🌐 Langue / Language</label>
-        <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 8px; border-radius: 5px; background: #0f172a; color: white; border: 1px solid #334e68; cursor: pointer; font-size: 0.9em;">
-            <option value="fr">🇫🇷 Français</option>
-            <option value="en">🇬🇧 English</option>
-        </select>
-    </div>
-</nav>
+        <nav class="sidebar-nav" style="padding: 15px; background: #0f172a; color: white;">
+            <!-- Liens de Navigation -->
+            <a href="index.html" data-lang="home" style="display: block; padding: 10px; color: white; text-decoration: none;">🏠 Accueil</a>
+            <a href="pages/dashboard.html" data-lang="dashboard" style="display: block; padding: 10px; color: white; text-decoration: none;">📊 Dashboard</a>
+            <a href="pages/immobilier.html" data-lang="realestate" style="display: block; padding: 10px; color: white; text-decoration: none;">🏡 Immobilier</a>
+            <a href="pages/parcelles.html" data-lang="plots" style="display: block; padding: 10px; color: white; text-decoration: none;">📍 Parcelles</a>
+            <a href="pages/marketplace.html" data-lang="marketplace" style="display: block; padding: 10px; color: white; text-decoration: none;">🛒 Marketplace</a>
+            <a href="pages/vendor.html" data-lang="vendor" style="display: block; padding: 10px; color: white; text-decoration: none;">🛍️ Vendor Center</a>
+            <a href="pages/paiement.html" data-lang="payment" style="display: block; padding: 10px; color: white; text-decoration: none;">💳 Paiement Pi</a>
+            <a href="pages/admin.html" data-lang="admin" style="display: block; padding: 10px; color: white; text-decoration: none;">👑 Admin</a>
+            
+            <!-- Sélecteur de Langue (Dans le menu latéral) -->
+            <div class="lang-selector" style="padding: 12px 10px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.15); background: #1e293b; border-radius: 6px;">
+                <label for="sidebarLanguageSelect" style="font-size: 0.85em; color: #94a3b8; display: block; margin-bottom: 6px;">🌐 Langue / Language</label>
+                <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 8px; border-radius: 5px; background: #0f172a; color: white; border: 1px solid #334e68; cursor: pointer; font-size: 0.9em;">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                </select>
+            </div>
+        </nav>
                   
     </aside>
 
@@ -75,7 +71,7 @@ MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
         </header>
 
         <section class="hero">
-            <h2>Bienvenue sur Entreprise ARASHI v3.0</h2>
+            <h2 data-lang="welcome">Bienvenue sur Entreprise ARASHI v3.0</h2>
             <p>Construction • Immobilier • Topographie • Marketplace • Paiements Pi Network</p>
 
             <div class="hero-tags">
@@ -106,19 +102,19 @@ MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
         <section class="upper-dashboard">
             <div class="upper-item">
                 <div class="icon">🏠</div>
-                <div class="label">Immobilier</div>
+                <div class="label" data-lang="realestate">Immobilier</div>
             </div>
             <div class="upper-item">
                 <div class="icon">🛒</div>
-                <div class="label">Marketplace</div>
+                <div class="label" data-lang="marketplace">Marketplace</div>
             </div>
             <div class="upper-item">
                 <div class="icon">📐</div>
-                <div class="label">Topographie</div>
+                <div class="label" data-lang="topography">Topographie</div>
             </div>
             <div class="upper-item">
                 <div class="icon">🏗️</div>
-                <div class="label">Construction</div>
+                <div class="label" data-lang="construction">Construction</div>
             </div>
             <div class="upper-item">
                 <div class="icon">🧱</div>
@@ -145,7 +141,7 @@ MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
                         <p>5 chambres • Piscine • Jardin</p>
                         <a href="pages/immobilier.html" class="service-link">Consulter les biens →</a>
                         <h2>2 π</h2>
-                        <button class="hero-btn" onclick="buy('Villa Moderne Niamey',2)">Acheter avec Pi</button>
+                        <button class="hero-btn" onclick="buy('Villa Moderne Niamey',2)" data-lang="buy_btn">Acheter avec Pi</button>
                     </div>
 
                     <div class="service-card">
@@ -154,7 +150,7 @@ MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
                         <p>Lot résidentiel sécurisé</p>
                         <a href="pages/immobilier.html" class="service-link">Consulter les biens →</a>
                         <h2>0.5 π</h2>
-                        <button class="hero-btn" onclick="buy('Terrain Résidentiel',0.5)">Acheter avec Pi</button>
+                        <button class="hero-btn" onclick="buy('Terrain Résidentiel',0.5)" data-lang="buy_btn">Acheter avec Pi</button>
                     </div>
                 </div>
             </section>
@@ -168,7 +164,7 @@ MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
                         <p>GPS • GLONASS • BeiDou</p>
                         <a href="pages/topographie.html" class="service-link">Demander un levé →</a>
                         <h2>0.1 π</h2>
-                        <button class="hero-btn" onclick="buy('GNSS RTK',0.1)">Acheter</button>
+                        <button class="hero-btn" onclick="buy('GNSS RTK',0.1)" data-lang="buy_btn">Acheter</button>
                     </div>
 
                     <div class="service-card">
@@ -177,7 +173,7 @@ MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
                         <p>Haute précision</p>
                         <a href="pages/topographie.html" class="service-link">Demander un levé →</a>
                         <h2>0.01 π</h2>
-                        <button class="hero-btn" onclick="buy('Station Totale',0.01)">Acheter</button>
+                        <button class="hero-btn" onclick="buy('Station Totale',0.01)" data-lang="buy_btn">Acheter</button>
                     </div>
                 </div>
             </section>
@@ -191,7 +187,7 @@ MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
                         <p>Matériel de chantier & BTP</p>
                         <a href="pages/construction.html" class="service-link">Voir les projets →</a>
                         <h2>0.2 π</h2>
-                        <button class="hero-btn" onclick="buy('Bétonnière',0.2)">Acheter</button>
+                        <button class="hero-btn" onclick="buy('Bétonnière',0.2)" data-lang="buy_btn">Acheter</button>
                     </div>
                 </div>
             </section>
@@ -358,27 +354,13 @@ MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
         </section>
 
         <!-- ==========================================
-        FOOTER
-        ========================================== -->
-        <footer>
-            <p>© 2026 Entreprise ARASHI</p>
-            <p>Powered by Pi Network • Supabase • Render • Vercel</p>
-        </footer>
-
-    </div>
-
-    
-</div>
-        </section>
-
-        <!-- ==========================================
-        FOOTER
+        FOOTER (UNIQUE ET PROPRE)
         ========================================== -->
         <footer style="padding: 20px; text-align: center; border-top: 1px solid #334e68; margin-top: 30px;">
-            <!-- Sélecteur de Langue -->
+            <!-- Sélecteur de Langue (Footer) -->
             <div class="lang-selector" style="max-width: 200px; margin: 0 auto 15px auto;">
-                <label for="languageSelect" style="font-size: 0.85em; color: #888; display: block; margin-bottom: 5px;">🌐 Langue / Language</label>
-                <select id="languageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 6px 10px; border-radius: 5px; background: #1a2a3a; color: white; border: 1px solid #334e68; cursor: pointer;">
+                <label for="footerLanguageSelect" style="font-size: 0.85em; color: #888; display: block; margin-bottom: 5px;">🌐 Langue / Language</label>
+                <select id="footerLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 6px 10px; border-radius: 5px; background: #1a2a3a; color: white; border: 1px solid #334e68; cursor: pointer;">
                     <option value="fr">🇫🇷 Français</option>
                     <option value="en">🇬🇧 English</option>
                 </select>
@@ -424,4 +406,5 @@ MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
 
 </body>
 
-</html>
+                </html>
+                            
