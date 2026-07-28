@@ -56,15 +56,15 @@
             <h1>🏗️ Entreprise ARASHI</h1>
 
             <div class="auth-area">
-                <button id="piLogin" class="btn btn-primary">
+                <button id="piLogin" class="btn btn-primary" data-lang="login_pi">
                     🪙 Connexion Pi
                 </button>
 
-                <span id="userStatus" style="margin-left:15px;font-weight:bold;">
+                <span id="userStatus" style="margin-left:15px;font-weight:bold;" data-lang="not_connected">
                     Non connecté
                 </span>
 
-                <button id="logoutBtn" class="btn btn-danger" style="margin-left:10px;">
+                <button id="logoutBtn" class="btn btn-danger" style="margin-left:10px;" data-lang="logout">
                     Déconnexion
                 </button>
             </div>
@@ -118,11 +118,11 @@
             </div>
             <div class="upper-item">
                 <div class="icon">🧱</div>
-                <div class="label">Matériaux</div>
+                <div class="label" data-lang="materials">Matériaux</div>
             </div>
             <div class="upper-item">
                 <div class="icon">🤖</div>
-                <div class="label">ARASHI AI</div>
+                <div class="label" data-lang="ai_bot">ARASHI AI</div>
             </div>
         </section>
 
@@ -130,25 +130,25 @@
         NOS DOMAINES D'ACTIVITÉ
         ========================================== -->
         <section class="main-services">
-            <h2>💼 Nos Domaines d'Activité</h2>
+            <h2 data-lang="main_domains">💼 Nos Domaines d'Activité</h2>
 
             <section id="immobilier">
-                <h2>🏡 Immobilier ARASHI</h2>
+                <h2 data-lang="realestate_title">🏡 Immobilier ARASHI</h2>
                 <div class="products-grid">
                     <div class="service-card">
-                        <img src="assets/villas/villa-moderne.jpg" class="product-image" alt="Villa Moderne">
+                        <img src="assets/villas/villa-moderne.jpg" class="product-image" alt="Villa Moderne" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=500';">
                         <h3>Villa Moderne Niamey</h3>
                         <p>5 chambres • Piscine • Jardin</p>
-                        <a href="pages/immobilier.html" class="service-link">Consulter les biens →</a>
+                        <a href="pages/immobilier.html" class="service-link" data-lang="view_items">Consulter les biens →</a>
                         <h2>2 π</h2>
                         <button class="hero-btn" onclick="buy('Villa Moderne Niamey',2)" data-lang="buy_btn">Acheter avec Pi</button>
                     </div>
 
                     <div class="service-card">
-                        <img src="assets/terrains/terrain.jpg" class="product-image" alt="Terrain">
+                        <img src="assets/terrains/terrain.jpg" class="product-image" alt="Terrain" onerror="this.src='https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500';">
                         <h3>Terrain Résidentiel</h3>
                         <p>Lot résidentiel sécurisé</p>
-                        <a href="pages/immobilier.html" class="service-link">Consulter les biens →</a>
+                        <a href="pages/immobilier.html" class="service-link" data-lang="view_items">Consulter les biens →</a>
                         <h2>0.5 π</h2>
                         <button class="hero-btn" onclick="buy('Terrain Résidentiel',0.5)" data-lang="buy_btn">Acheter avec Pi</button>
                     </div>
@@ -156,38 +156,38 @@
             </section>
 
             <section id="topographie">
-                <h2>📐 Topographie</h2>
+                <h2 data-lang="topography_title">📐 Topographie</h2>
                 <div class="products-grid">
                     <div class="service-card">
                         <img src="assets/topographie/gnss-rtk.jpg" class="product-image" alt="GNSS">
                         <h3>GNSS RTK Professionnel</h3>
                         <p>GPS • GLONASS • BeiDou</p>
-                        <a href="pages/topographie.html" class="service-link">Demander un levé →</a>
+                        <a href="pages/topographie.html" class="service-link" data-lang="request_survey">Demander un levé →</a>
                         <h2>0.1 π</h2>
-                        <button class="hero-btn" onclick="buy('GNSS RTK',0.1)" data-lang="buy_btn">Acheter</button>
+                        <button class="hero-btn" onclick="buy('GNSS RTK',0.1)" data-lang="buy_btn">Acheter avec Pi</button>
                     </div>
 
                     <div class="service-card">
                         <img src="assets/topographie/station-totale.jpg" class="product-image" alt="Station Totale">
                         <h3>Station Totale</h3>
                         <p>Haute précision</p>
-                        <a href="pages/topographie.html" class="service-link">Demander un levé →</a>
+                        <a href="pages/topographie.html" class="service-link" data-lang="request_survey">Demander un levé →</a>
                         <h2>0.01 π</h2>
-                        <button class="hero-btn" onclick="buy('Station Totale',0.01)" data-lang="buy_btn">Acheter</button>
+                        <button class="hero-btn" onclick="buy('Station Totale',0.01)" data-lang="buy_btn">Acheter avec Pi</button>
                     </div>
                 </div>
             </section>
 
             <section id="construction">
-                <h2>🏗️ Construction</h2>
+                <h2 data-lang="construction_title">🏗️ Construction</h2>
                 <div class="products-grid">
                     <div class="service-card">
                         <img src="assets/construction/betonniere.jpg" class="product-image" alt="Bétonnière">
                         <h3>Bétonnière Professionnelle</h3>
                         <p>Matériel de chantier & BTP</p>
-                        <a href="pages/construction.html" class="service-link">Voir les projets →</a>
+                        <a href="pages/construction.html" class="service-link" data-lang="view_projects">Voir les projets →</a>
                         <h2>0.2 π</h2>
-                        <button class="hero-btn" onclick="buy('Bétonnière',0.2)" data-lang="buy_btn">Acheter</button>
+                        <button class="hero-btn" onclick="buy('Bétonnière',0.2)" data-lang="buy_btn">Acheter avec Pi</button>
                     </div>
                 </div>
             </section>
@@ -198,8 +198,8 @@
         ========================================== -->
         <section class="popular-products" id="popularSection">
             <div class="section-header">
-                <h2>🔥 Opportunités Populaires</h2>
-                <a href="pages/marketplace.html" class="see-all">Tout voir →</a>
+                <h2 data-lang="popular_title">🔥 Opportunités Populaires</h2>
+                <a href="pages/marketplace.html" class="see-all" data-lang="see_all">Tout voir →</a>
             </div>
 
             <div class="products-grid" id="popularProductsGrid">
@@ -213,7 +213,7 @@
         STATISTIQUES
         ========================================== -->
         <section class="stats">
-            <h2>📊 Statistiques de la plateforme</h2>
+            <h2 data-lang="stats_title">📊 Statistiques de la plateforme</h2>
             <div class="stats-grid">
                 <div class="stat-card">
                     <span class="stat-icon">👥</span>
@@ -261,7 +261,7 @@
         ACTIONS RAPIDES
         ========================================== -->
         <section class="quick-actions">
-            <h2>⚡ Actions rapides</h2>
+            <h2 data-lang="quick_actions">⚡ Actions rapides</h2>
             <div class="actions-grid">
                 <a href="pages/vendor.html" class="action-btn">➕ Ajouter un produit</a>
                 <a href="pages/immobilier.html" class="action-btn">🏡 Publier un bien</a>
@@ -275,12 +275,11 @@
         MARKETPLACE PI (Dynamique via Supabase)
         ========================================== -->
         <section class="popular-products">
-            <h2>🛒 Marketplace Pi</h2>
+            <h2 data-lang="marketplace">🛒 Marketplace Pi</h2>
             <div class="section-header">
-                <a href="pages/marketplace.html" class="see-all">Voir tout →</a>
+                <a href="pages/marketplace.html" class="see-all" data-lang="see_all">Voir tout →</a>
             </div>
 
-            <!-- Conteneur ciblé par js/marketplace.js -->
             <div class="products-grid" id="marketplaceContainer">
                 <div class="product-card-placeholder">
                     Chargement des produits en cours...
@@ -292,19 +291,19 @@
         PANIER
         ========================================== -->
         <section class="quick-actions">
-            <h2>🛒 Mon Panier</h2>
+            <h2 data-lang="cart_title">🛒 Mon Panier</h2>
             <div id="cartList">
                 <p>Votre panier est vide.</p>
             </div>
             <h3>Total : <span id="cartTotal">0 π</span></h3>
-            <button class="hero-btn" onclick="checkout()">Payer avec Pi</button>
+            <button class="hero-btn" onclick="checkout()" data-lang="buy_btn">Payer avec Pi</button>
         </section>
 
         <!-- ==========================================
         FAVORIS
         ========================================== -->
         <section class="popular-products">
-            <h2>❤️ Mes Favoris</h2>
+            <h2 data-lang="favorites_title">❤️ Mes Favoris</h2>
             <div class="products-grid" id="favoriteList">
                 <p>Aucun favori.</p>
             </div>
@@ -314,7 +313,7 @@
         DERNIERS PAIEMENTS
         ========================================== -->
         <section class="stats">
-            <h2>💳 Derniers Paiements</h2>
+            <h2 data-lang="payments_title">💳 Derniers Paiements</h2>
             <table>
                 <thead>
                     <tr>
@@ -336,7 +335,7 @@
         ACTUALITÉS
         ========================================== -->
         <section class="ecosystem-news">
-            <h2>📢 Actualités ARASHI</h2>
+            <h2 data-lang="news_title">📢 Actualités ARASHI</h2>
             <div class="news-grid">
                 <div class="news-card">
                     <h3>🪙 Pi Network</h3>
@@ -354,10 +353,9 @@
         </section>
 
         <!-- ==========================================
-        FOOTER (UNIQUE ET PROPRE)
+        FOOTER
         ========================================== -->
         <footer style="padding: 20px; text-align: center; border-top: 1px solid #334e68; margin-top: 30px;">
-            <!-- Sélecteur de Langue (Footer) -->
             <div class="lang-selector" style="max-width: 200px; margin: 0 auto 15px auto;">
                 <label for="footerLanguageSelect" style="font-size: 0.85em; color: #888; display: block; margin-bottom: 5px;">🌐 Langue / Language</label>
                 <select id="footerLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 6px 10px; border-radius: 5px; background: #1a2a3a; color: white; border: 1px solid #334e68; cursor: pointer;">
@@ -406,5 +404,4 @@
 
 </body>
 
-                </html>
-                            
+</html>
