@@ -28,20 +28,43 @@
         </div>
 
         <nav>
-            <a href="index.html" class="active">🏠 Accueil</a>
-            <a href="pages/dashboard.html">📊 Dashboard</a>
-            <a href="pages/immobilier.html">🏡 Immobilier</a>
+
+<!-- ==========================================
+MENU LATÉRAL (SIDEBAR) AVEC SÉLECTEUR DE LANGUE
+========================================== -->
+<nav class="sidebar" style="padding: 15px; background: #0f172a; color: white;">
+    <!-- Liens de Navigation -->
+    <a href="index.html" data-lang="home" style="display: block; padding: 10px; color: white; text-decoration: none;">🏠 Accueil</a>
+    <a href="pages/dashboard.html" data-lang="dashboard" style="display: block; padding: 10px; color: white; text-decoration: none;">📊 Dashboard</a>
+    <a href="pages/immobilier.html" data-lang="realestate" style="display: block; padding: 10px; color: white; text-decoration: none;">🏡 Immobilier</a>
+    <a href="pages/parcelles.html" data-lang="plots" style="display: block; padding: 10px; color: white; text-decoration: none;">📍 Parcelles</a>
+    <a href="pages/marketplace.html" data-lang="marketplace" style="display: block; padding: 10px; color: white; text-decoration: none;">🛒 Marketplace</a>
+    <a href="pages/vendor.html" data-lang="vendor" style="display: block; padding: 10px; color: white; text-decoration: none;">🛍️ Vendor Center</a>
+    <a href="pages/paiement.html" data-lang="payment" style="display: block; padding: 10px; color: white; text-decoration: none;">💳 Paiement Pi</a>
+    <a href="pages/admin.html" data-lang="admin" style="display: block; padding: 10px; color: white; text-decoration: none;">👑 Admin</a>
+
+<a href="index.html" class="active">🏠 Accueil</a>
+            
+            
             <a href="pages/topographie.html">📐 Topographie</a>
             <a href="pages/construction.html">🏗️ Construction</a>
             <a href="pages/materiaux.html">🧱 Matériaux</a>
-            <a href="pages/marketplace.html">🛒 Marketplace</a>
-            <a href="pages/vendor.html">🛍️ Vendor Center</a>
+        
             <a href="pages/orders.html">📦 Commandes</a>
             <a href="pages/payments.html">💳 Paiements Pi</a>
             <a href="pages/profile.html">👤 Profil</a>
             <a href="pages/settings.html">⚙️ Paramètres</a>
-            <a href="pages/admin.html">👑 Admin</a>
-        </nav>
+    
+    <!-- Sélecteur de Langue (Dans le menu) -->
+    <div class="lang-selector" style="padding: 12px 10px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.15); background: #1e293b; border-radius: 6px;">
+        <label for="sidebarLanguageSelect" style="font-size: 0.85em; color: #94a3b8; display: block; margin-bottom: 6px;">🌐 Langue / Language</label>
+        <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 8px; border-radius: 5px; background: #0f172a; color: white; border: 1px solid #334e68; cursor: pointer; font-size: 0.9em;">
+            <option value="fr">🇫🇷 Français</option>
+            <option value="en">🇬🇧 English</option>
+        </select>
+    </div>
+</nav>
+                  
     </aside>
 
     <div class="content">
