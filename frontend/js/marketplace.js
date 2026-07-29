@@ -9,27 +9,6 @@ import { setLanguage } from './lang.js';
 const SUPABASE_URL = "https://cjmunzphzqazivbkgrdq.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_-7GJRL8TW81oHvjt-N17ZQ_OS8qD-cu";
 
-/**
- * Reconstruit l'URL complète Supabase Storage si nécessaire
- */
-function resolveImageUrl(rawPath) {
-    if (!rawPath) return 'https://via.placeholder.com/300x200?text=Pas+d+image';
-
-    let path = rawPath.trim();
-
-    // Si c'est déjà une URL HTTP/HTTPS complète
-    if (path.toLowerCase().startsWith('http://') || path.toLowerCase().startsWith('https://')) {
-        return path.replace(/^https?:\/\//i, 'https://');
-    }
-
-    // Si c'est une image encodée en base64
-    if (path.startsWith('data:')) return path;
-
-    // Si c'est un nom de fichier simple ou un chemin relatif dans le bucket products
-    const cleanPath = path.replace(/^\//, '');
-    return `${SUPABASE_URL}/storage/v1/object/public/products/${cleanPath}`;
-}
-
 export async function loadMarketplaceItems() {
     const container = document.getElementById("marketplaceContainer");
     if (!container) return;
@@ -42,7 +21,7 @@ export async function loadMarketplaceItems() {
             }
         });
 
-        if (!response.ok) throw new Error("Erreur de récupération des données Supabase.");
+        if (!response.ok) throw new Error("Erreur Supabase");
 
         const items = await response.json();
         container.innerHTML = "";
@@ -54,9 +33,18 @@ export async function loadMarketplaceItems() {
         }
 
         items.forEach(item => {
-            // Extraction de l'image quelle que soit la colonne utilisée
-            const rawPath = item.image_jpg || item.image_url || item.photo || '';
-            const imageSrc = resolveImageUrl(rawPath);
+            // Nettoyage de l'URL issue de la base de données
+            let imageSrc = (item.image_url || item.image_jpg || item.photo || '').trim();
+
+            // Correction automatique de la majuscule "Https://" si présente dans Supabase
+            if (imageSrc.startsWith('Https://')) {
+                imageSrc = imageSrc.replace('Https://', 'https://');
+            }
+
+            // Image de secours si la case est vide dans Supabase
+            if (!imageSrc) {
+                imageSrc = 'https://via.placeholder.com/300x200?text=Image+Non+Disponible';
+            }
 
             const price = item.price_pi || item.price || 0;
             const title = item.title || 'Produit ARASHI';
@@ -66,7 +54,7 @@ export async function loadMarketplaceItems() {
             card.className = "property-card service-card";
             card.style.marginBottom = "20px";
             card.innerHTML = `
-                <img src="${encodeURI(imageSrc)}" 
+                <img src="${imageSrc}" 
                      alt="${title}" 
                      class="property-img product-image"
                      style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; display: block;"
