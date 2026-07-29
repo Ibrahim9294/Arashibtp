@@ -6,17 +6,15 @@
 import { createPiPayment } from './pi-payments.js';
 import { setLanguage } from './lang.js';
 
-// URL Supabase
+// Configuration Supabase
 const SUPABASE_URL = "https://cjmunzphzqazivbkgrdq.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_-7GJRL8TW81oHvjt-N17ZQ_OS8qD-cu";
 
-// Fonction d'affichage des biens et produits
 export async function loadMarketplaceItems() {
     const container = document.getElementById("marketplaceContainer");
     if (!container) return;
 
     try {
-        // Chargement depuis l'API REST de Supabase (Table properties)
         const response = await fetch(`${SUPABASE_URL}/rest/v1/properties?select=*`, {
             headers: {
                 "apikey": SUPABASE_ANON_KEY,
@@ -24,13 +22,9 @@ export async function loadMarketplaceItems() {
             }
         });
 
-        if (!response.ok) {
-            throw new Error("Erreur de récupération des données Supabase.");
-        }
+        if (!response.ok) throw new Error("Erreur de récupération des données Supabase.");
 
         const items = await response.json();
-
-        // Nettoyage du conteneur
         container.innerHTML = "";
 
         if (!items || items.length === 0) {
@@ -39,21 +33,25 @@ export async function loadMarketplaceItems() {
             return;
         }
 
-        // Génération des cartes de biens/produits
         items.forEach(item => {
-            // 1. Récupération flexible de l'image (image_jpg ou image_url)
+            // 1. Récupération brute du chemin
             let rawPath = (item.image_jpg || item.image_url || '').trim();
-            let imageSrc = 'https://via.placeholder.com/300x200?text=ARASHI+BTP';
+            let imageSrc = '';
 
+            // 2. Traitement rigoureux des majuscules et espaces dans l'URL Supabase
             if (rawPath) {
-                if (rawPath.toLowerCase().startsWith('http://') || rawPath.toLowerCase().startsWith('https://') || rawPath.startsWith('data:')) {
+                if (rawPath.toLowerCase().startsWith('http://') || rawPath.toLowerCase().startsWith('https://')) {
+                    // Forcer 'https://' en minuscules si l'utilisateur a écrit 'Https://'
+                    imageSrc = rawPath.replace(/^https?:\/\//i, 'https://');
+                } else if (rawPath.startsWith('data:')) {
                     imageSrc = rawPath;
                 } else {
                     imageSrc = rawPath.startsWith('../') ? rawPath : `../${rawPath.replace(/^\//, '')}`;
                 }
+            } else {
+                imageSrc = 'https://via.placeholder.com/300x200?text=Image+Indisponible';
             }
 
-            // 2. Récupération du prix et des détails
             const price = item.price_pi || item.price || 0;
             const title = item.title || 'Produit ARASHI';
             const description = item.description || 'Projet certifié par ARASHI.';
@@ -66,7 +64,7 @@ export async function loadMarketplaceItems() {
                      alt="${title}" 
                      class="property-img product-image"
                      style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px;"
-                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500';">
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Erreur+Chargement+Image';">
                 <div class="property-info" style="padding: 15px 0;">
                     <h3>${title}</h3>
                     <p class="description">${description}</p>
@@ -83,10 +81,7 @@ export async function loadMarketplaceItems() {
             container.appendChild(card);
         });
 
-        // Attachement des événements de paiement sur les nouveaux boutons
         attachPaymentEvents();
-
-        // Application automatique de la langue sur les éléments dynamiques
         applyCurrentLanguage();
 
     } catch (error) {
@@ -95,13 +90,11 @@ export async function loadMarketplaceItems() {
     }
 }
 
-// Fonction auxiliaire pour réappliquer la langue enregistrée
 function applyCurrentLanguage() {
     const currentLang = localStorage.getItem("arashi_lang") || "fr";
     setLanguage(currentLang);
 }
 
-// Attachement des clics sur les boutons "Acheter avec Pi"
 function attachPaymentEvents() {
     const buyButtons = document.querySelectorAll(".btn-buy-pi");
     buyButtons.forEach(button => {
@@ -111,13 +104,11 @@ function attachPaymentEvents() {
             const price = btn.getAttribute("data-price");
             const title = btn.getAttribute("data-title");
 
-            console.log(`Lancement du paiement Pi pour : ${title} (${price} Pi)`);
             createPiPayment(price, `Achat ARASHI: ${title}`, productId);
         });
     });
 }
 
-// Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
     loadMarketplaceItems();
 });
