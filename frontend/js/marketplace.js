@@ -1,6 +1,6 @@
 // =====================================
 // Entreprise ARASHI v3.0
-// js/marketplace.js - Catalogue & Achats
+// js/marketplace.js - Catalogue Multi-pages
 // =====================================
 
 import { createPiPayment } from './pi-payments.js';
@@ -9,31 +9,29 @@ import { setLanguage } from './lang.js';
 const SUPABASE_URL = "https://cjmunzphzqazivbkgrdq.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_-7GJRL8TW81oHvjt-N17ZQ_OS8qD-cu";
 
-/**
- * Fonction universelle de traitement des URLs d'images (v2 + v3.0 Supabase)
- */
 function getValidImageUrl(rawPath) {
     if (!rawPath) return 'https://via.placeholder.com/300x200?text=Image+ARASHI';
-
+    
     let url = rawPath.trim();
-
-    // 1. Si c'est une URL Web complète (Supabase, ImgBB, etc.)
+    
     if (url.toLowerCase().startsWith('http://') || url.toLowerCase().startsWith('https://')) {
-        // Corriger 'Https://' en 'https://'
         return url.replace(/^https?:\/\//i, 'https://');
     }
-
-    // 2. Si c'est une image locale de la v2 (ex: assets/villas/photo.jpg)
-    // On ajoute '/' au début pour repartir de la racine absolue du site
+    
     if (url.startsWith('assets/') || url.startsWith('images/')) {
         return '/' + url;
     }
-
+    
     return url;
 }
 
 export async function loadMarketplaceItems() {
-    const container = document.getElementById("marketplaceContainer");
+    // 📍 Prise en compte de tous les IDs utilisés sur vos différentes pages
+    const container = document.getElementById("fullProductsGrid") || 
+                      document.getElementById("marketplaceContainer") || 
+                      document.getElementById("immobilierContainer") ||
+                      document.getElementById("propertiesContainer");
+
     if (!container) return;
 
     try {
@@ -44,7 +42,7 @@ export async function loadMarketplaceItems() {
             }
         });
 
-        if (!response.ok) throw new Error("Erreur de récupération des données Supabase.");
+        if (!response.ok) throw new Error("Erreur de réponse Supabase API.");
 
         const items = await response.json();
         container.innerHTML = "";
@@ -56,13 +54,12 @@ export async function loadMarketplaceItems() {
         }
 
         items.forEach(item => {
-            // Lecture flexible des colonnes d'images
             const rawPath = item.image_url || item.image_jpg || item.photo || '';
             const imageSrc = getValidImageUrl(rawPath);
 
             const price = item.price_pi || item.price || 0;
-            const title = item.title || 'Service ARASHI';
-            const description = item.description || 'Prestation certifiée par Entreprise ARASHI.';
+            const title = item.title || 'Prestation ARASHI';
+            const description = item.description || 'Bien certifié par l\'Entreprise ARASHI.';
 
             const card = document.createElement("div");
             card.className = "property-card service-card";
@@ -73,7 +70,7 @@ export async function loadMarketplaceItems() {
                      class="property-img product-image"
                      style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; display: block;"
                      loading="lazy"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Erreur+Image';">
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Image+Indisponible';">
                 <div class="property-info" style="padding: 15px 0;">
                     <h3>${title}</h3>
                     <p class="description">${description}</p>
@@ -94,7 +91,7 @@ export async function loadMarketplaceItems() {
         applyCurrentLanguage();
 
     } catch (error) {
-        console.error("Erreur Marketplace :", error);
+        console.error("Erreur de chargement Marketplace :", error);
         container.innerHTML = `<p style="text-align:center; color:#e74c3c;">Impossible de charger les annonces pour le moment.</p>`;
     }
 }
