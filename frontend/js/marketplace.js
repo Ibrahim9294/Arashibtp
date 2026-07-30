@@ -9,6 +9,29 @@ import { setLanguage } from './lang.js';
 const SUPABASE_URL = "https://cjmunzphzqazivbkgrdq.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_-7GJRL8TW81oHvjt-N17ZQ_OS8qD-cu";
 
+/**
+ * Fonction universelle de traitement des URLs d'images (v2 + v3.0 Supabase)
+ */
+function getValidImageUrl(rawPath) {
+    if (!rawPath) return 'https://via.placeholder.com/300x200?text=Image+ARASHI';
+
+    let url = rawPath.trim();
+
+    // 1. Si c'est une URL Web complète (Supabase, ImgBB, etc.)
+    if (url.toLowerCase().startsWith('http://') || url.toLowerCase().startsWith('https://')) {
+        // Corriger 'Https://' en 'https://'
+        return url.replace(/^https?:\/\//i, 'https://');
+    }
+
+    // 2. Si c'est une image locale de la v2 (ex: assets/villas/photo.jpg)
+    // On ajoute '/' au début pour repartir de la racine absolue du site
+    if (url.startsWith('assets/') || url.startsWith('images/')) {
+        return '/' + url;
+    }
+
+    return url;
+}
+
 export async function loadMarketplaceItems() {
     const container = document.getElementById("marketplaceContainer");
     if (!container) return;
@@ -21,7 +44,7 @@ export async function loadMarketplaceItems() {
             }
         });
 
-        if (!response.ok) throw new Error("Erreur Supabase");
+        if (!response.ok) throw new Error("Erreur de récupération des données Supabase.");
 
         const items = await response.json();
         container.innerHTML = "";
@@ -33,22 +56,13 @@ export async function loadMarketplaceItems() {
         }
 
         items.forEach(item => {
-            // Nettoyage de l'URL issue de la base de données
-            let imageSrc = (item.image_url || item.image_jpg || item.photo || '').trim();
-
-            // Correction automatique de la majuscule "Https://" si présente dans Supabase
-            if (imageSrc.startsWith('Https://')) {
-                imageSrc = imageSrc.replace('Https://', 'https://');
-            }
-
-            // Image de secours si la case est vide dans Supabase
-            if (!imageSrc) {
-                imageSrc = 'https://via.placeholder.com/300x200?text=Image+Non+Disponible';
-            }
+            // Lecture flexible des colonnes d'images
+            const rawPath = item.image_url || item.image_jpg || item.photo || '';
+            const imageSrc = getValidImageUrl(rawPath);
 
             const price = item.price_pi || item.price || 0;
-            const title = item.title || 'Produit ARASHI';
-            const description = item.description || 'Projet certifié par ARASHI.';
+            const title = item.title || 'Service ARASHI';
+            const description = item.description || 'Prestation certifiée par Entreprise ARASHI.';
 
             const card = document.createElement("div");
             card.className = "property-card service-card";
@@ -58,7 +72,8 @@ export async function loadMarketplaceItems() {
                      alt="${title}" 
                      class="property-img product-image"
                      style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; display: block;"
-                     loading="lazy">
+                     loading="lazy"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Erreur+Image';">
                 <div class="property-info" style="padding: 15px 0;">
                     <h3>${title}</h3>
                     <p class="description">${description}</p>
