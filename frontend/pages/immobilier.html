@@ -35,14 +35,15 @@
         <header class="topbar">
             <h1>🏡 Offres Immobilières Pi Network</h1>
             <div class="auth-area">
-                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
-                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+                <button id="piLogin" class="btn btn-primary" data-lang="login_pi">🪙 Connexion Pi</button>
+                <span id="userStatus" style="margin-left:15px;font-weight:bold;" data-lang="not_connected">Non connecté</span>
+                <button id="logoutBtn" class="btn btn-secondary" style="display:none; margin-left:10px;" data-lang="logout">Déconnexion</button>
             </div>
         </header>
 
         <section class="hero" style="background: linear-gradient(135deg, #2e7d32 0%, #0B3D91 100%);">
             <h2>Terrains, Parcels & Maisons</h2>
-            <p>Découvrez nos opportunités foncières certifiées payables directement en Pi au Niger.</p>
+            <p data-lang="welcome_sub">Construction • Immobilier • Topographie • Marketplace • Paiements Pi Network</p>
         </section>
 
         <section class="popular-products" style="margin-top: 20px;">
@@ -50,10 +51,10 @@
                 <h2>🏡 Catalogue des biens immobiliers</h2>
             </div>
 
-            <!-- Conteneur mis à jour avec id="marketplaceContainer" -->
+            <!-- Conteneur mis à jour avec id="marketplaceContainer" et traduction du placeholder -->
             <div class="products-grid" id="marketplaceContainer">
-                <div class="product-card-placeholder" style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
-                    <p>⏳ Chargement des biens immobiliers...</p>
+                <div class="product-card-placeholder" data-lang="loading_products" style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
+                    ⏳ Chargement des biens immobiliers...
                 </div>
             </div>
         </section>
