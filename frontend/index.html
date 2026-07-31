@@ -38,12 +38,12 @@
             <a href="pages/paiement.html" data-lang="payment" style="display: block; padding: 10px; color: white; text-decoration: none;">💳 Paiement Pi</a>
             <a href="pages/admin.html" data-lang="admin" style="display: block; padding: 10px; color: white; text-decoration: none;">👑 Admin</a>
             
-            <!-- ⚡ Lien Core Team Space -->
-            <a href="pages/core-team-space.html" style="display: flex; align-items: center; gap: 8px; padding: 10px; color: var(--secondary-color); font-weight: 600; text-decoration: none; border: 1px dashed var(--secondary-color); border-radius: 6px; margin-top: 15px; background: rgba(244, 180, 0, 0.05);" data-lang="core_team">
+            <!-- Lien Core Team Space -->
+            <a href="pages/core-team-space.html" data-lang="core_team" style="display: flex; align-items: center; gap: 8px; padding: 10px; color: var(--secondary-color, #f4b400); font-weight: 600; text-decoration: none; border: 1px dashed var(--secondary-color, #f4b400); border-radius: 6px; margin-top: 15px; background: rgba(244, 180, 0, 0.05);">
                 ⚡ Core Team Space
             </a>
 
-            <!-- Sélecteur de Langue Quadri-langue (FR, EN, HA, AR) -->
+            <!-- Sélecteur de Langue Quadri-langue (Sidebar) -->
             <div class="lang-selector" style="padding: 12px 10px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.15); background: #1e293b; border-radius: 6px;">
                 <label for="sidebarLanguageSelect" style="font-size: 0.85em; color: #94a3b8; display: block; margin-bottom: 6px;">🌐 Langue / Yare / اللغة</label>
                 <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 8px; border-radius: 5px; background: #0f172a; color: white; border: 1px solid #334e68; cursor: pointer; font-size: 0.9em;">
@@ -82,12 +82,12 @@
             <p data-lang="welcome_sub">Construction • Immobilier • Topographie • Marketplace • Paiements Pi Network</p>
 
             <div class="hero-tags">
-                <span>🏗️ Construction</span>
-                <span>🏡 Immobilier</span>
-                <span>📐 Topographie</span>
-                <span>🛒 Marketplace</span>
+                <span data-lang="construction">🏗️ Construction</span>
+                <span data-lang="realestate">🏡 Immobilier</span>
+                <span data-lang="topography">📐 Topographie</span>
+                <span data-lang="marketplace">🛒 Marketplace</span>
                 <span>🪙 Pi Network</span>
-                <span style="border: 1px solid var(--secondary-color); color: var(--secondary-color);">✨ Verified Core Team App</span>
+                <span style="border: 1px solid var(--secondary-color, #f4b400); color: var(--secondary-color, #f4b400);">✨ Verified Core Team App</span>
             </div>
 
             <button class="hero-btn" onclick="location.href='pages/marketplace.html'" data-lang="explore_btn">
@@ -95,32 +95,36 @@
             </button>
         </section>
 
-        <!-- RECHERCHE -->
+        <!-- ==========================================
+        RECHERCHE
+        ========================================== -->
         <section class="search-container">
             <div class="search-box">
                 <input type="search" id="globalSearch" data-lang="search" placeholder="🔎 Rechercher des villas, récepteurs GNSS, ciment, chantiers...">
             </div>
         </section>
 
-        <!-- TABLEAU DE BORD RAPIDE -->
+        <!-- ==========================================
+        TABLEAU DE BORD RAPIDE
+        ========================================== -->
         <section class="upper-dashboard">
-            <div class="upper-item">
+            <div class="upper-item" onclick="location.href='pages/immobilier.html'">
                 <div class="icon">🏠</div>
                 <div class="label" data-lang="realestate">Immobilier</div>
             </div>
-            <div class="upper-item">
+            <div class="upper-item" onclick="location.href='pages/marketplace.html'">
                 <div class="icon">🛒</div>
                 <div class="label" data-lang="marketplace">Marketplace</div>
             </div>
-            <div class="upper-item">
+            <div class="upper-item" onclick="location.href='pages/topographie.html'">
                 <div class="icon">📐</div>
                 <div class="label" data-lang="topography">Topographie</div>
             </div>
-            <div class="upper-item">
+            <div class="upper-item" onclick="location.href='pages/construction.html'">
                 <div class="icon">🏗️</div>
                 <div class="label" data-lang="construction">Construction</div>
             </div>
-            <div class="upper-item">
+            <div class="upper-item" onclick="location.href='pages/marketplace.html'">
                 <div class="icon">🧱</div>
                 <div class="label" data-lang="materials">Matériaux</div>
             </div>
@@ -130,20 +134,25 @@
             </div>
         </section>
 
-        <!-- NOURRICE CORE TEAM SPACE -->
-        <section class="core-team-space" style="margin: 20px 40px; padding: 20px; background: #ffffff; border-radius: var(--radius); box-shadow: var(--shadow); border-left: 5px solid var(--secondary-color);">
+        <!-- ==========================================
+        ⚡ CORE TEAM SPACE (SECTION SPÉCIALE DÉDIÉE)
+        ========================================== -->
+        <section class="core-team-space" style="margin: 20px 0; padding: 20px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid var(--secondary-color, #f4b400);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                 <div>
-                    <h3 style="color: var(--primary-color); margin-bottom: 5px;" data-lang="core_team">⚡ Pi Core Team Space</h3>
-                    <p style="font-size: 13px; color: var(--text-muted);">Accès aux métadonnées, à la vérification Pi App Engine et au statut Mainnet.</p>
+                    <h3 style="color: #0f172a; margin-bottom: 5px; font-size: 1.2rem;" data-lang="core_team">⚡ Pi Core Team Space</h3>
+                    <p style="font-size: 13px; color: #64748b; margin: 0;">Centre de vérification de l'application Pi App Engine, métadonnées du Mainnet et statut du SDK.</p>
                 </div>
-                <div>
-                    <span class="badge badge-success" style="font-size: 13px; padding: 8px 15px;">🟢 Pi App Verified</span>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span class="badge" style="font-size: 12px; padding: 6px 12px; background: #e2e8f0; color: #334155; border-radius: 20px; font-weight: 600;">SDK v2.0</span>
+                    <span class="badge" style="font-size: 12px; padding: 6px 12px; background: #10b981; color: white; border-radius: 20px; font-weight: 600;">🟢 Verified App</span>
                 </div>
             </div>
         </section>
 
-        <!-- NOS DOMAINES D'ACTIVITÉ -->
+        <!-- ==========================================
+        NOS DOMAINES D'ACTIVITÉ
+        ========================================== -->
         <section class="main-services">
             <h2>💼 Nos Domaines d'Activité</h2>
 
@@ -151,33 +160,250 @@
                 <h2 data-lang="realestate">🏡 Immobilier ARASHI</h2>
                 <div class="products-grid">
                     <div class="service-card">
-                        <img src="assets/villas/villa-moderne.jpg" class="product-image" alt="Villa Moderne" style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px;">
-                        <h3 style="margin-top: 10px;">Villa Moderne Niamey</h3>
+                        <img src="assets/villas/villa-moderne.jpg" class="product-image" alt="Villa Moderne">
+                        <h3>Villa Moderne Niamey</h3>
                         <p>5 chambres • Piscine • Jardin</p>
                         <a href="pages/immobilier.html" class="service-link">Consulter les biens →</a>
-                        <h2 style="margin-top: 10px; color: var(--secondary-color);">2 π</h2>
+                        <h2 style="color: var(--secondary-color, #f4b400);">2 π</h2>
+                        <button class="hero-btn" onclick="buy('Villa Moderne Niamey',2)">Acheter avec Pi</button>
+                    </div>
+
+                    <div class="service-card">
+                        <img src="assets/terrains/terrain.jpg" class="product-image" alt="Terrain">
+                        <h3>Terrain Résidentiel</h3>
+                        <p>Lot résidentiel sécurisé</p>
+                        <a href="pages/immobilier.html" class="service-link">Consulter les biens →</a>
+                        <h2 style="color: var(--secondary-color, #f4b400);">0.5 π</h2>
+                        <button class="hero-btn" onclick="buy('Terrain Résidentiel',0.5)">Acheter avec Pi</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="topographie">
+                <h2 data-lang="topography">📐 Topographie</h2>
+                <div class="products-grid">
+                    <div class="service-card">
+                        <img src="assets/topographie/gnss-rtk.jpg" class="product-image" alt="GNSS">
+                        <h3>GNSS RTK Professionnel</h3>
+                        <p>GPS • GLONASS • BeiDou</p>
+                        <a href="pages/topographie.html" class="service-link">Demander un levé →</a>
+                        <h2 style="color: var(--secondary-color, #f4b400);">0.1 π</h2>
+                        <button class="hero-btn" onclick="buy('GNSS RTK',0.1)">Acheter</button>
+                    </div>
+
+                    <div class="service-card">
+                        <img src="assets/topographie/station-totale.jpg" class="product-image" alt="Station Totale">
+                        <h3>Station Totale</h3>
+                        <p>Haute précision</p>
+                        <a href="pages/topographie.html" class="service-link">Demander un levé →</a>
+                        <h2 style="color: var(--secondary-color, #f4b400);">0.01 π</h2>
+                        <button class="hero-btn" onclick="buy('Station Totale',0.01)">Acheter</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="construction">
+                <h2 data-lang="construction">🏗️ Construction</h2>
+                <div class="products-grid">
+                    <div class="service-card">
+                        <img src="assets/construction/betonniere.jpg" class="product-image" alt="Bétonnière">
+                        <h3>Bétonnière Professionnelle</h3>
+                        <p>Matériel de chantier & BTP</p>
+                        <a href="pages/construction.html" class="service-link">Voir les projets →</a>
+                        <h2 style="color: var(--secondary-color, #f4b400);">0.2 π</h2>
+                        <button class="hero-btn" onclick="buy('Bétonnière',0.2)">Acheter</button>
                     </div>
                 </div>
             </section>
         </section>
 
-        <!-- FOOTER -->
-        <footer>
-            <p>© 2026 Entreprise ARASHI v3.0 - Tous droits réservés.</p>
+        <!-- ==========================================
+        OPPORTUNITÉS POPULAIRES
+        ========================================== -->
+        <section class="popular-products" id="popularSection">
+            <div class="section-header">
+                <h2>🔥 Opportunités Populaires</h2>
+                <a href="pages/marketplace.html" class="see-all">Tout voir →</a>
+            </div>
+
+            <div class="products-grid" id="popularProductsGrid">
+                <div class="product-card-placeholder">
+                    <p>Chargement des opportunités en cours...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+        STATISTIQUES
+        ========================================== -->
+        <section class="stats">
+            <h2>📊 Statistiques de la plateforme</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-icon">👥</span>
+                    <div>
+                        <strong id="totalUsers">0</strong>
+                        <p>Membres</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-icon">🏪</span>
+                    <div>
+                        <strong id="totalVendors">0</strong>
+                        <p>Vendeurs</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-icon">🏠</span>
+                    <div>
+                        <strong id="totalProperties">0</strong>
+                        <p>Biens</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-icon">📦</span>
+                    <div>
+                        <strong id="dashboardProducts">0</strong>
+                        <p>Produits</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-icon">💳</span>
+                    <div>
+                        <strong id="dashboardRevenue">0 π</strong>
+                        <p>Paiements Pi</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+        ACTIONS RAPIDES
+        ========================================== -->
+        <section class="quick-actions">
+            <h2>⚡ Actions rapides</h2>
+            <div class="actions-grid">
+                <a href="pages/vendor.html" class="action-btn">➕ Ajouter un produit</a>
+                <a href="pages/immobilier.html" class="action-btn">🏡 Publier un bien</a>
+                <a href="pages/topographie.html" class="action-btn">📐 Nouveau levé</a>
+                <a href="pages/construction.html" class="action-btn">🏗️ Nouveau chantier</a>
+                <a href="pages/marketplace.html" class="action-btn highlight">🛒 Acheter avec Pi</a>
+            </div>
+        </section>
+
+        <!-- ==========================================
+        MARKETPLACE PI (Dynamique via Supabase)
+        ========================================== -->
+        <section class="popular-products">
+            <h2>🛒 Marketplace Pi</h2>
+            <div class="section-header">
+                <a href="pages/marketplace.html" class="see-all">Voir tout →</a>
+            </div>
+
+            <!-- Conteneur ciblé par js/marketplace.js -->
+            <div class="products-grid" id="marketplaceContainer">
+                <div class="product-card-placeholder">
+                    Chargement des produits en cours...
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+        PANIER
+        ========================================== -->
+        <section class="quick-actions">
+            <h2>🛒 Mon Panier</h2>
+            <div id="cartList">
+                <p>Votre panier est vide.</p>
+            </div>
+            <h3>Total : <span id="cartTotal">0 π</span></h3>
+            <button class="hero-btn" onclick="checkout()">Payer avec Pi</button>
+        </section>
+
+        <!-- ==========================================
+        FAVORIS
+        ========================================== -->
+        <section class="popular-products">
+            <h2>❤️ Mes Favoris</h2>
+            <div class="products-grid" id="favoriteList">
+                <p>Aucun favori.</p>
+            </div>
+        </section>
+
+        <!-- ==========================================
+        DERNIERS PAIEMENTS
+        ========================================== -->
+        <section class="stats">
+            <h2>💳 Derniers Paiements</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="recentPayments">
+                    <tr>
+                        <td colspan="4">Aucun paiement enregistré</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ==========================================
+        ACTUALITÉS
+        ========================================== -->
+        <section class="ecosystem-news">
+            <h2>📢 Actualités ARASHI</h2>
+            <div class="news-grid">
+                <div class="news-card">
+                    <h3>🪙 Pi Network</h3>
+                    <p>Les paiements sont sécurisés grâce au SDK officiel Pi Network.</p>
+                </div>
+                <div class="news-card">
+                    <h3>🏗️ Construction</h3>
+                    <p>Suivez vos projets de construction et vos commandes en temps réel.</p>
+                </div>
+                <div class="news-card">
+                    <h3>🏡 Marketplace Immobilier</h3>
+                    <p>Achetez des terrains, villas et matériaux directement en Pi.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+        FOOTER
+        ========================================== -->
+        <footer style="padding: 20px; text-align: center; border-top: 1px solid #334e68; margin-top: 30px;">
+            <!-- Sélecteur de Langue Quadri-langue (Footer) -->
+            <div class="lang-selector" style="max-width: 220px; margin: 0 auto 15px auto;">
+                <label for="footerLanguageSelect" style="font-size: 0.85em; color: #888; display: block; margin-bottom: 5px;">🌐 Langue / Yare / اللغة</label>
+                <select id="footerLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 6px 10px; border-radius: 5px; background: #1a2a3a; color: white; border: 1px solid #334e68; cursor: pointer;">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="ha">🇳🇬 Haoussa (Hausa)</option>
+                    <option value="ar">🇸🇦 Arabe (العربية)</option>
+                </select>
+            </div>
+
+            <p>© 2026 Entreprise ARASHI</p>
+            <p style="font-size: 0.85em; color: #666;">Powered by Pi Network • Supabase • Render • Vercel</p>
         </footer>
 
     </div>
 
-    <!-- Scripts JavaScript global -->
+    <!-- ==========================================
+    MODULES JS PRINCIPAUX
+    ========================================== -->
     <script type="module" src="js/app.js"></script>
-    <script type="module" src="js/lang.js"></script>
-
-    <script>
-        // Toggle Sidebar Mobile
-        document.getElementById('menuToggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('active');
-        });
-    </script>
-</body>
-
-</html>
+    <script type="module" src="js/marketplace.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
+    <script type="module" src="js/cart.js"></script>
+    
+    <!-- Module de gestion des langues (v3.
