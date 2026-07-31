@@ -1,101 +1,155 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
+
 <head>
-<meta name="referrer" content="no-referrer">
-
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+
     <title>Marketplace | Entreprise ARASHI v3.0</title>
-    <!-- Lien vers le fichier CSS global -->
+    <meta name="description" content="Achetez des matériaux, équipements et biens immobiliers avec Pi Network sur la Marketplace ARASHI.">
+
+    <!-- CSS Global -->
     <link rel="stylesheet" href="../css/style.css">
-    <!-- SDK Pi Network requis pour les transactions -->
+
+    <!-- SDK Officiel Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
+
 <body>
 
-    <!-- Menu Toggle pour mobile -->
-    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
+    <!-- Bouton Toggle Mobile -->
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰ Menu</button>
 
-    <!-- Sidebar : Architecture v3.0 -->
+    <!-- ==========================================
+    SIDEBAR LATÉRALE (STYLE ARASHI PRO)
+    ========================================== -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
-            <h2>ARASHI</h2>
-            <p>v3.0 Marketplace</p>
+            <h2>ARASHI.Pi</h2>
+            <p data-lang="welcome_sub">v3.0 Marketplace</p>
         </div>
-        <nav>
-            <a href="../index.html">🏠 Accueil</a>
-            <a href="dashboard.html">📊 Dashboard</a>
-            <a href="immobilier.html">🏡 Immobilier</a>
-            <a href="topographie.html">📐 Topographie</a>
-            <a href="construction.html">🏗️ Construction</a>
-            <a href="materiaux.html">🧱 Matériaux</a>
-            <a href="marketplace.html" class="active">🛒 Marketplace</a>
-            <a href="vendor.html">🛍️ Vendor Center</a>
+
+        <nav class="sidebar-nav">
+            <span class="menu-title" data-lang="menu_portals">NAVIGATION</span>
+            <a href="../index.html" data-lang="home">🏠 Accueil</a>
+            <a href="dashboard.html" data-lang="dashboard">📊 Dashboard</a>
+            <a href="immobilier.html" data-lang="realestate">🏡 Immobilier</a>
+            <a href="topographie.html" data-lang="topography_title">📐 Topographie</a>
+            <a href="construction.html" data-lang="construction_title">🏗️ Construction</a>
+            <a href="materiaux.html" data-lang="materials_title">🧱 Matériaux</a>
+            <a href="marketplace.html" class="active" data-lang="marketplace">🛒 Marketplace</a>
+            <a href="vendor.html" data-lang="vendor">🛍️ Vendor Center</a>
             <a href="partnership.html">🤝 Partnership</a>
             <a href="orders.html">📦 Mes Commandes</a>
-            <a href="admin.html">👑 Admin</a>
+            <a href="admin.html" data-lang="admin">👑 Admin</a>
             <a href="ai.html">🤖 ARASHI AI</a>
+
+            <!-- Sélecteur de Langue -->
+            <div class="lang-selector">
+                <label for="sidebarLanguageSelect">🌐 Langue / Language</label>
+                <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="ha">🇳🇪 Hausa</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                </select>
+            </div>
         </nav>
     </aside>
 
-    <!-- Contenu Principal -->
+    <!-- ==========================================
+    CONTENU PRINCIPAL
+    ========================================== -->
     <div class="content">
+
+        <!-- HEADER TOPBAR -->
         <header class="topbar">
-            <h1>Marketplace Globale Pi</h1>
+            <h1 data-lang="marketplace">🛒 Marketplace Globale Pi</h1>
+
             <div class="auth-area">
-                <span id="userStatus">🟢 Chargement...</span>
+                <button id="piLogin" class="btn btn-primary" data-lang="login_pi">
+                    🪙 Connexion Pi
+                </button>
+                <span id="userStatus" data-lang="not_connected">🟢 Connexion...</span>
+                <button id="logoutBtn" class="btn btn-danger" style="display:none;" data-lang="logout">
+                    Déconnexion
+                </button>
             </div>
         </header>
 
-        <!-- Section Hero -->
-        <section class="hero" style="background: linear-gradient(135deg, #F4B400 0%, #0B3D91 100%);">
+        <!-- HERO SECTION -->
+        <section class="hero">
             <h2>Le Marché B2B & B2C Pi Network</h2>
             <p>Achetez vos matériaux, équipements et fournitures directement avec votre Wallet Pi auprès de nos vendeurs certifiés.</p>
-        </section>
-
-        <!-- Recherche dédiée aux produits -->
-        <section class="search-container">
-            <div class="search-box">
-                <input type="text" id="marketSearch" placeholder="Rechercher un produit, un matériau, une marque...">
+            <div class="hero-tags">
+                <span>🧱 BTP & Ciment</span>
+                <span>📐 Équipements GNSS</span>
+                <span>🏡 Clé en main</span>
+                <span>🪙 Paiement Sécurisé</span>
             </div>
         </section>
 
-        <!-- Grille des Produits -->
+        <!-- RECHERCHE DÉDIÉE -->
+        <section class="search-container">
+            <div class="search-box">
+                <input type="search" id="marketSearch" data-lang="search" placeholder="🔎 Rechercher un produit, un matériau, une marque...">
+            </div>
+        </section>
+
+        <!-- GRILLE DE PRODUITS (DYNAMIQUE SUPABASE) -->
         <section class="popular-products" style="margin-top: 20px;">
             <div class="section-header">
-                <h2>🛍️ Toutes les offres disponibles</h2>
+                <h2 data-lang="popular_opportunities">🛍️ Toutes les offres disponibles</h2>
             </div>
 
             <div class="products-grid" id="fullProductsGrid">
-                <!-- Les articles de la boutique s'injecteront dynamiquement ici -->
-                <div class="product-card-placeholder">
-                    <p>⏳ Chargement des articles du catalogue de l'Entreprise ARASHI...</p>
+                <!-- Chargement dynamique via JavaScript -->
+                <div class="product-card-placeholder" data-lang="loading_products">
+                    ⏳ Chargement des articles du catalogue de l'Entreprise ARASHI...
                 </div>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer>
+        <!-- FOOTER PROPRE -->
+        <footer style="padding: 30px; text-align: center; border-top: 1px solid var(--border-color); margin-top: 40px;">
+            <div class="lang-selector" style="max-width: 220px; margin: 0 auto 15px auto;">
+                <label for="footerLanguageSelect">🌐 Langue / Language</label>
+                <select id="footerLanguageSelect" onchange="changeLanguage(this.value)">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="ha">🇳🇪 Hausa</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                </select>
+            </div>
             <p>© 2026 Entreprise ARASHI v3.0 - Tous droits réservés.</p>
+            <p style="font-size: 0.8em; color: var(--text-muted);">arashi.pi • Supabase • Pi Network</p>
         </footer>
+
     </div>
 
-    <!-- Script de liaison dynamique pour la Marketplace complète -->
+    <!-- ==========================================
+    SCRIPTS MODULES & SUPABASE (v3.0)
+    ========================================== -->
     <script type="module">
         import { supabase, STORAGE_BUCKET } from '../js/supabase.js';
+        import { setLanguage } from '../js/lang.js';
 
         document.addEventListener("DOMContentLoaded", () => {
             // Affichage de l'utilisateur connecté
             const savedUser = localStorage.getItem("pi_user");
             if (savedUser) {
-                const user = JSON.parse(savedUser);
-                if (document.getElementById("userStatus")) {
-                    document.getElementById("userStatus").innerHTML = `🟢 <strong>@${user.username}</strong>`;
+                try {
+                    const user = JSON.parse(savedUser);
+                    if (document.getElementById("userStatus")) {
+                        document.getElementById("userStatus").innerHTML = `🟢 <strong>@${user.username}</strong>`;
+                    }
+                } catch (e) {
+                    console.error("Erreur de lecture de la session utilisateur");
                 }
             }
 
-            // Charger l'intégralité du catalogue
+            // Chargement dynamique du catalogue
             loadCatalog();
         });
 
@@ -113,19 +167,21 @@
 
                 if (!products || products.length === 0) {
                     gridContainer.innerHTML = `
-                        <div class="product-card-placeholder">
-                            <p>🛍️ Le catalogue est actuellement vide. Revenez très bientôt !</p>
+                        <div class="product-card-placeholder" style="grid-column: 1/-1;">
+                            <p data-lang="no_products">🛍️ Le catalogue est actuellement vide. Revenez très bientôt !</p>
                         </div>`;
+                    applyCurrentLanguage();
                     return;
                 }
 
                 gridContainer.innerHTML = "";
 
                 products.forEach(product => {
-                    let imageUrl = "../assets/images/placeholder.jpg";
+                    let imageUrl = "https://via.placeholder.com/400x200?text=Produit+ARASHI";
+                    
                     if (product.image_url) {
                         if (!product.image_url.startsWith('http')) {
-                            const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(product.image_url);
+                            const { data } = supabase.storage.from(STORAGE_BUCKET || 'arashi_media').getPublicUrl(product.image_url);
                             imageUrl = data.publicUrl;
                         } else {
                             imageUrl = product.image_url;
@@ -133,51 +189,64 @@
                     }
 
                     const card = document.createElement("div");
-                    card.className = "service-card";
-                    card.style.borderTop = "4px solid #F4B400";
+                    card.className = "product-card";
 
-                    const productTitle = product.title || product.name || 'Produit';
-                    const productPrice = product.price_pi || product.price_fcfa || product.price || 0;
-
-                    const priceDisplay = product.price_pi 
-                        ? `🪙 <strong>${product.price_pi} π</strong>` 
-                        : `💵 <strong>${product.price_fcfa || product.price} FCFA</strong>`;
+                    const productTitle = product.title || product.name || 'Produit ARASHI';
+                    const productPrice = product.price_pi || product.price || 0;
+                    const description = product.description || 'Matériel & service certifié par Entreprise ARASHI.';
 
                     card.innerHTML = `
-                        <div style="text-align:center; margin-bottom:15px;">
-                            <img src="${imageUrl}" alt="${productTitle}" style="max-width:100%; height:140px; object-fit:cover; border-radius:8px;">
+                        <div class="image-container">
+                            <img src="${imageUrl}" 
+                                 alt="${productTitle}" 
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/400x200?text=Image+Indisponible';">
+                            <span class="tag-badge">DISPONIBLE</span>
                         </div>
-                        <h3>${productTitle}</h3>
-                        <p style="font-size:13px; color:#666; height:40px; overflow:hidden;">${product.description || ''}</p>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:10px; border-top:1px solid #f5f5f5;">
-                            <span style="font-size:16px; color:#0B3D91;">${priceDisplay}</span>
-                            <button onclick="window.buy('${productTitle.replace(/'/g, "\\'")}', ${productPrice})" 
-                                    style="background:#0B3D91; color:white; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600;">
-                                Acheter
+                        <div class="product-details">
+                            <div class="price-tag">${productPrice} π</div>
+                            <h3>${productTitle}</h3>
+                            <p style="color: var(--text-muted); font-size: 0.85rem; height: 38px; overflow: hidden;">${description}</p>
+                            
+                            <div class="badges-row">
+                                <span class="badge-item">✨ Vendeur Certifié</span>
+                                <span class="badge-item">🛡️ Escrow Pi</span>
+                            </div>
+
+                            <button class="btn-buy-pi" 
+                                    onclick="window.buy('${productTitle.replace(/'/g, "\\'")}', ${productPrice})"
+                                    data-lang="buy_btn">
+                                ⚡ Acheter avec Pi
                             </button>
                         </div>
                     `;
                     gridContainer.appendChild(card);
                 });
 
+                applyCurrentLanguage();
+
             } catch (err) {
-                console.error("Erreur catalogue marketplace :", err);
+                console.error("Erreur de chargement du catalogue :", err);
                 gridContainer.innerHTML = `
-                    <div class="product-card-placeholder" style="border-color:#ff4d4d; color:#ff4d4d;">
+                    <div class="product-card-placeholder" style="grid-column: 1/-1; border-color:#ef4444; color:#ef4444;">
                         <p>⚠️ Impossible de récupérer les produits de la boutique pour le moment.</p>
                     </div>`;
             }
         }
+
+        function applyCurrentLanguage() {
+            const savedLang = localStorage.getItem("arashi_lang") || "fr";
+            setLanguage(savedLang);
+        }
     </script>
 
-    <!-- ==========================================
-    MODULES JAVASCRIPT ARASHI (Placement tout en bas)
-    ========================================== -->
+    <!-- JS Globaux -->
     <script type="module" src="../js/app.js"></script>
     <script type="module" src="../js/marketplace.js"></script>
     <script type="module" src="../js/cart.js"></script>
+    <script type="module" src="../js/lang.js"></script>
 
-    <!-- Gestion du bouton d'achat direct -->
+    <!-- Gestionnaire du bouton d'achat -->
     <script>
         window.buy = async function(title, price) {
             if (typeof window.addToCart === "function") {
@@ -185,9 +254,14 @@
             } else if (typeof window.createPiPayment === "function") {
                 await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
             } else {
-                alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
+                alert("Initialisation du module Pi Network... Veuillez réessayer dans un instant.");
             }
         };
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
     </script>
 </body>
+
 </html>
