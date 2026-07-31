@@ -1,3 +1,7 @@
+/* ==========================================
+   ARASHI v3.0 - Gestionnaire Quadri-langue
+========================================== */
+
 const translations = {
     fr: {
         home: "🏠 Accueil",
@@ -39,8 +43,9 @@ const translations = {
 
 window.changeLanguage = function(lang) {
     if (!translations[lang]) return;
-    localStorage.setItem('selected_lang', lang);
     
+    localStorage.setItem('arashi_lang', lang);
+
     document.querySelectorAll('[data-lang]').forEach(element => {
         const key = element.getAttribute('data-lang');
         if (translations[lang][key]) {
@@ -48,7 +53,7 @@ window.changeLanguage = function(lang) {
         }
     });
 
-    // Gestion du sens de lecture pour l'arabe
+    // Support de la direction RTL pour l'Arabe
     if (lang === 'ar') {
         document.body.setAttribute('dir', 'rtl');
     } else {
@@ -57,7 +62,7 @@ window.changeLanguage = function(lang) {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    const savedLang = localStorage.getItem('selected_lang') || 'fr';
+    const savedLang = localStorage.getItem('arashi_lang') || 'fr';
     const selector = document.getElementById('sidebarLanguageSelect');
     if (selector) selector.value = savedLang;
     window.changeLanguage(savedLang);
