@@ -1,86 +1,49 @@
-// =====================================
-// Entreprise ARASHI v3.0
-// js/app.js - Module Principal & UI
-// =====================================
-
-import { createPiPayment, loginWithPi, initPiSdk } from './pi-payments.js';
-
-// Fonction globale pour mettre à jour l'affichage de l'utilisateur
-function updateUIWithUser(user) {
-    const userStatusEl = document.getElementById("userStatus");
-    if (userStatusEl && user) {
-        const username = user.username || user.uid || "Utilisateur";
-        userStatusEl.innerText = `@${username}`;
-        userStatusEl.style.color = "#28a745";
-        userStatusEl.style.fontWeight = "bold";
-    }
-}
+// =====================================================
+// Entreprise ARASHI v3.0 - Script d'initialisation Pi
+// =====================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Initialisation immédiate du SDK Pi Network
-    initPiSdk();
-
-    // 2. Gestion Ouverture / Fermeture du Menu Sidebar
-    const menuToggle = document.getElementById("menuToggle");
-    const sidebar = document.getElementById("sidebar");
-    
-    if (menuToggle && sidebar) {
-        menuToggle.addEventListener("click", (e) => {
-            e.stopPropagation();
-            sidebar.classList.toggle("open");
-            sidebar.classList.toggle("active"); // Support des deux classes CSS
-        });
-
-        // Fermer le menu si on clique en dehors
-        document.addEventListener("click", (e) => {
-            if (sidebar.classList.contains("open") || sidebar.classList.contains("active")) {
-                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                    sidebar.classList.remove("open", "active");
-                }
-            }
-        });
+    // Initialisation SDK Pi Network
+    if (window.Pi) {
+        window.Pi.init({ version: "2.0", sandbox: false });
     }
 
-    // 3. Bouton Connexion Pi Network
-    const piLoginBtn = document.getElementById("piLogin");
-    if (piLoginBtn) {
-        piLoginBtn.addEventListener("click", async () => {
+    // Gestion des boutons de connexion
+    const loginBtn = document.getElementById("piLogin");
+    if(loginBtn) {
+        loginBtn.addEventListener("click", async () => {
             try {
-                const user = await loginWithPi();
-                if (user) {
-                    updateUIWithUser(user);
-                    alert(`Bienvenue @${user.username || 'Pioneer'} !`);
-                }
+                const scopes = ['username', 'payments'];
+                const auth = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
+                document.getElementById("userStatus").innerText = "@" + auth.user.username;
+                loginBtn.style.display = "none";
+                document.getElementById("logoutBtn").style.display = "inline-block";
             } catch (err) {
-                console.error("Détail de l'erreur Pi :", err);
-                const detail = err?.message || (typeof err === "object" ? JSON.stringify(err) : String(err));
-                alert("Échec de la connexion Pi : " + detail);
+                console.error("Erreur d'authentification Pi:", err);
             }
         });
-    }
-
-    // 4. Bouton Déconnexion
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-            localStorage.removeItem("pi_user");
-            const userStatusEl = document.getElementById("userStatus");
-            if (userStatusEl) {
-                userStatusEl.innerText = "Non connecté";
-                userStatusEl.style.color = "";
-            }
-            alert("Déconnecté avec succès.");
-        });
-    }
-
-    // 5. Restauration de la session utilisateur enregistrée
-    const savedUser = localStorage.getItem("pi_user");
-    if (savedUser) {
-        try {
-            const user = JSON.parse(savedUser);
-            updateUIWithUser(user);
-        } catch (e) {
-            console.error("Erreur lecture session enregistrée :", e);
-        }
     }
 });
+
+function onIncompletePaymentFound(payment) {
+    console.log("Paiement incomplet trouvé:", payment);
+}
+
+// Fonction globale pour orchestrer les paiements Pi
+window.createPiPayment = async function(amount, memo, metadata) {
+    if (!window.Pi) {
+        alert("SDK Pi Network indisponible.");
+        return;
+    }
+    
+    return window.Pi.createPayment({
+        amount: amount,
+        memo: memo,
+        metadata: { item: metadata }
+    }, {
+        onReadyForServerApproval: (paymentId) => console.log("Approval ID:", paymentId),
+        onReadyForServerCompletion: (paymentId, txid) => console.log("Completion ID:", paymentId, txid),
+        onCancel: (paymentId) => alert("Paiement annulé"),
+        onError: (error, payment) => console.error("Erreur Paiement:", error)
+    });
+};
