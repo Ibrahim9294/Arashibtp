@@ -1,46 +1,61 @@
-<section class="governance-card">
-    <div class="card-header">
-        <span class="badge">✨ Governance & Verification Application</span>
-        <h2>Devenez un vérificateur officiel ou auditeur ARASHI</h2>
-        <p>Rejoignez l'équipe pour valider les terrains, les levés topographiques et sécuriser les transactions en Pi.</p>
-    </div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Team Space | ARASHI v3.0</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
 
-    <form id="governanceForm" onsubmit="submitApplication(event)">
-        <!-- Selection Photo / Avatar -->
-        <div class="form-group">
-            <label>1. SÉLECTIONNEZ VOTRE PHOTO DE PROFIL</label>
-            <div class="avatar-selector">
-                <img src="assets/avatars/user1.jpg" class="avatar-opt selected" onclick="selectAvatar(this)">
-                <img src="assets/avatars/user2.jpg" class="avatar-opt" onclick="selectAvatar(this)">
-                <img src="assets/avatars/user3.jpg" class="avatar-opt" onclick="selectAvatar(this)">
+    <main class="content" style="margin-left: 0; width: 100%; padding: 30px; max-width: 1000px; margin: 0 auto;">
+        
+        <a href="../index.html" class="see-all" style="margin-bottom: 20px; display: inline-block;">← Retour au Dashboard</a>
+
+        <div class="card" style="border-top: 5px solid var(--secondary-color);">
+            <h2 style="color: var(--primary-color);">⚡ Pi Core Team Verification Center</h2>
+            <p style="color: var(--text-muted); margin: 10px 0 20px 0;">Espace de validation technique et d'audit pour le Pi Developer Portal.</p>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
+                <span class="badge badge-success">🟢 SDK v2.0 Connecté</span>
+                <span class="badge badge-warning">Mainnet Ready</span>
+                <span class="badge badge-success">Supabase Storage Active</span>
             </div>
-            <input type="url" id="customAvatar" placeholder="Ou collez l'URL d'une photo personnalisée">
+
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Paramètre</th>
+                        <th>Valeur</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Nom de l'App</td>
+                        <td><code>Entreprise ARASHI v3.0</code></td>
+                        <td><span class="badge badge-success">Conforme</span></td>
+                    </tr>
+                    <tr>
+                        <td>Sandbox Mode</td>
+                        <td><code>False (Production)</code></td>
+                        <td><span class="badge badge-success">Actif</span></td>
+                    </tr>
+                    <tr>
+                        <td>Domain SSL</td>
+                        <td><code>https://...github.io</code></td>
+                        <td><span class="badge badge-success">Sécurisé</span></td>
+                    </tr>
+                    <tr>
+                        <td>Callback API</td>
+                        <td><code>/approve</code> & <code>/complete</code></td>
+                        <td><span class="badge badge-success">200 OK</span></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <!-- Informations Pi -->
-        <div class="form-group">
-            <label>NOM PIONEER</label>
-            <input type="text" id="pioneerName" required placeholder="ex: Elhadj Arashi">
-        </div>
+    </main>
 
-        <div class="form-group">
-            <label>NOM D'UTILISATEUR PI NETWORK</label>
-            <input type="text" id="piUsername" required placeholder="@votre_username">
-        </div>
-
-        <!-- Choix du rôle -->
-        <div class="form-group">
-            <label>2. RÔLE SOUHAITÉ DANS LE CORE TEAM</label>
-            <select id="desiredRole" required>
-                <option value="escrow_auditor">Lead Escrow Auditor (Opérations)</option>
-                <option value="verifier_niger">Property Verifier - Niger 🇳🇪</option>
-                <option value="verifier_international">Property Verifier - Afrique de l'Ouest</option>
-                <option value="topographer_lead">Géomètre Topographe Certifié</option>
-                <option value="smart_contract_dev">Smart Contract / Supabase Developer</option>
-                <option value="community_mod">Modérateur de la communauté (Croissance)</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn-submit-app">Soumettre la candidature</button>
-    </form>
-</section>
+</body>
+</html>
