@@ -38,17 +38,19 @@
             <a href="pages/paiement.html" data-lang="payment" style="display: block; padding: 10px; color: white; text-decoration: none;">💳 Paiement Pi</a>
             <a href="pages/admin.html" data-lang="admin" style="display: block; padding: 10px; color: white; text-decoration: none;">👑 Admin</a>
             
-            <!-- ⚡ AJOUT : Lien Core Team Space -->
-            <a href="pages/core-team-space.html" style="display: flex; align-items: center; gap: 8px; padding: 10px; color: var(--secondary-color); font-weight: 600; text-decoration: none; border: 1px dashed var(--secondary-color); border-radius: 6px; margin-top: 15px; background: rgba(244, 180, 0, 0.05);">
+            <!-- ⚡ Lien Core Team Space -->
+            <a href="pages/core-team-space.html" style="display: flex; align-items: center; gap: 8px; padding: 10px; color: var(--secondary-color); font-weight: 600; text-decoration: none; border: 1px dashed var(--secondary-color); border-radius: 6px; margin-top: 15px; background: rgba(244, 180, 0, 0.05);" data-lang="core_team">
                 ⚡ Core Team Space
             </a>
 
-            <!-- Sélecteur de Langue (Dans le menu latéral) -->
+            <!-- Sélecteur de Langue Quadri-langue (FR, EN, HA, AR) -->
             <div class="lang-selector" style="padding: 12px 10px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.15); background: #1e293b; border-radius: 6px;">
-                <label for="sidebarLanguageSelect" style="font-size: 0.85em; color: #94a3b8; display: block; margin-bottom: 6px;">🌐 Langue / Language</label>
+                <label for="sidebarLanguageSelect" style="font-size: 0.85em; color: #94a3b8; display: block; margin-bottom: 6px;">🌐 Langue / Yare / اللغة</label>
                 <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 8px; border-radius: 5px; background: #0f172a; color: white; border: 1px solid #334e68; cursor: pointer; font-size: 0.9em;">
                     <option value="fr">🇫🇷 Français</option>
                     <option value="en">🇬🇧 English</option>
+                    <option value="ha">🇳🇬 Haoussa (Hausa)</option>
+                    <option value="ar">🇸🇦 Arabe (العربية)</option>
                 </select>
             </div>
         </nav>
@@ -85,7 +87,6 @@
                 <span>📐 Topographie</span>
                 <span>🛒 Marketplace</span>
                 <span>🪙 Pi Network</span>
-                <!-- Badge informatif Core Team Space -->
                 <span style="border: 1px solid var(--secondary-color); color: var(--secondary-color);">✨ Verified Core Team App</span>
             </div>
 
@@ -94,18 +95,14 @@
             </button>
         </section>
 
-        <!-- ==========================================
-        RECHERCHE
-        ========================================== -->
+        <!-- RECHERCHE -->
         <section class="search-container">
             <div class="search-box">
                 <input type="search" id="globalSearch" data-lang="search" placeholder="🔎 Rechercher des villas, récepteurs GNSS, ciment, chantiers...">
             </div>
         </section>
 
-        <!-- ==========================================
-        TABLEAU DE BORD RAPIDE
-        ========================================== -->
+        <!-- TABLEAU DE BORD RAPIDE -->
         <section class="upper-dashboard">
             <div class="upper-item">
                 <div class="icon">🏠</div>
@@ -133,13 +130,11 @@
             </div>
         </section>
 
-        <!-- ==========================================
-        ⚡ NOURRICE CORE TEAM SPACE (BLOC SPÉCIAL DÉDIÉ)
-        ========================================== -->
+        <!-- NOURRICE CORE TEAM SPACE -->
         <section class="core-team-space" style="margin: 20px 40px; padding: 20px; background: #ffffff; border-radius: var(--radius); box-shadow: var(--shadow); border-left: 5px solid var(--secondary-color);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                 <div>
-                    <h3 style="color: var(--primary-color); margin-bottom: 5px;">⚡ Pi Core Team Space</h3>
+                    <h3 style="color: var(--primary-color); margin-bottom: 5px;" data-lang="core_team">⚡ Pi Core Team Space</h3>
                     <p style="font-size: 13px; color: var(--text-muted);">Accès aux métadonnées, à la vérification Pi App Engine et au statut Mainnet.</p>
                 </div>
                 <div>
@@ -148,14 +143,12 @@
             </div>
         </section>
 
-        <!-- ==========================================
-        NOS DOMAINES D'ACTIVITÉ
-        ========================================== -->
+        <!-- NOS DOMAINES D'ACTIVITÉ -->
         <section class="main-services">
             <h2>💼 Nos Domaines d'Activité</h2>
 
             <section id="immobilier">
-                <h2>🏡 Immobilier ARASHI</h2>
+                <h2 data-lang="realestate">🏡 Immobilier ARASHI</h2>
                 <div class="products-grid">
                     <div class="service-card">
                         <img src="assets/villas/villa-moderne.jpg" class="product-image" alt="Villa Moderne" style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px;">
