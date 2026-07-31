@@ -1,16 +1,19 @@
-// =====================================
+// =====================================================
 // Entreprise ARASHI v3.0
-// js/marketplace.js - Catalogue Multi-pages
-// =====================================
+// js/marketplace.js - Catalogue Multi-pages & Supabase
+// =====================================================
 
-import { createPiPayment } from './pi-payments.js';
+import { createPiPayment } from './app.js';
 import { setLanguage } from './lang.js';
 
 const SUPABASE_URL = "https://cjmunzphzqazivbkgrdq.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_-7GJRL8TW81oHvjt-N17ZQ_OS8qD-cu";
 
+/**
+ * Normalise les URLs d'images Supabase, assets locaux ou placeholders
+ */
 function getValidImageUrl(rawPath) {
-    if (!rawPath) return 'https://via.placeholder.com/300x200?text=Image+ARASHI';
+    if (!rawPath) return 'https://via.placeholder.com/400x200?text=Image+ARASHI';
     
     let url = rawPath.trim();
     
@@ -25,10 +28,14 @@ function getValidImageUrl(rawPath) {
     return url;
 }
 
+/**
+ * Charge dynamiquement les annonces depuis Supabase
+ */
 export async function loadMarketplaceItems() {
-    // 📍 Prise en compte de tous les IDs utilisés sur vos différentes pages
-    const container = document.getElementById("fullProductsGrid") || 
-                      document.getElementById("marketplaceContainer") || 
+    // 📍 Support de tous les conteneurs d'affichage sur vos différentes pages
+    const container = document.getElementById("marketplaceContainer") || 
+                      document.getElementById("fullProductsGrid") || 
+                      document.getElementById("popularProductsGrid") ||
                       document.getElementById("immobilierContainer") ||
                       document.getElementById("propertiesContainer");
 
@@ -48,7 +55,7 @@ export async function loadMarketplaceItems() {
         container.innerHTML = "";
 
         if (!items || items.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:#666;" data-lang="no_products">Aucun bien disponible pour le moment.</p>`;
+            container.innerHTML = `<p style="text-align:center; color: var(--text-muted); grid-column: 1/-1;" data-lang="no_products">Aucun bien disponible pour le moment.</p>`;
             applyCurrentLanguage();
             return;
         }
@@ -59,23 +66,31 @@ export async function loadMarketplaceItems() {
 
             const price = item.price_pi || item.price || 0;
             const title = item.title || 'Prestation ARASHI';
-            const description = item.description || 'Bien certifié par l\'Entreprise ARASHI.';
+            const description = item.description || 'Certifié par l\'Entreprise ARASHI.';
+            const category = item.category || item.type || 'OFFRE';
 
             const card = document.createElement("div");
-            card.className = "property-card service-card";
-            card.style.marginBottom = "20px";
+            card.className = "product-card";
             card.innerHTML = `
-                <img src="${imageSrc}" 
-                     alt="${title}" 
-                     class="property-img product-image"
-                     style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; display: block;"
-                     loading="lazy"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Image+Indisponible';">
-                <div class="property-info" style="padding: 15px 0;">
+                <div class="image-container">
+                    <img src="${imageSrc}" 
+                         alt="${title}" 
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/400x200?text=ARASHI+v3.0';">
+                    <button class="fav-btn">❤️</button>
+                    <span class="tag-badge">${category}</span>
+                </div>
+                <div class="product-details">
+                    <div class="price-tag">${price} π</div>
                     <h3>${title}</h3>
-                    <p class="description">${description}</p>
-                    <p class="price"><strong>${price} π</strong></p>
-                    <button class="btn-buy-pi hero-btn" 
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">${description}</p>
+                    
+                    <div class="badges-row">
+                        <span class="badge-item">✨ Certifié ARASHI</span>
+                        <span class="badge-item">🛡️ Escrow Pi</span>
+                    </div>
+
+                    <button class="btn-buy-pi" 
                             data-id="${item.id}" 
                             data-price="${price}" 
                             data-title="${title}"
@@ -92,15 +107,21 @@ export async function loadMarketplaceItems() {
 
     } catch (error) {
         console.error("Erreur de chargement Marketplace :", error);
-        container.innerHTML = `<p style="text-align:center; color:#e74c3c;">Impossible de charger les annonces pour le moment.</p>`;
+        container.innerHTML = `<p style="text-align:center; color:#ef4444; grid-column: 1/-1;">Impossible de charger les annonces pour le moment.</p>`;
     }
 }
 
+/**
+ * Applique la langue sauvegardée dans le LocalStorage
+ */
 function applyCurrentLanguage() {
     const currentLang = localStorage.getItem("arashi_lang") || "fr";
     setLanguage(currentLang);
 }
 
+/**
+ * Attache l'événement de paiement Pi aux boutons dynamiques
+ */
 function attachPaymentEvents() {
     const buyButtons = document.querySelectorAll(".btn-buy-pi");
     buyButtons.forEach(button => {
@@ -110,11 +131,18 @@ function attachPaymentEvents() {
             const price = btn.getAttribute("data-price");
             const title = btn.getAttribute("data-title");
 
-            createPiPayment(price, `Achat ARASHI: ${title}`, productId);
+            if (typeof window.createPiPayment === "function") {
+                window.createPiPayment(Number(price), `Achat ARASHI: ${title}`, productId);
+            } else if (typeof createPiPayment === "function") {
+                createPiPayment(Number(price), `Achat ARASHI: ${title}`, productId);
+            } else {
+                alert("Système de paiement Pi Network en cours de chargement...");
+            }
         });
     });
 }
 
+// Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
     loadMarketplaceItems();
 });
