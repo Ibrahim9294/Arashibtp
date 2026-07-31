@@ -1,0 +1,46 @@
+<section class="governance-card">
+    <div class="card-header">
+        <span class="badge">✨ Governance & Verification Application</span>
+        <h2>Devenez un vérificateur officiel ou auditeur ARASHI</h2>
+        <p>Rejoignez l'équipe pour valider les terrains, les levés topographiques et sécuriser les transactions en Pi.</p>
+    </div>
+
+    <form id="governanceForm" onsubmit="submitApplication(event)">
+        <!-- Selection Photo / Avatar -->
+        <div class="form-group">
+            <label>1. SÉLECTIONNEZ VOTRE PHOTO DE PROFIL</label>
+            <div class="avatar-selector">
+                <img src="assets/avatars/user1.jpg" class="avatar-opt selected" onclick="selectAvatar(this)">
+                <img src="assets/avatars/user2.jpg" class="avatar-opt" onclick="selectAvatar(this)">
+                <img src="assets/avatars/user3.jpg" class="avatar-opt" onclick="selectAvatar(this)">
+            </div>
+            <input type="url" id="customAvatar" placeholder="Ou collez l'URL d'une photo personnalisée">
+        </div>
+
+        <!-- Informations Pi -->
+        <div class="form-group">
+            <label>NOM PIONEER</label>
+            <input type="text" id="pioneerName" required placeholder="ex: Elhadj Arashi">
+        </div>
+
+        <div class="form-group">
+            <label>NOM D'UTILISATEUR PI NETWORK</label>
+            <input type="text" id="piUsername" required placeholder="@votre_username">
+        </div>
+
+        <!-- Choix du rôle -->
+        <div class="form-group">
+            <label>2. RÔLE SOUHAITÉ DANS LE CORE TEAM</label>
+            <select id="desiredRole" required>
+                <option value="escrow_auditor">Lead Escrow Auditor (Opérations)</option>
+                <option value="verifier_niger">Property Verifier - Niger 🇳🇪</option>
+                <option value="verifier_international">Property Verifier - Afrique de l'Ouest</option>
+                <option value="topographer_lead">Géomètre Topographe Certifié</option>
+                <option value="smart_contract_dev">Smart Contract / Supabase Developer</option>
+                <option value="community_mod">Modérateur de la communauté (Croissance)</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-submit-app">Soumettre la candidature</button>
+    </form>
+</section>
