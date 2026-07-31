@@ -1,12 +1,13 @@
-/* ===============================================
-   ENTREPRISE ARASHI v3.0 - CHARTE GRAPHIQUE
-   =============================================== */
+/* =====================================================
+   ENTREPRISE ARASHI v3.0 - STYLE OFFICIEL & DARK MODE
+   ===================================================== */
+
 :root {
     --arashi-dark: #0f172a;       /* Fond sombre principal */
-    --arashi-card-bg: #1e293b;  /* Fond des cartes et conteneurs */
-    --arashi-gold: #f59e0b;     /* Couleur d'accent Or/Jaune ARASHI */
+    --arashi-card: #1e293b;       /* Fond cartes */
+    --arashi-gold: #f59e0b;       /* Couleurs Or / Jaune ARASHI */
     --arashi-gold-hover: #d97706;
-    --arashi-blue: #0284c7;     /* Bleu BTP / Topographie */
+    --arashi-blue: #0284c7;       /* Bleu BTP / Topo */
     --text-light: #f8fafc;
     --text-muted: #94a3b8;
     --border-color: #334155;
@@ -15,41 +16,133 @@
 body {
     background-color: var(--arashi-dark);
     color: var(--text-light);
-    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     margin: 0;
-    padding: 0;
+    display: flex;
 }
 
-/* Grille de la Marketplace */
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+/* Sidebar Styling */
+.sidebar {
+    width: 260px;
+    background: #0b1120;
+    border-right: 1px solid var(--border-color);
+    min-height: 100vh;
     padding: 20px;
+    box-sizing: border-box;
 }
 
-/* Carte de Produit / Immobilier / Topo */
-.product-card {
-    background: var(--arashi-card-bg);
+.sidebar .logo h2 {
+    color: var(--arashi-gold);
+    margin: 0;
+}
+
+.sidebar-nav a {
+    display: block;
+    padding: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: 0.2s;
+}
+
+.sidebar-nav a:hover, .sidebar-nav a.active {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--arashi-gold);
+}
+
+.menu-title {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--text-muted);
+    margin-top: 15px;
+    display: block;
+}
+
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+    background: var(--arashi-gold);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* Layout Content */
+.content {
+    flex: 1;
+    padding: 20px 40px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.hero {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
     border: 1px solid var(--border-color);
     border-radius: 16px;
+    padding: 30px;
+    margin: 20px 0;
+}
+
+.hero h2 { color: var(--arashi-gold); }
+
+.hero-tags span {
+    background: rgba(2, 132, 199, 0.2);
+    color: var(--arashi-blue);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-right: 8px;
+}
+
+.hero-btn, .btn-buy-pi {
+    background: linear-gradient(135deg, var(--arashi-gold), var(--arashi-gold-hover));
+    color: #000;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    width: 100%;
+}
+
+/* Grille de Produits et Cartes */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.product-card {
+    background: var(--arashi-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
     overflow: hidden;
-    position: relative;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease;
 }
 
 .product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
     border-color: var(--arashi-gold);
 }
 
-/* Gestion de l'Image */
 .product-card .image-container {
+    height: 180px;
     position: relative;
-    width: 100%;
-    height: 200px;
-    background-color: #000;
+    background: #000;
 }
 
 .product-card img {
@@ -58,69 +151,51 @@ body {
     object-fit: cover;
 }
 
-.fav-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: rgba(15, 23, 42, 0.7);
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    color: #fff;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-}
-
-/* Badges sur l'image */
 .tag-badge {
     position: absolute;
-    bottom: 12px;
-    left: 12px;
+    bottom: 10px;
+    left: 10px;
     background: var(--arashi-gold);
     color: #000;
-    font-weight: 700;
     font-size: 0.75rem;
-    padding: 4px 10px;
-    border-radius: 6px;
-    text-transform: uppercase;
-}
-
-/* Contenu de la Carte */
-.product-details {
-    padding: 16px;
-}
-
-.price-tag {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: var(--arashi-gold);
-    margin: 8px 0;
-}
-
-.badges-row {
-    display: flex;
-    gap: 8px;
-    margin: 10px 0;
-}
-
-.badge-item {
-    background: rgba(2, 132, 199, 0.15);
-    color: var(--arashi-blue);
-    border: 1px solid rgba(2, 132, 199, 0.3);
-    font-size: 0.7rem;
-    padding: 3px 8px;
-    border-radius: 12px;
-}
-
-.btn-buy-pi {
-    width: 100%;
-    background: linear-gradient(135deg, var(--arashi-gold), var(--arashi-gold-hover));
-    color: #000;
-    border: none;
-    padding: 12px;
-    border-radius: 10px;
     font-weight: bold;
-    cursor: pointer;
-    font-size: 0.95rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.product-details { padding: 15px; }
+.price-tag { font-size: 1.4rem; font-weight: bold; color: var(--arashi-gold); }
+
+.badges-row { display: flex; gap: 6px; margin: 8px 0; }
+.badge-item { background: rgba(255,255,255,0.05); font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; color: var(--text-muted); }
+
+/* Raccourcis Dashboard */
+.upper-dashboard { display: flex; gap: 15px; overflow-x: auto; margin: 20px 0; }
+.upper-item { background: var(--arashi-card); padding: 15px 25px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid var(--border-color); }
+.upper-item:hover { border-color: var(--arashi-gold); }
+
+/* Actions Rapides */
+.actions-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.action-btn { background: var(--arashi-card); color: white; padding: 10px 18px; border-radius: 8px; text-decoration: none; border: 1px solid var(--border-color); }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 10px; }
+.stat-card { background: var(--arashi-card); padding: 15px; border-radius: 10px; display: flex; gap: 15px; align-items: center; border: 1px solid var(--border-color); }
+
+/* Sélecteur de langue */
+.lang-selector select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    background: #0f172a;
+    color: white;
+    border: 1px solid var(--border-color);
+}
+
+/* Responsivité Mobile */
+@media (max-width: 768px) {
+    .menu-toggle { display: block; }
+    .sidebar { position: fixed; left: -270px; z-index: 999; transition: 0.3s; }
+    .sidebar.open { left: 0; }
+    .content { padding: 15px; }
 }
