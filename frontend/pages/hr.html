@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ARASHI ERP - Ressources Humaines</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+<h1>👥 Ressources Humaines</h1>
+
+<a href="erp.html" class="btn">
+⬅ Retour ERP
+</a>
+
+</header>
+
+<section class="hero">
+
+<h2>Gestion des Employés</h2>
+
+<p>
+Administration complète des ressources humaines.
+</p>
+
+</section>
+
+<section class="dashboard-grid">
+
+<div class="card">
+
+<h3>👥 Employés</h3>
+
+<p id="totalEmployees">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>🟢 Présents</h3>
+
+<p id="presentEmployees">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>🏖️ Congés</h3>
+
+<p id="leaveEmployees">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>💰 Masse salariale</h3>
+
+<p id="salaryTotal">0 π</p>
+
+</div>
+
+</section>
+
+<section class="form-container">
+
+<h2>Nouvel employé</h2>
+
+<input type="text" id="employeeName" placeholder="Nom complet">
+
+<input type="text" id="employeePosition" placeholder="Poste">
+
+<input type="email" id="employeeEmail" placeholder="Email">
+
+<input type="tel" id="employeePhone" placeholder="Téléphone">
+
+<input type="number" id="employeeSalary" placeholder="Salaire">
+
+<button id="saveEmployee">
+Enregistrer
+</button>
+
+</section>
+
+<section>
+
+<h2>Liste des employés</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Nom</th>
+
+<th>Poste</th>
+
+<th>Email</th>
+
+<th>Téléphone</th>
+
+<th>Salaire</th>
+
+</tr>
+
+</thead>
+
+<tbody id="employeesTable">
+
+<tr>
+
+<td colspan="5">
+
+Aucun employé enregistré.
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+<script type="module" src="../js/hr.js"></script>
+
+</body>
+
+</html>
