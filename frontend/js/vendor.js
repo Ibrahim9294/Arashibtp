@@ -1,15 +1,19 @@
 /* ==========================================
-   Entreprise ARASHI v4.0 - Module Vendor Center
+   Entreprise ARASHI v4.0 - Module Espace Vendeur
    Fichier : js/vendor.js
 ========================================== */
 
 import { supabase } from './supabase.js';
 
 /**
- * Charge les statistiques et l'inventaire du vendeur connecté
+ * Charge les offres et statistiques de l'utilisateur vendeur connecté
  */
 export async function loadVendorData() {
     const tbody = document.getElementById("vendorInventoryTable");
+    const countEl = document.getElementById("vendorItemsCount");
+    const earningsEl = document.getElementById("vendorTotalEarnings");
+    
+    // Récupération de l'utilisateur Pi connecté
     const user = typeof window.getCurrentUser === "function" ? window.getCurrentUser() : null;
 
     if (!user || (!user.uid && !user.username)) {
@@ -17,7 +21,7 @@ export async function loadVendorData() {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
-                        Veuillez vous connecter avec Pi Network pour gérer vos produits.
+                        Veuillez vous connecter avec votre compte Pi Network pour gérer vos offres.
                     </td>
                 </tr>
             `;
@@ -25,62 +29,66 @@ export async function loadVendorData() {
         return;
     }
 
-    const currentUsername = user.username || user.uid;
+    const vendorIdentifier = user.username || user.uid;
 
     try {
-        // Récupération des articles publiés par le vendeur
         const { data: items, error } = await supabase
             .from("properties")
             .select("*")
-            .eq("username", currentUsername)
+            .eq("username", vendorIdentifier)
             .order("created_at", { ascending: false });
 
         if (error) throw error;
 
-        // Mise à jour du tableau d'inventaire
         if (tbody) {
             tbody.innerHTML = "";
             if (!items || items.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
-                            Vous n'avez encore publié aucun article.
+                            Vous n'avez encore publié aucun article ou prestation.
                         </td>
                     </tr>
                 `;
             } else {
+                let totalValue = 0;
+
                 items.forEach(item => {
+                    const price = parseFloat(item.price_pi || item.price || 0);
+                    totalValue += price;
+
                     const row = document.createElement("tr");
                     row.style.borderBottom = "1px solid var(--border)";
                     row.innerHTML = `
-                        <td style="padding: 12px 10px; font-family: monospace; font-size: 0.85rem;">${item.id}</td>
+                        <td style="padding: 12px 10px; font-family: monospace; font-size: 0.85rem;">${item.id.toString().substring(0, 8)}...</td>
                         <td style="padding: 12px 10px; font-weight: bold;">${item.title}</td>
-                        <td style="padding: 12px 10px; color: #f39c12; font-weight: bold;">${item.price_pi || item.price || 0} π</td>
+                        <td style="padding: 12px 10px; color: #f39c12; font-weight: bold;">${price.toFixed(2)} π</td>
                         <td style="padding: 12px 10px; color: var(--text-muted);">${item.created_at ? new Date(item.created_at).toLocaleDateString() : '-'}</td>
                         <td style="padding: 12px 10px; text-align: right;">
-                            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="deleteVendorItem('${item.id}')">
+                            <button class="btn btn-danger delete-vendor-item-btn" data-id="${item.id}" style="padding: 5px 10px; font-size: 0.8rem;">
                                 <i class="fa-solid fa-trash"></i> Retirer
                             </button>
                         </td>
                     `;
                     tbody.appendChild(row);
                 });
+
+                if (earningsEl) earningsEl.textContent = `${totalValue.toFixed(2)} π`;
             }
         }
 
-        // Mise à jour des compteurs et statistiques
-        const countEl = document.getElementById("vendorItemsCount");
         if (countEl) countEl.textContent = items ? items.length : 0;
 
-        // Calcul des revenus estimés si des articles existent
-        const totalEarningsEl = document.getElementById("vendorTotalEarnings");
-        if (totalEarningsEl && items) {
-            const total = items.reduce((sum, item) => sum + parseFloat(item.price_pi || item.price || 0), 0);
-            totalEarningsEl.textContent = `${total.toFixed(2)} π`;
-        }
+        // Événement pour la suppression des articles
+        document.querySelectorAll(".delete-vendor-item-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const id = e.currentTarget.getAttribute("data-id");
+                deleteVendorItem(id);
+            });
+        });
 
     } catch (err) {
-        console.error("Erreur lors du chargement de l'inventaire vendeur :", err);
+        console.error("Erreur lors de la récupération du catalogue vendeur :", err);
     }
 }
 
@@ -97,61 +105,69 @@ export async function deleteVendorItem(id) {
 
             if (error) throw error;
 
-            alert("Article retiré avec succès.");
+            alert("L'article a été retiré avec succès.");
             loadVendorData();
         } catch (err) {
+            console.error("Erreur de suppression :", err);
             alert("Erreur lors de la suppression : " + err.message);
         }
     }
 }
 
 /**
- * Initialise le formulaire de publication de produits/services
+ * Gère l'envoi du formulaire de publication
  */
-export function setupVendorForm() {
+function initVendorPublishForm() {
     const form = document.getElementById("vendorPublishForm");
+    const btnRefresh = document.getElementById("btnRefreshVendor");
+
+    if (btnRefresh) {
+        btnRefresh.addEventListener("click", loadVendorData);
+    }
+
     if (!form) return;
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
+
         const user = typeof window.getCurrentUser === "function" ? window.getCurrentUser() : null;
 
-        if (!user) {
-            alert("Veuillez d'abord vous connecter avec Pi Network.");
+        if (!user || (!user.uid && !user.username)) {
+            alert("Veuillez d'abord vous connecter avec votre compte Pi Network.");
             return;
         }
 
-        const title = document.getElementById("vendorItemTitle").value;
-        const price = parseFloat(document.getElementById("vendorItemPrice").value);
-        const image = document.getElementById("vendorItemImage").value;
-        const description = document.getElementById("vendorItemDescription").value;
+        const title = document.getElementById("vendorItemTitle")?.value;
+        const price = parseFloat(document.getElementById("vendorItemPrice")?.value) || 0;
+        const image = document.getElementById("vendorItemImage")?.value;
+        const description = document.getElementById("vendorItemDescription")?.value;
 
         try {
-            const { error } = await supabase.from("properties").insert([{
-                title: title,
-                price_pi: price,
-                image_url: image || "https://via.placeholder.com/300x200?text=Produit+Vendeur",
-                description: description,
-                username: user.username || user.uid,
-                created_at: new Date().toISOString()
-            }]);
+            const { error } = await supabase
+                .from("properties")
+                .insert([{
+                    title: title,
+                    price_pi: price,
+                    image_url: image || "https://via.placeholder.com/300x200?text=Produit+Vendeur",
+                    description: description,
+                    username: user.username || user.uid,
+                    created_at: new Date().toISOString()
+                }]);
 
             if (error) throw error;
 
-            alert("🎉 Article mis en ligne avec succès !");
+            alert("🎉 Article mis en ligne avec succès sur la Marketplace !");
             form.reset();
             loadVendorData();
         } catch (err) {
+            console.error("Erreur lors de la publication :", err);
             alert("Erreur de publication : " + err.message);
         }
     });
 }
 
-// Expositions globales pour les événements inline (onclick) et l'initialisation DOM
-window.loadVendorData = loadVendorData;
-window.deleteVendorItem = deleteVendorItem;
-
+// Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
-    setupVendorForm();
+    initVendorPublishForm();
     loadVendorData();
 });
