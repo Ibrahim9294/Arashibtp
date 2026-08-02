@@ -1,44 +1,118 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
+    <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marketplace | ARASHI v3.0</title>
+    <title>Marketplace Pi | Entreprise ARASHI v4.0</title>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Unifié -->
     <link rel="stylesheet" href="../css/style.css">
+    
+    <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <main class="content" style="margin-left: 0; width: 100%; padding: 30px; max-width: 1200px; margin: 0 auto;">
-        
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <div>
-                <a href="../index.html" class="see-all">← Retour à l'accueil</a>
-                <h1 style="color: var(--primary-color); margin-top: 10px;">🛒 Marketplace Officiel ARASHI</h1>
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p data-lang="marketplace">Marketplace Pi</p>
+        </div>
+
+        <!-- Sélecteur de Langue -->
+        <div class="lang-selector" style="padding: 15px 20px 5px;">
+            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                <option value="fr">Français (FR)</option>
+                <option value="ha">Hausa (HA)</option>
+                <option value="dje">Zarma (DJE)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+
+        <nav>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
+            <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
+            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="marketplace.html" class="active"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
+            <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
+            <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
+            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
+            <a href="paiement.html"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+        <header class="topbar">
+            <h1 data-lang="marketplace">🛒 Marketplace Écosystème Pi Network</h1>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
+                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
+                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
             </div>
-            <button class="btn btn-warning" onclick="history.back()">Retour</button>
         </header>
 
-        <!-- Recherche et Filtres -->
-        <section class="search-container" style="margin: 0 0 30px 0;">
+        <!-- HERO BANNER -->
+        <section class="hero" style="background: linear-gradient(135deg, #f39c12 0%, #0B3D91 100%);">
+            <h2>Achetez & Vendez en Pi (π)</h2>
+            <p data-lang="welcome">Matériaux BTP, équipements géodésiques, prestations de génie civil et biens immobiliers certifiés au Niger.</p>
+            <button class="hero-btn" onclick="document.getElementById('fullProductsGrid').scrollIntoView({behavior: 'smooth'});">
+                Parcourir le catalogue
+            </button>
+        </section>
+
+        <!-- BARRE DE RECHERCHE DYNAMIQUE -->
+        <div class="search-container" style="margin: 25px 0;">
             <div class="search-box">
-                <input type="text" id="searchListing" placeholder="Rechercher une villa, un matériau, un service topographique...">
+                <input type="text" id="globalSearch" placeholder="🔎 Rechercher des récepteurs GNSS, ciment, parcelles, projets BTP...">
+            </div>
+        </div>
+
+        <!-- CATALOGUE MULTI-PAGES -->
+        <section class="popular-products">
+            <div class="section-header" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h2>🛒 Tous les articles & opportunités</h2>
+            </div>
+
+            <!-- Conteneur unifié compatible avec 'fullProductsGrid', 'marketplaceContainer', etc. -->
+            <div class="products-grid" id="fullProductsGrid">
+                <div class="product-card-placeholder" style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
+                    <p><i class="fa-solid fa-spinner fa-spin"></i> Chargement des articles du marché...</p>
+                </div>
             </div>
         </section>
 
-        <!-- Grille Principale des Produits -->
-        <section class="products-grid" id="fullMarketplaceGrid">
-            <div class="product-card-placeholder">Chargement du catalogue Supabase...</div>
-        </section>
+        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
+            <p>© 2026 Entreprise ARASHI • Vitrine & Marketplace Pi Network</p>
+        </footer>
+    </div>
 
-    </main>
+    <!-- MODULES JS ES6 (Bas de page) -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/pi-payments.js"></script>
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/marketplace.js"></script>
 
-    <script type="module">
-        import { loadMarketplaceListings } from '../js/marketplace.js';
-        document.addEventListener('DOMContentLoaded', () => {
-            loadMarketplaceListings('fullMarketplaceGrid');
-        });
+    <script>
+        // Fallback paiement rapide
+        window.buy = async function(title, price) {
+            if (typeof window.createPiPayment === "function") {
+                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
+            } else {
+                alert("Initialisation du SDK Pi Network... Veuillez réessayer dans un instant.");
+            }
+        };
     </script>
 </body>
 </html>
