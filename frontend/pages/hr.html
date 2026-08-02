@@ -1,152 +1,139 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr" dir="ltr">
 <head>
+    <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion RH & Paie - ARASHI Enterprise v4.0</title>
-    
-    <!-- CSS Globaux & Thème -->
-    <link rel="stylesheet" href="../css/style.css">
-    
-    <!-- Font Awesome CDN pour les icônes -->
+    <title>Ressources Humaines | Entreprise ARASHI v4.0</title>
+
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
+    <!-- CSS Unifié -->
+    <link rel="stylesheet" href="../css/style.css">
+
     <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
-<body class="bg-main text-main">
+<body>
 
-    <!-- BARRE DE NAVIGATION PRINCIPALE -->
-    <header class="navbar">
-        <div class="nav-container">
-            <a href="../index.html" class="brand-logo">
-                <i class="fa-solid fa-cube text-primary"></i> ARASHI <span class="badge-v4">v4.0</span>
-            </a>
-            
-            <nav class="nav-menu">
-                <a href="../index.html" class="nav-link" data-i18n="nav_home"><i class="fa-solid fa-house"></i> Accueil</a>
-                <a href="vendor.html" class="nav-link" data-i18n="nav_vendor"><i class="fa-solid fa-store"></i> Espace Vendeur</a>
-                <a href="hr.html" class="nav-link active" data-i18n="nav_hr"><i class="fa-solid fa-users"></i> Ressources Humaines</a>
-            </nav>
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-            <div class="nav-actions">
-                <!-- Selecteur de Langue -->
-                <select id="langSelector" class="lang-select">
-                    <option value="fr">🇫🇷 FR</option>
-                    <option value="en">🇺🇸 EN</option>
-                </select>
-
-                <!-- Zone Authentification Pi -->
-                <div id="authContainer">
-                    <button id="btnPiAuth" class="btn btn-primary">
-                        <i class="fa-solid fa-bolt"></i> Connexion Pi
-                    </button>
-                    <div id="userInfo" class="user-profile-chip hidden">
-                        <i class="fa-solid fa-user-circle"></i>
-                        <span id="userNameDisplay">--</span>
-                    </div>
-                </div>
-            </div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p data-lang="hr">Ressources Humaines</p>
         </div>
-    </header>
 
-    <!-- CONTENU PRINCIPAL RH -->
-    <main class="container py-4">
-        
-        <!-- En-tête de la page -->
-        <section class="page-header d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 style="margin: 0; font-size: 1.8rem;">
-                    <i class="fa-solid fa-users-gear text-primary"></i> Module RH & Paie
-                </h1>
-                <p class="text-muted" style="margin-top: 5px;">
-                    Gérez les collaborateurs, le suivi des présences et le versement des salaires en Pi (π).
-                </p>
+        <!-- Sélecteur de Langue -->
+        <div class="lang-selector" style="padding: 15px 20px 5px;">
+            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                <option value="fr">Français (FR)</option>
+                <option value="ha">Hausa (HA)</option>
+                <option value="dje">Zarma (DJE)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+
+        <nav>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
+            <a href="erp.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
+            <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
+            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction BTP</span></a>
+            <a href="hr.html" class="active"><i class="fa-solid fa-users"></i> <span>Ressources Humaines</span></a>
+            <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
+            <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
+            <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
+            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
+            <a href="paiement.html"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+        <header class="topbar">
+            <h1>👥 Module RH & Salaires</h1>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
+                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
+                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
             </div>
-            <button class="btn btn-success" id="btnAddEmployeeBtn">
+        </header>
+
+        <section style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <p style="color: var(--text-muted); margin: 0;">Gérez les collaborateurs, le suivi des présences et la paie des salaires en Pi (π).</p>
+            <button class="btn btn-success" id="btnAddEmployee">
                 <i class="fa-solid fa-user-plus"></i> Nouveau Collaborateur
             </button>
         </section>
 
-        <!-- KPI / Statistiques RH -->
-        <section class="grid-4 mb-4">
-            <div class="card card-stat">
-                <div class="stat-icon bg-blue"><i class="fa-solid fa-users"></i></div>
-                <div class="stat-details">
-                    <span class="text-muted">Total Effectif</span>
-                    <h3 id="statTotalEmployees">0</h3>
-                </div>
-            </div>
-            
-            <div class="card card-stat">
-                <div class="stat-icon bg-green"><i class="fa-solid fa-circle-check"></i></div>
-                <div class="stat-details">
-                    <span class="text-muted">Présents Aujourd'hui</span>
-                    <h3 id="statPresentToday">0</h3>
-                </div>
-            </div>
-
-            <div class="card card-stat">
-                <div class="stat-icon bg-warning"><i class="fa-solid fa-coins"></i></div>
-                <div class="stat-details">
-                    <span class="text-muted">Masse Salariale</span>
-                    <h3 id="statTotalPayroll">0.00 π</h3>
-                </div>
-            </div>
-
-            <div class="card card-stat">
-                <div class="stat-icon bg-purple"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                <div class="stat-details">
-                    <span class="text-muted">Congés en Attente</span>
-                    <h3 id="statPendingLeaves">0</h3>
-                </div>
-            </div>
-        </section>
-
-        <!-- Grille du contenu principal RH -->
-        <section class="grid-2">
-            
-            <!-- Tableau des Employés -->
-            <div class="card" style="grid-column: span 2;">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3><i class="fa-solid fa-address-book"></i> Registre des Employés</h3>
-                    <div class="search-box">
-                        <input type="text" id="hrSearchInput" class="form-input" placeholder="Rechercher un employé...">
+        <!-- CARTES RESUME RH -->
+        <section class="stats" style="margin-bottom: 25px;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: var(--primary-color);">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Total Effectif</span>
+                        <h3 id="statTotalEmployees" style="font-size: 1.5rem; font-weight: 700;">0</h3>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nom / Pseudonyme</th>
-                                <th>Poste</th>
-                                <th>Département</th>
-                                <th>Salaire (π)</th>
-                                <th>Statut</th>
-                                <th style="text-align: right;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="hrEmployeeTable">
-                            <tr>
-                                <td colspan="7" style="text-align: center; padding: 20px;" class="text-muted">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Chargement de la liste des employés...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #28a745;">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Présents Aujourd'hui</span>
+                        <h3 id="statPresentToday" style="font-size: 1.5rem; font-weight: 700;">0</h3>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #ffc107;">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Masse Salariale</span>
+                        <h3 id="statTotalPayroll" style="font-size: 1.5rem; font-weight: 700;">0.00 π</h3>
+                    </div>
                 </div>
             </div>
-
         </section>
-    </main>
 
-    <!-- FOOTER GLOBALE -->
-    <footer class="footer">
-        <div class="container text-center">
-            <p>&copy; 2026 ARASHI Enterprise v4.0. Droits réservés. Intégré avec le réseau Pi Network.</p>
+        <!-- TABLEAU DES COLLABORATEURS -->
+        <div class="card">
+            <h2><i class="fa-solid fa-id-card"></i> Liste des Collaborateurs & Paie</h2>
+            <div style="overflow-x: auto; margin-top: 15px;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted);">
+                            <th style="padding: 10px;">Nom & Prénom</th>
+                            <th style="padding: 10px;">Poste</th>
+                            <th style="padding: 10px;">Salaire Mensuel (π)</th>
+                            <th style="padding: 10px;">Statut</th>
+                            <th style="padding: 10px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Chargement des données RH...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </footer>
+
+        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
+            <p>© 2026 Entreprise ARASHI • Module Ressources Humaines v4.0</p>
+        </footer>
+    </div>
 
     <!-- MODULES JS ES6 -->
     <script type="module" src="../js/supabase.js"></script>
