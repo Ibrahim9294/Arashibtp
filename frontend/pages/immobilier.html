@@ -4,14 +4,14 @@
     <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Immobilier | Entreprise ARASHI v4.0</title>
+    <title>Immobilier & Foncier | Entreprise ARASHI v4.0</title>
 
-    <!-- FontAwesome icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Style Global -->
+
+    <!-- CSS Unifié -->
     <link rel="stylesheet" href="../css/style.css">
-    
+
     <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
@@ -40,10 +40,11 @@
 
         <nav>
             <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
-            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="erp.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
             <a href="immobilier.html" class="active"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
             <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
-            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction BTP</span></a>
+            <a href="hr.html"><i class="fa-solid fa-users"></i> <span>Ressources Humaines</span></a>
             <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
             <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
             <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
@@ -52,10 +53,10 @@
         </nav>
     </aside>
 
-    <!-- CONTENT AREA -->
+    <!-- MAIN CONTENT -->
     <div class="content">
         <header class="topbar">
-            <h1 data-lang="realestate">🏡 Offres Immobilières Pi Network</h1>
+            <h1 data-lang="realestate">🏡 Offres Immobilières & Parc Foncier</h1>
             <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
                 <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
                 <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
@@ -63,56 +64,94 @@
         </header>
 
         <!-- HERO BANNER -->
-        <section class="hero" style="background: linear-gradient(135deg, #2e7d32 0%, #0B3D91 100%);">
-            <h2>Terrains, Parcels & Maisons</h2>
-            <p data-lang="welcome">Découvrez nos opportunités foncières certifiées payables directement en Pi au Niger.</p>
-            <button class="hero-btn" onclick="document.getElementById('fullProductsGrid').scrollIntoView({behavior: 'smooth'});">
+        <section class="hero" style="background: linear-gradient(135deg, #2e7d32 0%, #0B3D91 100%); padding: 30px; border-radius: 12px; color: #fff; margin-bottom: 25px;">
+            <h2>Terrains, Parcelles & Maisons</h2>
+            <p data-lang="welcome">Découvrez nos opportunités foncières certifiées payables directement en Pi (π) au Niger.</p>
+            <button class="hero-btn" onclick="document.getElementById('propertiesGrid').scrollIntoView({behavior: 'smooth'});">
                 Explorer les opportunités
             </button>
         </section>
 
-        <!-- BARRE DE RECHERCHE DYNAMIQUE -->
-        <div class="search-container">
-            <div class="search-box">
-                <input type="text" id="globalSearch" placeholder="🔎 Rechercher des villas, parcelles, terrains certifiés...">
-            </div>
-        </div>
+        <!-- CARDS RESUME IMMOBILIER -->
+        <section class="stats" style="margin-bottom: 25px;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: var(--primary-color);">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Total Biens</span>
+                        <h3 id="statTotalProperties" style="font-size: 1.5rem; font-weight: 700;">--</h3>
+                    </div>
+                </div>
 
-        <!-- CATALOGUE IMMOBILIER -->
-        <section class="popular-products">
-            <div class="section-header" style="margin-bottom: 20px;">
-                <h2>🏡 Catalogue des biens immobiliers</h2>
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #28a745;">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Disponibles</span>
+                        <h3 id="statAvailableProperties" style="font-size: 1.5rem; font-weight: 700;">--</h3>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #ffc107;">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Valeur Estimée (π)</span>
+                        <h3 id="statTotalValuation" style="font-size: 1.5rem; font-weight: 700;">-- π</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTRES ET RECHERCHE -->
+        <section class="main-services">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 20px;">
+                <h2><i class="fa-solid fa-house-signal"></i> Biens & Propriétés Disponibles</h2>
+                
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%; max-width: 500px;">
+                    <input type="text" id="globalSearch" class="form-input" placeholder="🔎 Rechercher une villa, parcelle..." style="flex: 1; min-width: 200px;">
+                    <select id="propertyTypeFilter" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text);">
+                        <option value="all">Tous les types</option>
+                        <option value="Vente">Vente</option>
+                        <option value="Location">Location</option>
+                        <option value="Terrain">Terrain / Parcelle</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- Conteneur unifié multi-pages (Supporte 'fullProductsGrid' et 'marketplaceContainer') -->
-            <div class="products-grid" id="fullProductsGrid">
-                <div class="product-card-placeholder">
-                    <p><i class="fa-solid fa-spinner fa-spin"></i> Chargement des biens immobiliers...</p>
+            <!-- GRILLE DE CARTE DES BIENS -->
+            <div id="propertiesGrid" class="actions-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                    <p style="margin-top: 10px;">Chargement des biens immobiliers...</p>
                 </div>
             </div>
         </section>
 
         <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
-            <p>© 2026 Entreprise ARASHI • Immobilier & Foncier</p>
+            <p>© 2026 Entreprise ARASHI • Gestion Immobilière v4.0</p>
         </footer>
     </div>
 
     <!-- MODULES JS ES6 (Bas de page) -->
     <script type="module" src="../js/supabase.js"></script>
     <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/auth.js"></script>
     <script type="module" src="../js/pi-payments.js"></script>
     <script type="module" src="../js/app.js"></script>
-    <script type="module" src="../js/marketplace.js"></script>
+    <script type="module" src="../js/immobilier.js"></script>
 
     <script>
-        // Fonction Fallback d'Achat Direct
+        // Fallback global d'achat direct
         window.buy = async function(title, price) {
             if (typeof window.createPiPayment === "function") {
-                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
-            } else if (typeof window.addToCart === "function") {
-                window.addToCart(title, price);
+                await window.createPiPayment(Number(price), title, { item: title });
             } else {
-                alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
+                alert("Initialisation du paiement Pi pour : " + title);
             }
         };
     </script>
