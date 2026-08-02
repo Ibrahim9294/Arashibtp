@@ -4,14 +4,14 @@
     <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Construction & BTP | Entreprise ARASHI v4.0</title>
+    <title>Construction BTP | Entreprise ARASHI v4.0</title>
 
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- CSS Unifié -->
     <link rel="stylesheet" href="../css/style.css">
-    
+
     <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
@@ -23,7 +23,7 @@
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
-            <p>Construction & BTP</p>
+            <p data-lang="construction">Construction & BTP</p>
         </div>
 
         <!-- Sélecteur de Langue -->
@@ -40,10 +40,11 @@
 
         <nav>
             <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
-            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="erp.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
             <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
             <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
-            <a href="construction.html" class="active"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="construction.html" class="active"><i class="fa-solid fa-helmet-safety"></i> <span>Construction BTP</span></a>
+            <a href="hr.html"><i class="fa-solid fa-users"></i> <span>Ressources Humaines</span></a>
             <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
             <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
             <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
@@ -55,65 +56,132 @@
     <!-- MAIN CONTENT -->
     <div class="content">
         <header class="topbar">
-            <h1>🏗️ Travaux de Construction, Pavage & Matériaux BTP</h1>
+            <h1>🏗️ Travaux de Construction & Devis BTP</h1>
             <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
                 <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
                 <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
             </div>
         </header>
 
-        <!-- HERO BANNER -->
-        <section class="hero" style="background: linear-gradient(135deg, #d35400 0%, #0B3D91 100%);">
-            <h2>Génie Civil, Pavage Routier & Matériaux de Chantier</h2>
-            <p>Commandez vos travaux de terrassement, pavage, ciment et armature métallique directement en Pi Network (π).</p>
-            <button class="hero-btn" onclick="document.getElementById('fullProductsGrid').scrollIntoView({behavior: 'smooth'});">
-                Explorer les offres BTP
+        <!-- HERO BANNER CONSTRUCTION -->
+        <section class="hero" style="background: linear-gradient(135deg, #d35400 0%, #0B3D91 100%); padding: 30px; border-radius: 12px; color: #fff; margin-bottom: 25px;">
+            <h2>Projets Immobiliers & Geniie Civil</h2>
+            <p>Obtenez une estimation personnalisée et réservez vos chantiers de construction payables en Pi (π).</p>
+            <button class="hero-btn" onclick="document.getElementById('constructionFormSection').scrollIntoView({behavior: 'smooth'});">
+                Demander un Devis BTP
             </button>
         </section>
 
-        <!-- BARRE DE RECHERCHE -->
-        <div class="search-container" style="margin: 25px 0;">
-            <div class="search-box">
-                <input type="text" id="globalSearch" placeholder="🔎 Rechercher du pavage de route, ciment CPJ 45, fer à béton, gros œuvre...">
-            </div>
-        </div>
+        <!-- STATISTIQUES CHANTIERS -->
+        <section class="stats" style="margin-bottom: 25px;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #d35400;">
+                        <i class="fa-solid fa-trowel-bricks"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Chantiers Actifs</span>
+                        <h3 id="statActiveProjects" style="font-size: 1.5rem; font-weight: 700;">--</h3>
+                    </div>
+                </div>
 
-        <!-- CATALOGUE CONSTRUCTION -->
-        <section class="popular-products">
-            <div class="section-header" style="margin-bottom: 20px;">
-                <h2>🏗️ Catalogues des prestations BTP & Matériaux</h2>
-            </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #28a745;">
+                        <i class="fa-solid fa-check-double"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Projets Livrés</span>
+                        <h3 id="statCompletedProjects" style="font-size: 1.5rem; font-weight: 700;">--</h3>
+                    </div>
+                </div>
 
-            <!-- Grille dynamique connectée à Supabase via js/marketplace.js -->
-            <div class="products-grid" id="fullProductsGrid">
-                <div class="product-card-placeholder" style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
-                    <p><i class="fa-solid fa-spinner fa-spin"></i> Chargement des offres de construction...</p>
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #ffc107;">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Devis en Cours</span>
+                        <h3 id="statPendingQuotes" style="font-size: 1.5rem; font-weight: 700;">--</h3>
+                    </div>
                 </div>
             </div>
         </section>
 
+        <!-- CALCULATEUR DE DEVIS & RECAPITULATIF -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            
+            <!-- FORMULAIRE DE DEMANDE DE DEVIS -->
+            <div class="card" id="constructionFormSection">
+                <h2><i class="fa-solid fa-calculator"></i> Simulation & Demande de Devis</h2>
+                <form id="constructionQuoteForm" style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+                    <div>
+                        <label style="font-size: 0.85rem; color: var(--text-muted);">Type de Travaux</label>
+                        <select id="constructionType" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text);">
+                            <option value="Pavageroad">Pavage de Route / Chaussée</option>
+                            <option value="GrosOeuvre">Gros Œuvre & Fondations</option>
+                            <option value="BatimentComplet">Villa / Clé en main</option>
+                            <option value="Renovation">Rénovation & Finition</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.85rem; color: var(--text-muted);">Superficie de la surface (m²)</label>
+                        <input type="number" id="constructionArea" placeholder="Ex: 291" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text);">
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.85rem; color: var(--text-muted);">Emplacement du chantier</label>
+                        <input type="text" id="constructionLocation" placeholder="Ex: Niamey, Koira Kano" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text);">
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.85rem; color: var(--text-muted);">Estimation en Pi (π)</label>
+                        <input type="text" id="constructionPriceEstimate" readonly value="0.00 π" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: #d35400; font-weight: bold;">
+                    </div>
+
+                    <button type="submit" class="btn btn-warning" style="margin-top: 10px;">
+                        <i class="fa-solid fa-paper-plane"></i> Valider le Devis avec Pi
+                    </button>
+                </form>
+            </div>
+
+            <!-- SUIVI DES CHANTIERS & DEVIS -->
+            <div class="card">
+                <h2><i class="fa-solid fa-list-check"></i> Chantiers & Devis récents</h2>
+                <div style="overflow-x: auto; margin-top: 15px;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted);">
+                                <th style="padding: 10px;">Projet</th>
+                                <th style="padding: 10px;">Surface</th>
+                                <th style="padding: 10px;">Montant (π)</th>
+                                <th style="padding: 10px;">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody id="constructionProjectsTable">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Chargement des chantiers...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
         <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
-            <p>© 2026 Entreprise ARASHI • Génie Civil, Construction & BTP</p>
+            <p>© 2026 Entreprise ARASHI • Construction & BTP v4.0</p>
         </footer>
     </div>
 
-    <!-- MODULES JS ES6 (Bas de page) -->
+    <!-- MODULES JS ES6 -->
     <script type="module" src="../js/supabase.js"></script>
     <script type="module" src="../js/lang.js"></script>
     <script type="module" src="../js/auth.js"></script>
     <script type="module" src="../js/pi-payments.js"></script>
     <script type="module" src="../js/app.js"></script>
-    <script type="module" src="../js/marketplace.js"></script>
-
-    <script>
-        // Callback global fallback pour paiements
-        window.buy = async function(title, price) {
-            if (typeof window.createPiPayment === "function") {
-                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
-            } else {
-                alert("Initialisation du SDK Pi Network... Veuillez réessayer dans un instant.");
-            }
-        };
-    </script>
+    <script type="module" src="../js/construction.js"></script>
 </body>
 </html>
