@@ -1,115 +1,116 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
+    <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entreprise ARASHI | Topographie & GNSS</title>
-    <!-- Lien vers le fichier CSS global -->
+    <title>Topographie | Entreprise ARASHI v4.0</title>
+
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Unifié -->
     <link rel="stylesheet" href="../css/style.css">
-    <!-- SDK Pi Network requis pour les fonctionnalités Pi -->
+    
+    <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 
-    <!-- Sidebar : Architecture v3.0 -->
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
+
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
-            <p>Topographie & BTP</p>
+            <p>Topographie & Foncier</p>
         </div>
-        <nav>
-            <a href="../index.html">🏠 Accueil</a>
-            <a href="dashboard.html">📊 Dashboard</a>
-            <a href="immobilier.html">🏡 Immobilier</a>
-            <a href="topographie.html" class="active">📐 Topographie</a>
-            <a href="construction.html">🏗️ Construction</a>
-            <a href="marketplace.html">🛒 Marketplace</a>
-            <a href="admin.html">👑 Admin</a>
-<a href="paiement.html">💳 Paiement Pi</a>
 
+        <!-- Sélecteur de Langue -->
+        <div class="lang-selector" style="padding: 15px 20px 5px;">
+            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                <option value="fr">Français (FR)</option>
+                <option value="ha">Hausa (HA)</option>
+                <option value="dje">Zarma (DJE)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+
+        <nav>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
+            <a href="topographie.html" class="active"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
+            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
+            <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
+            <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
+            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
+            <a href="paiement.html"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
         </nav>
     </aside>
 
-    <!-- Contenu Principal -->
+    <!-- MAIN CONTENT -->
     <div class="content">
         <header class="topbar">
-            <h1>📐 Services de Topographie & GNSS</h1>
-            <div class="auth-area">
-                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
-                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+            <h1>📐 Services & Équipements Topographiques</h1>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
+                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
+                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
             </div>
         </header>
 
-        <section class="hero">
-            <h2>Expertise et Haute Précision</h2>
-            <p>Commandez vos levés topographiques, implantations et géolocalisation par Récepteurs GNSS RTK à Niamey et partout au Niger.</p>
+        <!-- HERO BANNER -->
+        <section class="hero" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+            <h2>Bornage, Levés Géodésiques & Cartographie</h2>
+            <p>Commandez vos expertises foncières, plans de morcellement et équipements de mesure payables en Pi (π).</p>
+            <button class="hero-btn" onclick="document.getElementById('fullProductsGrid').scrollIntoView({behavior: 'smooth'});">
+                Découvrir les services
+            </button>
         </section>
 
-        <!-- Formulaire de demande de levé -->
-        <section class="quick-actions" style="background: var(--bg-card, #fff); padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-            <h2>📋 Demander un Devis ou un Levé Topographique</h2>
-            <form id="topoForm" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin-top: 20px;">
-                <div>
-                    <label for="topoType" style="display: block; margin-bottom: 5px; font-weight: bold;">Type de prestation :</label>
-                    <select id="topoType" class="form-control" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                        <option value="Levé planimétrique et altimétrique">Levé planimétrique et altimétrique</option>
-                        <option value="Implantation de bâtiment / terrain">Implantation de bâtiment / terrain</option>
-                        <option value="Location GNSS RTK avec opérateur">Location GNSS RTK avec opérateur</option>
-                        <option value="Bornage et Morcellement">Bornage et Morcellement</option>
-                    </select>
+        <!-- BARRE DE RECHERCHE -->
+        <div class="search-container" style="margin: 25px 0;">
+            <div class="search-box">
+                <input type="text" id="globalSearch" placeholder="🔎 Rechercher récepteurs GNSS RTK, bornages, levés d'architecture...">
+            </div>
+        </div>
+
+        <!-- CATALOGUE TOPOGRAPHIE -->
+        <section class="popular-products">
+            <div class="section-header" style="margin-bottom: 20px;">
+                <h2>📐 Catalogues des prestations & équipements</h2>
+            </div>
+
+            <!-- Grille dynamique gérée par js/marketplace.js -->
+            <div class="products-grid" id="fullProductsGrid">
+                <div class="product-card-placeholder" style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
+                    <p><i class="fa-solid fa-spinner fa-spin"></i> Chargement des offres topographiques...</p>
                 </div>
-                <div>
-                    <label for="topoLocation" style="display: block; margin-bottom: 5px; font-weight: bold;">Localisation du site (Ex: Niamey, Quartier...) :</label>
-                    <input type="text" id="topoLocation" placeholder="Précisez la ville et le quartier" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-                </div>
-                <div>
-                    <label for="topoDetails" style="display: block; margin-bottom: 5px; font-weight: bold;">Détails / Superficie estimée :</label>
-                    <textarea id="topoDetails" rows="4" placeholder="Décrivez votre projet..." style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
-                </div>
-                <button type="submit" class="hero-btn" style="cursor: pointer;">Envoyer la demande de devis</button>
-            </form>
-            <p id="topoMsg" style="margin-top: 15px; font-weight: bold;"></p>
+            </div>
         </section>
 
-        <footer>
-            <p>© 2026 Entreprise ARASHI • Topographie</p>
+        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
+            <p>© 2026 Entreprise ARASHI • Expertise Topographique & Cartographie</p>
         </footer>
     </div>
 
-    <!-- Script spécifique au formulaire -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById("topoForm");
-            if (form) {
-                form.addEventListener("submit", (e) => {
-                    e.preventDefault();
-                    const type = document.getElementById("topoType").value;
-                    const location = document.getElementById("topoLocation").value;
-                    const msg = document.getElementById("topoMsg");
-
-                    msg.style.color = "green";
-                    msg.innerText = `✅ Demande enregistrée pour "${type}" à "${location}". Un topographe d'ARASHI vous contactera.`;
-                    form.reset();
-                });
-            }
-        });
-    </script>
-
-    <!-- ==========================================
-    MODULES JAVASCRIPT ARASHI (Placement tout en bas)
-    ========================================== -->
+    <!-- MODULES JS ES6 (Bas de page) -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/pi-payments.js"></script>
     <script type="module" src="../js/app.js"></script>
-    <script type="module" src="../js/cart.js"></script>
+    <script type="module" src="../js/marketplace.js"></script>
 
-    <!-- Gestion du bouton d'achat direct (au cas où) -->
     <script>
         window.buy = async function(title, price) {
-            if (typeof window.addToCart === "function") {
-                window.addToCart(title, price);
-            } else if (typeof window.createPiPayment === "function") {
+            if (typeof window.createPiPayment === "function") {
                 await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
             } else {
-                alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
+                alert("Initialisation du SDK Pi Network... Veuillez réessayer dans un instant.");
             }
         };
     </script>
