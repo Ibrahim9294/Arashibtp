@@ -1,13 +1,13 @@
 /* ==========================================
    Entreprise ARASHI v4.0 - Paiements Pi Network
-   Fichier : js/pi-payments.js
+   Fichier : js/pi-payments.js (Corrigé pour Vercel)
 ========================================== */
 
 import { supabase } from './supabase.js';
 
 export async function createPiPayment(amount, memo, metadata = {}) {
     if (typeof Pi === "undefined") {
-        alert("Le SDK Pi Network n'est pas prêt. Ouvrez l'application dans Pi Browser.");
+        alert("Le SDK Pi Network n'est pas chargé. Ouvrez l'application dans Pi Browser.");
         return;
     }
 
@@ -18,22 +18,25 @@ export async function createPiPayment(amount, memo, metadata = {}) {
     };
 
     const paymentCallbacks = {
-        // Step 1 : Approbation obligatoire par le serveur du développeur
         onReadyForServerApproval: async (paymentId) => {
-            console.log("Approbation serveur requise pour paymentId :", paymentId);
+            console.log("Paiement prêt pour approbation serveur :", paymentId);
             
             try {
-                const res = await fetch('/api/approve-payment', {
+                // 1. Appel vers la fonction Serverless Vercel (api/approve-payment.js)
+                const response = await fetch('/api/approve-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ paymentId })
                 });
 
-                if (!res.ok) {
-                    throw new Error("Échec de l'approbation du serveur.");
+                const data = await response.json();
+                if (!response.ok) {
+                    console.error("Erreur d'approbation backend :", data);
+                    return;
                 }
+                console.log("Paiement approuvé avec succès par le serveur !");
 
-                // Enregistrement de la commande en attente dans Supabase
+                // 2. Insertion du suivi dans Supabase
                 const user = window.currentUser || {};
                 await supabase.from("orders").insert([{
                     payment_id: paymentId,
@@ -44,48 +47,56 @@ export async function createPiPayment(amount, memo, metadata = {}) {
                 }]);
 
             } catch (err) {
-                console.error("Erreur lors de l'approbation :", err);
+                console.error("Erreur réseau lors de l'approbation :", err);
             }
         },
 
-        // Step 2 : Validation finale et enregistrement de la transaction (TXID)
         onReadyForServerCompletion: async (paymentId, txid) => {
-            console.log("Finalisation requise :", paymentId, txid);
+            console.log("Paiement prêt pour validation finale :", paymentId, txid);
 
             try {
-                const res = await fetch('/api/complete-payment', {
+                // 1. Appel vers la fonction Serverless Vercel (api/complete-payment.js)
+                const response = await fetch('/api/complete-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ paymentId, txid })
                 });
 
-                if (res.ok) {
-                    await supabase.from("orders").update({
-                        status: "completed",
-                        txid: txid
-                    }).eq("payment_id", paymentId);
-
-                    alert("🎉 Paiement validé avec succès sur la Blockchain Pi !");
-                    if (typeof window.loadUserOrders === "function") window.loadUserOrders();
+                const data = await response.json();
+                if (!response.ok) {
+                    console.error("Erreur de finalisation backend :", data);
+                    return;
                 }
+                console.log("Paiement finalisé avec succès sur la blockchain Pi !");
+
+                // 2. Mise à jour dans Supabase
+                await supabase.from("orders").update({
+                    status: "completed",
+                    txid: txid
+                }).eq("payment_id", paymentId);
+
+                alert("🎉 Achat effectué et validé avec succès !");
+                if (typeof window.loadUserOrders === "function") window.loadUserOrders();
+
             } catch (err) {
-                console.error("Erreur lors de la finalisation :", err);
+                console.error("Erreur réseau lors de la finalisation :", err);
             }
         },
 
         onCancel: (paymentId) => {
-            console.log("Paiement annulé :", paymentId);
+            console.log("Paiement annulé par l'utilisateur :", paymentId);
         },
+
         onError: (error, payment) => {
-            console.error("Erreur de paiement :", error, payment);
-            alert("Erreur de paiement Pi.");
+            console.error("Erreur de paiement Pi :", error, payment);
+            alert("Une erreur est survenue lors du paiement Pi.");
         }
     };
 
     try {
         await Pi.createPayment(paymentData, paymentCallbacks);
     } catch (err) {
-        console.error("Erreur d'exécution du paiement :", err);
+        console.error("Erreur d'initialisation du paiement :", err);
     }
 }
 
