@@ -1,103 +1,75 @@
-// =====================================
-// ARASHI ERP v4.0
-// js/hr.js
-// =====================================
+/* ==========================================
+   Entreprise ARASHI v4.0 - Module HR & Payroll
+   Fichier : js/hr.js
+========================================== */
 
-import { supabase } from "./supabase.js";
+import { supabase } from './supabase.js';
 
-// Charger les employés
-async function loadEmployees() {
+/**
+ * Charge l'effectif et met à jour le tableau RH
+ */
+export async function loadHRData() {
+    const tbody = document.getElementById("hrEmployeeTable");
 
-    const table = document.getElementById("employeesTable");
-
-    if (!table) return;
-
-    const { data, error } = await supabase
-        .from("employees")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-    if (error) {
-        console.error(error);
-        return;
-    }
-
-    table.innerHTML = "";
-
-    if (!data || data.length === 0) {
-        table.innerHTML = `
-        <tr>
-            <td colspan="5">Aucun employé enregistré.</td>
-        </tr>`;
-        return;
-    }
-
-    let salaryTotal = 0;
-
-    data.forEach(employee => {
-
-        salaryTotal += Number(employee.salary || 0);
-
-        table.innerHTML += `
-        <tr>
-            <td>${employee.name}</td>
-            <td>${employee.position}</td>
-            <td>${employee.email}</td>
-            <td>${employee.phone}</td>
-            <td>${employee.salary} π</td>
-        </tr>
-        `;
-
-    });
-
-    document.getElementById("totalEmployees").textContent = data.length;
-    document.getElementById("salaryTotal").textContent =
-        salaryTotal.toFixed(2) + " π";
-
-}
-
-// Ajouter un employé
-const saveBtn = document.getElementById("saveEmployee");
-
-if (saveBtn) {
-
-    saveBtn.addEventListener("click", async () => {
-
-        const name = document.getElementById("employeeName").value;
-        const position = document.getElementById("employeePosition").value;
-        const email = document.getElementById("employeeEmail").value;
-        const phone = document.getElementById("employeePhone").value;
-        const salary = document.getElementById("employeeSalary").value;
-
-        if (!name || !position) {
-            alert("Veuillez remplir les champs obligatoires.");
-            return;
-        }
-
-        const { error } = await supabase
+    try {
+        const { data: employees, error } = await supabase
             .from("employees")
-            .insert([
-                {
-                    name,
-                    position,
-                    email,
-                    phone,
-                    salary
-                }
-            ]);
+            .select("*")
+            .order("created_at", { ascending: false });
 
-        if (error) {
-            console.error(error);
-            alert("Erreur lors de l'enregistrement.");
-            return;
+        if (error) throw error;
+
+        if (tbody) {
+            tbody.innerHTML = "";
+
+            if (!employees || employees.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 20px;" class="text-muted">
+                            Aucun employé inscrit dans la base de données.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                let payrollTotal = 0;
+
+                employees.forEach(emp => {
+                    payrollTotal += parseFloat(emp.salary_pi || 0);
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td style="font-family: monospace;">${emp.id.substring(0, 8)}...</td>
+                        <td style="font-weight: bold;">${emp.full_name || emp.username}</td>
+                        <td>${emp.position || 'Non spécifié'}</td>
+                        <td>${emp.department || 'Général'}</td>
+                        <td style="color: #f39c12; font-weight: bold;">${emp.salary_pi || 0} π</td>
+                        <td>
+                            <span class="badge ${emp.status === 'actif' ? 'badge-success' : 'badge-danger'}">
+                                ${emp.status || 'actif'}
+                            </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="paySalary('${emp.id}', ${emp.salary_pi})">
+                                <i class="fa-solid fa-money-bill-transfer"></i> Payer en π
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                // Calculs statistiques
+                const totalEl = document.getElementById("statTotalEmployees");
+                const payrollEl = document.getElementById("statTotalPayroll");
+                
+                if (totalEl) totalEl.textContent = employees.length;
+                if (payrollEl) payrollEl.textContent = `${payrollTotal.toFixed(2)} π`;
+            }
         }
-
-        alert("Employé ajouté avec succès.");
-
-        location.reload();
-
-    });
-
+    } catch (err) {
+        console.error("Erreur chargement RH :", err);
+    }
 }
 
-document.addEventListener("DOMContentLoaded", loadEmployees);
+document.addEventListener("DOMContentLoaded", () => {
+    loadHRData();
+});
