@@ -1,158 +1,121 @@
 /* ==========================================
-   Entreprise ARASHI v4.0 & v3.0
-   Fichier : js/marketplace.js - Catalogue Multi-pages
+   Entreprise ARASHI v4.0 - Module Marketplace
+   Fichier : js/marketplace.js
 ========================================== */
 
-import { supabase, STORAGE_BUCKET } from './supabase.js';
+import { supabase } from './supabase.js';
 import { createPiPayment } from './pi-payments.js';
-import { changeLanguage } from './lang.js';
 
-const SUPABASE_URL = "https://cjmunzphzqazivbkgrdq.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_-7GJRL8TW81oHvjt-N17ZQ_OS8qD-cu";
+let allProducts = [];
 
 /**
- * Normalise et sécurise l'URL d'une image de produit / bien immobilier
- * @param {string} rawPath - Chemin brut ou URL stockée en BDD
- * @returns {string} URL valide utilisable dans une balise <img>
+ * Charge les offres depuis Supabase (table 'properties' ou 'products')
  */
-function getValidImageUrl(rawPath) {
-    if (!rawPath) return 'https://via.placeholder.com/300x200?text=Image+ARASHI';
-
-    let url = rawPath.trim();
-
-    if (url.toLowerCase().startsWith('http://') || url.toLowerCase().startsWith('https://')) {
-        return url.replace(/^https?:\/\//i, 'https://');
-    }
-
-    if (url.startsWith('assets/') || url.startsWith('images/')) {
-        return '/' + url;
-    }
-
-    // Récupération depuis le Storage Supabase si c'est un nom de fichier simple
-    if (supabase && STORAGE_BUCKET) {
-        const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(url);
-        if (data && data.publicUrl) return data.publicUrl;
-    }
-
-    return url;
-}
-
-/**
- * Charge dynamiquement les éléments depuis la table properties de Supabase
- * et s'adapte automatiquement à l'élément de grille présent sur la page courante.
- */
-export async function loadMarketplaceItems() {
-    // 📍 Prise en compte de tous les conteneurs cibles des différentes pages
-    const container = document.getElementById("fullProductsGrid") || 
-                      document.getElementById("marketplaceContainer") || 
-                      document.getElementById("immobilierContainer") ||
-                      document.getElementById("propertiesContainer");
-
-    if (!container) return;
+export async function loadMarketplaceProducts() {
+    const grid = document.getElementById("fullProductsGrid");
+    if (!grid) return;
 
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/properties?select=*`, {
-            headers: {
-                "apikey": SUPABASE_ANON_KEY,
-                "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-            }
-        });
+        const { data: products, error } = await supabase
+            .from("properties")
+            .select("*")
+            .order("created_at", { ascending: false });
 
-        if (!response.ok) throw new Error("Erreur de réponse API Supabase.");
+        if (error) throw error;
 
-        const items = await response.json();
-        container.innerHTML = "";
+        allProducts = products || [];
+        renderProducts(allProducts);
 
-        if (!items || items.length === 0) {
-            container.innerHTML = `
-                <div class="product-card-placeholder">
-                    <p style="text-align:center; color:#666;" data-lang="no_products">Aucun bien disponible pour le moment.</p>
-                </div>
-            `;
-            applyCurrentLanguage();
-            return;
-        }
-
-        items.forEach(item => {
-            const rawPath = item.image_url || item.image_jpg || item.photo || item.image_path || '';
-            const imageSrc = getValidImageUrl(rawPath);
-
-            const price = item.price_pi || item.price || 0;
-            const title = item.title || item.name || 'Prestation ARASHI';
-            const description = item.description || 'Bien certifié par l\'Entreprise ARASHI.';
-
-            const card = document.createElement("div");
-            card.className = "property-card service-card product-card";
-            card.style.marginBottom = "20px";
-            card.innerHTML = `
-                <img src="${imageSrc}" 
-                     alt="${title}" 
-                     class="property-img product-image"
-                     style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; display: block;"
-                     loading="lazy"
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Image+Indisponible';">
-                <div class="property-info" style="padding: 15px 0; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                    <div>
-                        <h3 style="margin-bottom: 8px;">${title}</h3>
-                        <p class="description" style="font-size: 0.9rem; color: #64748b; margin-bottom: 12px;">${description}</p>
-                    </div>
-                    <div>
-                        <p class="price" style="font-size: 1.1rem; margin-bottom: 10px;"><strong>${price} π</strong></p>
-                        <button class="btn-buy-pi hero-btn btn btn-warning" 
-                                style="width: 100%; border: none; cursor: pointer;"
-                                data-id="${item.id}" 
-                                data-price="${price}" 
-                                data-title="${title.replace(/"/g, '&quot;')}"
-                                data-lang="buy_btn">
-                            ⚡ Acheter avec Pi
-                        </button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-
-        attachPaymentEvents();
-        applyCurrentLanguage();
-
-    } catch (error) {
-        console.error("Erreur de chargement Marketplace :", error);
-        container.innerHTML = `
-            <div class="product-card-placeholder">
-                <p style="text-align:center; color:#dc3545;">Impossible de charger les annonces pour le moment.</p>
+    } catch (err) {
+        console.error("Erreur de chargement de la marketplace :", err);
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px 0;">
+                <i class="fa-solid fa-circle-exclamation" style="font-size: 2rem; color: #e74c3c; margin-bottom: 10px;"></i>
+                <p>Impossible de charger les articles de la Marketplace pour le moment.</p>
             </div>
         `;
     }
 }
 
 /**
- * Applique la langue enregistrée dans le navigateur
+ * Affiche la liste des produits dans la grille
  */
-function applyCurrentLanguage() {
-    const currentLang = localStorage.getItem("arashi_lang") || "fr";
-    if (typeof changeLanguage === 'function') {
-        changeLanguage(currentLang);
+function renderProducts(items) {
+    const grid = document.getElementById("fullProductsGrid");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+
+    if (items.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px 0;">
+                <p>Aucun article disponible sur le marché actuellement.</p>
+            </div>
+        `;
+        return;
     }
-}
 
-/**
- * Attache la logique de paiement Pi aux boutons dynamiques
- */
-function attachPaymentEvents() {
-    const buyButtons = document.querySelectorAll(".btn-buy-pi");
-    buyButtons.forEach(button => {
-        button.addEventListener("click", (e) => {
-            const btn = e.currentTarget;
-            const productId = btn.getAttribute("data-id");
-            const price = btn.getAttribute("data-price");
-            const title = btn.getAttribute("data-title");
+    items.forEach(product => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.style.cssText = "background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between;";
 
-            createPiPayment(Number(price), `Achat ARASHI: ${title}`, productId);
+        const price = parseFloat(product.price_pi || product.price || 0).toFixed(2);
+        const imageUrl = product.image_url || "https://via.placeholder.com/300x200?text=ARASHI+Marketplace";
+        const title = product.title || "Article sans titre";
+        const description = product.description ? (product.description.substring(0, 90) + "...") : "Aucune description fournie.";
+
+        card.innerHTML = `
+            <div>
+                <img src="${imageUrl}" alt="${title}" style="width: 100%; height: 160px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" onerror="this.src='https://via.placeholder.com/300x200?text=Produit'">
+                <h3 style="font-size: 1.05rem; margin-bottom: 8px;">${title}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">${description}</p>
+            </div>
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-weight: bold; color: #f39c12; font-size: 1.2rem;">${price} π</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-user"></i> ${product.username || 'ARASHI'}</span>
+                </div>
+                <button class="btn btn-warning buy-product-btn" data-title="${title}" data-price="${price}" data-id="${product.id}" style="width: 100%; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer;">
+                    ⚡ Acher en Pi
+                </button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    // Attachement des gestionnaires d'événements d'achat
+    document.querySelectorAll(".buy-product-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const itemTitle = e.currentTarget.getAttribute("data-title");
+            const itemPrice = e.currentTarget.getAttribute("data-price");
+            const itemId = e.currentTarget.getAttribute("data-id");
+
+            createPiPayment(itemPrice, `Achat Marketplace: ${itemTitle}`, { productId: itemId });
         });
     });
 }
 
-// Initialisation automatique au chargement du DOM
+/**
+ * Filtre dynamiquement les produits selon la saisie de recherche
+ */
+function initSearch() {
+    const searchInput = document.getElementById("globalSearch");
+    if (!searchInput) return;
+
+    searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const filtered = allProducts.filter(item => {
+            const titleMatch = item.title ? item.title.toLowerCase().includes(query) : false;
+            const descMatch = item.description ? item.description.toLowerCase().includes(query) : false;
+            return titleMatch || descMatch;
+        });
+        renderProducts(filtered);
+    });
+}
+
+// Initialisation au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
-    loadMarketplaceItems();
+    loadMarketplaceProducts();
+    initSearch();
 });
