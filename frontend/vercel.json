@@ -1,9 +1,17 @@
 {
+  "version": 2,
   "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/erp", "destination": "/pages/erp.html" },
+    { "source": "/immobilier", "destination": "/pages/immobilier.html" },
+    { "source": "/topographie", "destination": "/pages/topographie.html" },
+    { "source": "/construction", "destination": "/pages/construction.html" },
+    { "source": "/hr", "destination": "/pages/hr.html" },
+    { "source": "/marketplace", "destination": "/pages/marketplace.html" },
+    { "source": "/vendor", "destination": "/pages/vendor.html" },
+    { "source": "/orders", "destination": "/pages/orders.html" },
+    { "source": "/admin", "destination": "/pages/admin.html" },
+    { "source": "/paiement", "destination": "/pages/paiement.html" }
   ]
 }
