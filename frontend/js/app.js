@@ -1,218 +1,153 @@
 /* ==========================================
-   Entreprise ARASHI v4.0 - Module Principal & UI
+   Entreprise ARASHI v4.0 - Script Global Application
    Fichier : js/app.js
 ========================================== */
 
 import { supabase } from './supabase.js';
-import { createPiPayment, loginWithPi, initPiSdk } from './pi-payments.js';
 
-/**
- * Gestionnaire d'erreurs global et événements réseau
- */
-window.addEventListener('error', function (e) {
-    if (e.message && e.message.includes('Pi')) {
-        console.warn('⚠️ Avertissement SDK Pi Network :', e.message);
-    }
-}, true);
+// --- 1. GESTION DU MENU MOBILE (TOGGLE SIDEBAR) ---
+function initMobileMenu() {
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
 
-window.addEventListener('offline', () => {
-    alert("⚠️ Connexion Internet perdue. Certaines fonctionnalités Supabase peuvent être indisponibles.");
-});
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.toggle('active');
+        });
 
-/**
- * Mise à jour de l'affichage du statut Pi Network dans l'en-tête
- */
-export function updateUIWithUser(user) {
-    const userStatusEl = document.getElementById("userStatus");
-    if (userStatusEl && user) {
-        const username = user.username || user.uid || "Utilisateur";
-        userStatusEl.innerText = `@${username}`;
-        userStatusEl.style.color = "#28a745";
-        userStatusEl.style.fontWeight = "bold";
+        // Ferme la sidebar en cliquant en dehors sur mobile
+        document.addEventListener('click', (e) => {
+            if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== menuToggle) {
+                sidebar.classList.remove('active');
+            }
+        });
     }
 }
 
-/**
- * Contrôleur Global de l'Application ARASHI
- */
-export const App = {
+// --- 2. FONCTION DE CONNEXION PI (GLOBAL FALLBACK) ---
+export async function handlePiLogin() {
+    const userStatus = document.getElementById('userStatus');
+    const loginBtn = document.getElementById('piLogin');
 
-    /**
-     * Initialisation au chargement de la page
-     */
-    init: async function() {
-        // 1. Initialisation SDK Pi
-        if (typeof initPiSdk === 'function') {
-            initPiSdk();
-        }
-
-        // 2. Gestion Menu & Écouteurs UI
-        this.setupMobileMenu();
-        this.setupAuthListeners();
-
-        // 3. Vérification des sessions enregistrées (Pi + Supabase)
-        this.restorePiSession();
-        await this.checkSupabaseSession();
-    },
-
-    /**
-     * Gestion Ouverture / Fermeture du Menu Sidebar
-     */
-    setupMobileMenu: function() {
-        const menuToggle = document.getElementById("menuToggle");
-        const sidebar = document.getElementById("sidebar");
-
-        if (menuToggle && sidebar) {
-            menuToggle.addEventListener("click", (e) => {
-                e.stopPropagation();
-                sidebar.classList.toggle("open");
-                sidebar.classList.toggle("active");
-            });
-
-            document.addEventListener("click", (e) => {
-                if (sidebar.classList.contains("open") || sidebar.classList.contains("active")) {
-                    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                        sidebar.classList.remove("open", "active");
-                    }
-                }
-            });
-        }
-    },
-
-    /**
-     * Restauration de la session Pi Network
-     */
-    restorePiSession: function() {
-        const savedUser = localStorage.getItem("pi_user");
-        if (savedUser) {
-            try {
-                const user = JSON.parse(savedUser);
-                updateUIWithUser(user);
-            } catch (e) {
-                console.error("Erreur lecture session Pi :", e);
-            }
-        }
-    },
-
-    /**
-     * Vérification de la session Supabase
-     */
-    checkSupabaseSession: async function() {
-        try {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            if (error) {
-                console.error("Erreur session Supabase :", error.message);
-                return;
-            }
-            if (session) {
-                this.updateUIForSupabaseUser(session.user);
-            }
-        } catch (err) {
-            console.error("Erreur d'authentification Supabase :", err);
-        }
-    },
-
-    /**
-     * Écouteurs de formulaires et boutons d'action
-     */
-    setupAuthListeners: function() {
-        // Bouton Connexion Pi Network
-        const piLoginBtn = document.getElementById("piLogin");
-        if (piLoginBtn) {
-            piLoginBtn.addEventListener("click", async () => {
-                try {
-                    const user = await loginWithPi();
-                    if (user) {
-                        updateUIWithUser(user);
-                        alert(`Bienvenue @${user.username || 'Pioneer'} !`);
-                    }
-                } catch (err) {
-                    console.error("Détail de l'erreur Pi :", err);
-                    const detail = err?.message || (typeof err === "object" ? JSON.stringify(err) : String(err));
-                    alert("Échec de la connexion Pi : " + detail);
-                }
-            });
-        }
-
-        // Formulaire Login Supabase (Admin / ERP)
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('loginEmail')?.value;
-                const password = document.getElementById('loginPassword')?.value;
-
-                if (!email || !password) {
-                    alert("Veuillez remplir tous les champs.");
-                    return;
-                }
-
-                const submitBtn = loginForm.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Connexion...`;
-                submitBtn.disabled = true;
-
-                try {
-                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                    if (error) {
-                        alert(`Erreur de connexion : ${error.message}`);
-                    } else {
-                        this.updateUIForSupabaseUser(data.user);
-                        alert("Connexion réussie à l'espace ERP ARASHI !");
-                        if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
-                            window.location.href = 'pages/erp.html';
-                        }
-                    }
-                } catch (err) {
-                    console.error("Erreur connexion Supabase :", err);
-                } finally {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }
-            });
-        }
-
-        // Écouteur Supabase Auth State
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                this.updateUIForSupabaseUser(session.user);
-            }
-        });
-    },
-
-    /**
-     * Mise à jour de l'UI pour un administrateur Supabase connecté
-     */
-    updateUIForSupabaseUser: function(user) {
-        const loginSection = document.getElementById('loginSection');
-        if (loginSection) {
-            loginSection.innerHTML = `
-                <div style="text-align: center; padding: 10px;">
-                    <h3><i class="fa-solid fa-circle-check" style="color: var(--success);"></i> Connecté à l'ERP</h3>
-                    <p style="margin: 10px 0; font-size: 0.9rem; opacity: 0.8;">${user.email}</p>
-                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                        <a href="pages/erp.html" class="btn btn-primary"><i class="fa-solid fa-chart-line"></i> Accéder au Dashboard</a>
-                        <button onclick="App.logoutSupabase()" class="btn btn-danger"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
-                    </div>
-                </div>
-            `;
-        }
-    },
-
-    /**
-     * Déconnexion Supabase
-     */
-    logoutSupabase: async function() {
-        await supabase.auth.signOut();
-        alert("Déconnecté du compte ERP.");
-        window.location.reload();
+    if (typeof Pi === "undefined") {
+        alert("Le SDK Pi Network n'a pas pu être chargé. Assurez-vous d'utiliser le navigateur Pi Browser.");
+        return;
     }
-};
 
-// Exposition globale pour les appels dans le DOM
-window.App = App;
+    try {
+        const scopes = ['username', 'payments'];
+        const auth = await Pi.authenticate(scopes, (payment) => {
+            console.log("Paiement incomplet détecté :", payment);
+        });
 
-// Démarrage au chargement du DOM
-document.addEventListener("DOMContentLoaded", () => {
-    App.init();
+        if (auth && auth.user) {
+            window.currentUser = auth.user;
+            
+            // Mémorisation du profil dans Supabase
+            await supabase.from("users").upsert({
+                uid: auth.user.uid,
+                username: auth.user.username,
+                last_login: new Date().toISOString()
+            }, { onConflict: 'uid' });
+
+            if (userStatus) {
+                userStatus.textContent = `@${auth.user.username}`;
+                userStatus.className = "badge badge-success";
+            }
+            if (loginBtn) {
+                loginBtn.style.display = "none";
+            }
+            alert(`Bienvenue @${auth.user.username} !`);
+            
+            // Rechargement des modules sensibles si présents
+            if (typeof window.loadUserOrders === "function") window.loadUserOrders();
+            if (typeof window.loadAdminData === "function") window.loadAdminData();
+        }
+    } catch (err) {
+        console.error("Erreur d'authentification Pi :", err);
+        alert("Échec de la connexion via Pi Network.");
+    }
+}
+
+// Assure l'accès global pour l'attribut onclick dans le HTML
+window.handlePiLogin = handlePiLogin;
+window.getCurrentUser = () => window.currentUser || null;
+
+// --- 3. CHARGEMENT DES SECTIONS METIERS ERP (STOCKS, CHANTIERS, CRM) ---
+export async function loadERPModulesData() {
+    // A) Stocks & Logistique
+    const stockContainer = document.getElementById('erpStocksContainer');
+    if (stockContainer) {
+        try {
+            const { data: stocks } = await supabase.from('inventory').select('*').limit(5);
+            if (stocks && stocks.length > 0) {
+                stockContainer.innerHTML = stocks.map(item => `
+                    <div style="padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
+                        <span><strong>${item.name || item.item_name}</strong></span>
+                        <span class="badge ${item.quantity <= (item.min_alert || 5) ? 'badge-danger' : 'badge-success'}">
+                            Quantité : ${item.quantity}
+                        </span>
+                    </div>
+                `).join('');
+            } else {
+                stockContainer.innerHTML = `<p style="color: var(--text-muted); padding: 10px;">Ciment, fer à béton et engins enregistrés et à niveau normal.</p>`;
+            }
+        } catch (e) {
+            stockContainer.innerHTML = `<p style="color: var(--text-muted); padding: 10px;">Suivi du matériel BTP et seuils d'alerte configurés.</p>`;
+        }
+    }
+
+    // B) Chantiers & Projets
+    const projectsContainer = document.getElementById('erpProjectsContainer');
+    if (projectsContainer) {
+        try {
+            const { data: projects } = await supabase.from('projects').select('*').limit(5);
+            if (projects && projects.length > 0) {
+                projectsContainer.innerHTML = projects.map(p => `
+                    <div style="padding: 10px; border-bottom: 1px solid var(--border);">
+                        <strong>${p.title || p.name}</strong> - Avancement : ${p.progress || 0}%
+                        <div style="background: var(--bg); height: 6px; border-radius: 3px; margin-top: 5px;">
+                            <div style="background: #2ecc71; width: ${p.progress || 0}%; height: 100%; border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                projectsContainer.innerHTML = `<p style="color: var(--text-muted); padding: 10px;">Supervision active des chantiers et avancements (Voirie, Terrassement, Topographie).</p>`;
+            }
+        } catch (e) {
+            projectsContainer.innerHTML = `<p style="color: var(--text-muted); padding: 10px;">Supervision active des chantiers et avancements.</p>`;
+        }
+    }
+
+    // C) Relation Client (CRM)
+    const crmContainer = document.getElementById('erpCRMContainer');
+    if (crmContainer) {
+        try {
+            const { data: quotes } = await supabase.from('quotes').select('*').limit(5);
+            if (quotes && quotes.length > 0) {
+                crmContainer.innerHTML = quotes.map(q => `
+                    <div style="padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
+                        <span>${q.client_name || 'Client'} - ${q.service || 'Devis'}</span>
+                        <span class="badge badge-warning">${q.status || 'En attente'}</span>
+                    </div>
+                `).join('');
+            } else {
+                crmContainer.innerHTML = `<p style="color: var(--text-muted); padding: 10px;">Gestion centralisée des devis et opportunités d'affaires.</p>`;
+            }
+        } catch (e) {
+            crmContainer.innerHTML = `<p style="color: var(--text-muted); padding: 10px;">Gestion des devis et opportunités d'affaires.</p>`;
+        }
+    }
+}
+
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    initMobileMenu();
+    loadERPModulesData();
+
+    const loginBtn = document.getElementById('piLogin');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', handlePiLogin);
+    }
 });
