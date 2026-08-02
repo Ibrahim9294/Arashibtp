@@ -1,94 +1,120 @@
 <!DOCTYPE html>
-<html lang="fr">
-
+<html lang="fr" dir="ltr">
 <head>
+    <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Immobilier | Entreprise ARASHI v3.0</title>
+    <title>Immobilier | Entreprise ARASHI v4.0</title>
+
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Unifié -->
     <link rel="stylesheet" href="../css/style.css">
+    
+    <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
-
 <body>
 
-    <button id="menuToggle" class="menu-toggle">☰</button>
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
-            <p>Immobilier</p>
+            <p data-lang="realestate">Immobilier & Foncier</p>
         </div>
 
-        <nav class="sidebar-nav" style="padding: 15px; background: #0f172a; color: white;">
-            <a href="../index.html" data-lang="home" style="display: block; padding: 10px; color: white; text-decoration: none;">🏠 Accueil</a>
-            <a href="dashboard.html" data-lang="dashboard" style="display: block; padding: 10px; color: white; text-decoration: none;">📊 Dashboard</a>
-            <a href="immobilier.html" class="active" data-lang="realestate" style="display: block; padding: 10px; color: white; text-decoration: none; font-weight: bold; background: rgba(255,255,255,0.1); border-radius: 6px;">🏡 Immobilier</a>
-            <a href="parcelles.html" data-lang="plots" style="display: block; padding: 10px; color: white; text-decoration: none;">📍 Parcelles</a>
-            <a href="marketplace.html" data-lang="marketplace" style="display: block; padding: 10px; color: white; text-decoration: none;">🛒 Marketplace</a>
-            <a href="vendor.html" data-lang="vendor" style="display: block; padding: 10px; color: white; text-decoration: none;">🛍️ Vendor Center</a>
-            <a href="paiement.html" data-lang="payment" style="display: block; padding: 10px; color: white; text-decoration: none;">💳 Paiement Pi</a>
-            <a href="admin.html" data-lang="admin" style="display: block; padding: 10px; color: white; text-decoration: none;">👑 Admin</a>
+        <!-- Sélecteur de Langue -->
+        <div class="lang-selector" style="padding: 15px 20px 5px;">
+            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                <option value="fr">Français (FR)</option>
+                <option value="ha">Hausa (HA)</option>
+                <option value="dje">Zarma (DJE)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
 
-            <div class="lang-selector" style="padding: 12px 10px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.15); background: #1e293b; border-radius: 6px;">
-                <label for="sidebarLanguageSelect" style="font-size: 0.85em; color: #94a3b8; display: block; margin-bottom: 6px;">🌐 Langue / Yare / اللغة</label>
-                <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 8px; border-radius: 5px; background: #0f172a; color: white; border: 1px solid #334e68; cursor: pointer; font-size: 0.9em;">
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="en">🇬🇧 English</option>
-                    <option value="ha">🇳🇬 Haoussa (Hausa)</option>
-                    <option value="ar">🇸🇦 Arabe (العربية)</option>
-                </select>
-            </div>
+        <nav>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
+            <a href="erp.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="immobilier.html" class="active"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
+            <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
+            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
+            <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
+            <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
+            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
+            <a href="paiement.html"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
         </nav>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <div class="content">
-
         <header class="topbar">
-            <h1 data-lang="realestate">🏡 Immobilier ARASHI</h1>
-            <div class="auth-area">
-                <button id="piLogin" class="btn btn-primary" data-lang="login_pi">🪙 Connexion Pi</button>
-                <span id="userStatus" style="margin-left:15px;font-weight:bold;" data-lang="not_connected">Non connecté</span>
-                <button id="logoutBtn" class="btn btn-danger" style="margin-left:10px; display:none;" data-lang="logout">Déconnexion</button>
+            <h1 data-lang="realestate">🏡 Offres Immobilières Pi Network</h1>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
+                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
+                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
             </div>
         </header>
 
-        <section class="search-container">
+        <!-- HERO BANNER -->
+        <section class="hero" style="background: linear-gradient(135deg, #2e7d32 0%, #0B3D91 100%);">
+            <h2>Terrains, Parcels & Maisons</h2>
+            <p data-lang="welcome">Découvrez nos opportunités foncières certifiées payables directement en Pi au Niger.</p>
+            <button class="hero-btn" onclick="document.getElementById('marketplaceContainer').scrollIntoView({behavior: 'smooth'});">
+                Explorer le catalogue
+            </button>
+        </section>
+
+        <!-- BARRE DE RECHERCHE -->
+        <div class="search-container">
             <div class="search-box">
-                <input type="search" id="propertySearch" data-lang="search" placeholder="🔎 Rechercher des villas, duplex, appartements...">
+                <input type="text" id="globalSearch" placeholder="🔎 Rechercher des villas, parcelles, terrains certifiés...">
             </div>
-        </section>
+        </div>
 
-        <!-- GRILLE DES PROPRIÉTÉS -->
-        <section class="properties-section" style="padding: 20px;">
-            <div class="products-grid" id="villasContainer">
-                
-                <!-- Exemple de carte Villa -->
-                <div class="service-card" style="background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                    <img src="https://zupsptrtesedlqazayzw.supabase.co/storage/v1/object/public/arashi-assets/villas/villa-moderne.jpg" alt="Villa VIP" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
-                    <h3 style="margin-top: 12px; font-size: 1.2rem;">Villa Haute Standing Niamey</h3>
-                    <p style="color: #64748b; font-size: 0.9rem;">5 Chambres • 4 Douches • Piscine • Garage</p>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-                        <span style="font-size: 1.4rem; font-weight: bold; color: var(--secondary-color, #f4b400);">3.5 π</span>
-                        <button class="btn btn-primary" onclick="initiatePropertyPayment('Villa Haute Standing Niamey', 3.5)">Acheter / Réserver</button>
-                    </div>
+        <!-- CATALOGUE IMMOBILIER -->
+        <section class="popular-products">
+            <div class="section-header" style="margin-bottom: 20px;">
+                <h2>🏡 Catalogue des biens immobiliers</h2>
+            </div>
+
+            <!-- Grille Dynamique connectée à Supabase (js/marketplace.js) -->
+            <div class="products-grid" id="marketplaceContainer">
+                <div class="product-card-placeholder">
+                    <p><i class="fa-solid fa-spinner fa-spin"></i> Chargement des biens immobiliers...</p>
                 </div>
-
             </div>
         </section>
 
-        <footer>
-            <p>© 2026 Entreprise ARASHI v3.0 - Tous droits réservés.</p>
+        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
+            <p>© 2026 Entreprise ARASHI • Immobilier & Foncier</p>
         </footer>
-
     </div>
 
-    <script type="module" src="../js/app.js"></script>
+    <!-- MODULES JS ES6 (Bas de page) -->
+    <script type="module" src="../js/supabase.js"></script>
     <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/pi-payments.js"></script>
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/marketplace.js"></script>
+
     <script>
-        document.getElementById('menuToggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('active');
-        });
+        // Callback global fallback pour les boutons d'achat direct
+        window.buy = async function(title, price) {
+            if (typeof window.createPiPayment === "function") {
+                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
+            } else if (typeof window.addToCart === "function") {
+                window.addToCart(title, price);
+            } else {
+                alert("Initialisation du SDK Pi Network... Veuillez réessayer dans un instant.");
+            }
+        };
     </script>
 </body>
-
 </html>
