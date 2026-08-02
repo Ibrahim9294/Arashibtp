@@ -1,70 +1,84 @@
 /* ==========================================
-   Entreprise ARASHI v4.0 - Module ERP Dashboard
+   Entreprise ARASHI v4.0 - ERP Dashboard Global
    Fichier : js/erp.js
 ========================================== */
 
 import { supabase } from './supabase.js';
 
 /**
- * Charge les métriques clés et l'activité récente pour le Dashboard ERP
+ * Initialise l'ensemble du tableau de bord ERP
  */
-export async function loadERPStats() {
-    const tableBody = document.getElementById("erpRecentActivityTable");
-    const totalProductsEl = document.getElementById("erpTotalProducts");
+export async function loadErpDashboard() {
+    initNavigationRouting();
+    await Promise.all([
+        loadStocksAndLogistics(),
+        loadConstructionProjects(),
+        loadCrmData()
+    ]);
+}
+
+/**
+ * Gestion du routage et des évènements d'interaction
+ */
+function initNavigationRouting() {
+    const navLinks = document.querySelectorAll("aside.sidebar nav a");
+    
+    navLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+            const href = link.getAttribute("href");
+            if (!href || href === "#") {
+                e.preventDefault();
+                console.warn("Lien non défini ou en cours de développement.");
+            }
+        });
+    });
+}
+
+/**
+ * 📦 1. STOCKS & LOGISTIQUE
+ * Suivi du matériel BTP et alerte sur seuil critique
+ */
+async function loadStocksAndLogistics() {
+    const tableBody = document.getElementById("stocksTableBody");
+    const alertBadge = document.getElementById("stockAlertBadge");
 
     try {
-        // 1. Récupération du total des offres/propriétés en catalogue
-        const { count: productCount, error: countErr } = await supabase
-            .from("properties")
-            .select("*", { count: "exact", head: true });
-
-        if (!countErr && totalProductsEl) {
-            totalProductsEl.textContent = productCount !== null ? productCount : "0";
-        }
-
-        // 2. Récupération des transactions récentes (payments / orders)
-        let payments = [];
-        const { data: payData, error: payErr } = await supabase
-            .from("payments")
+        const { data: inventory, error } = await supabase
+            .from("inventory_equipment")
             .select("*")
-            .order("created_at", { ascending: false })
-            .limit(5);
+            .order("quantity", { ascending: true });
 
-        if (!payErr && payData) {
-            payments = payData;
-        } else {
-            // Fallback sur la table orders si payments n'est pas alimentée
-            const { data: orderData, error: orderErr } = await supabase
-                .from("orders")
-                .select("*")
-                .order("created_at", { ascending: false })
-                .limit(5);
-            if (!orderErr && orderData) payments = orderData;
-        }
+        if (error) throw error;
 
-        // 3. Remplissage du tableau d'activité récente
+        let lowStockCount = 0;
+
         if (tableBody) {
             tableBody.innerHTML = "";
-            if (!payments || payments.length === 0) {
+
+            if (!inventory || inventory.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
-                            Aucune transaction récente enregistrée.
+                        <td colspan="4" style="text-align: center; padding: 15px; color: var(--text-muted);">
+                            Aucun équipement répertorié dans les stocks.
                         </td>
                     </tr>
                 `;
             } else {
-                payments.forEach(tx => {
+                inventory.forEach(item => {
+                    const isLowStock = item.quantity <= (item.min_threshold || 5);
+                    if (isLowStock) lowStockCount++;
+
                     const row = document.createElement("tr");
                     row.style.borderBottom = "1px solid var(--border)";
                     row.innerHTML = `
-                        <td style="padding: 12px 10px; font-family: monospace; font-size: 0.85rem;">${tx.payment_id || tx.id ? (tx.payment_id || tx.id).substring(0, 8) + '...' : '-'}</td>
-                        <td style="padding: 12px 10px; font-weight: 600;">@${tx.pi_uid || tx.username || 'Pioneer'}</td>
-                        <td style="padding: 12px 10px; color: var(--text-muted);">${tx.memo || tx.title || 'Achat Marketplace'}</td>
-                        <td style="padding: 12px 10px; color: #28a745; font-weight: bold;">${tx.amount || tx.price_pi || 0} π</td>
-                        <td style="padding: 12px 10px;">
-                            <span class="badge ${tx.status === 'COMPLETED' ? 'badge-success' : 'badge-warning'}">
-                                ${tx.status || 'PENDING'}
+                        <td style="padding: 10px; font-weight: 600;">${item.name || 'Matériel'}</td>
+                        <td style="padding: 10px;">${item.category || 'BTP'}</td>
+                        <td style="padding: 10px; font-weight: bold; color: ${isLowStock ? '#e74c3c' : 'var(--text)'};">
+                            ${item.quantity} ${item.unit || 'unités'}
+                        </td>
+                        <td style="padding: 10px;">
+                            <span class="badge ${isLowStock ? 'badge-danger' : 'badge-success'}">
+                                ${isLowStock ? '⚠️ Seuil Critique' : 'OK'}
                             </span>
                         </td>
                     `;
@@ -72,20 +86,128 @@ export async function loadERPStats() {
                 });
             }
         }
-    } catch (err) {
-        console.error("Erreur d'initialisation du Dashboard ERP :", err);
-        if (tableBody) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px; color: var(--danger);">
-                        Erreur de chargement des données ERP.
-                    </td>
-                </tr>
-            `;
+
+        if (alertBadge) {
+            alertBadge.textContent = `${lowStockCount} alerte(s)`;
+            alertBadge.className = `badge ${lowStockCount > 0 ? 'badge-danger' : 'badge-success'}`;
         }
+
+    } catch (err) {
+        console.error("Erreur chargement stocks BTP :", err);
+    }
+}
+
+/**
+ * 🏗️ 2. CHANTIERS & PROJETS
+ * Supervision des chantiers et taux d'avancement
+ */
+async function loadConstructionProjects() {
+    const projectsContainer = document.getElementById("projectsSupervisionGrid");
+
+    try {
+        const { data: projects, error } = await supabase
+            .from("construction_projects")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        if (projectsContainer) {
+            projectsContainer.innerHTML = "";
+
+            if (!projects || projects.length === 0) {
+                projectsContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-muted);">
+                        Aucun chantier en cours de supervision.
+                    </div>
+                `;
+                return;
+            }
+
+            projects.forEach(project => {
+                const progress = project.progress_percent || 0;
+                const card = document.createElement("div");
+                card.className = "card";
+                card.style.cssText = "padding: 15px; border-left: 4px solid var(--primary-color);";
+
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin: 0;">${project.project_type || 'Chantier BTP'}</h4>
+                        <span class="badge badge-info">${project.status || 'En cours'}</span>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+                        📍 ${project.location || 'Site non spécifié'}
+                    </p>
+                    <div style="margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+                            <span>Avancement</span>
+                            <span><strong>${progress}%</strong></span>
+                        </div>
+                        <div style="width: 100%; background: var(--border); height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="width: ${progress}%; background: #28a745; height: 100%;"></div>
+                        </div>
+                    </div>
+                `;
+                projectsContainer.appendChild(card);
+            });
+        }
+
+    } catch (err) {
+        console.error("Erreur chargement suivi des chantiers :", err);
+    }
+}
+
+/**
+ * 🤝 3. RELATION CLIENT (CRM)
+ * Opportunités et devis d'affaires
+ */
+async function loadCrmData() {
+    const crmTable = document.getElementById("crmOpportunitiesTable");
+
+    try {
+        const { data: leads, error } = await supabase
+            .from("crm_opportunities")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        if (crmTable) {
+            crmTable.innerHTML = "";
+
+            if (!leads || leads.length === 0) {
+                crmTable.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 15px; color: var(--text-muted);">
+                            Aucune opportunité CRM enregistrée.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            leads.forEach(lead => {
+                const row = document.createElement("tr");
+                row.style.borderBottom = "1px solid var(--border)";
+                row.innerHTML = `
+                    <td style="padding: 10px; font-weight: 600;">${lead.client_name || 'Client Inconnu'}</td>
+                    <td style="padding: 10px;">${lead.subject || 'Devis BTP'}</td>
+                    <td style="padding: 10px; color: #f39c12; font-weight: bold;">${lead.estimated_value_pi || 0} π</td>
+                    <td style="padding: 10px;">
+                        <span class="badge ${lead.status === 'gagne' ? 'badge-success' : 'badge-warning'}">
+                            ${lead.status || 'En négociation'}
+                        </span>
+                    </td>
+                `;
+                crmTable.appendChild(row);
+            });
+        }
+
+    } catch (err) {
+        console.error("Erreur chargement CRM :", err);
     }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadERPStats();
+    loadErpDashboard();
 });
