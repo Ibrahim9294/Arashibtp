@@ -1,11 +1,11 @@
 /* =================================================================
-   ARASHI Enterprise v3.0 - Multi-language Manager
+   ARASHI Enterprise v4.0 - Multi-language Manager
    Fichier : js/lang.js
 ================================================================= */
 
 const translations = {
     fr: {
-        welcome: "Bienvenue sur Entreprise ARASHI v3.0",
+        welcome: "Bienvenue sur Entreprise ARASHI v4.0",
         home: "🏠 Accueil",
         dashboard: "📊 Dashboard",
         realestate: "🏡 Immobilier",
@@ -19,7 +19,7 @@ const translations = {
         topography: "Topographie"
     },
     ha: {
-        welcome: "Barka da zuwa Entreprise ARASHI v3.0",
+        welcome: "Barka da zuwa Entreprise ARASHI v4.0",
         home: "🏠 Shafin Gida",
         dashboard: "📊 Dashboard",
         realestate: "🏡 Gidaje da Filaye",
@@ -33,7 +33,7 @@ const translations = {
         topography: "Binciken Kasa"
     },
     dje: {
-        welcome: "Kubani ARASHI v3.0 ra",
+        welcome: "Kubani ARASHI v4.0 ra",
         home: "🏠 Hu gaa",
         dashboard: "📊 Dashboard",
         realestate: "🏡 Fuu nda Laabu",
@@ -47,7 +47,7 @@ const translations = {
         topography: "Laabu neesa"
     },
     ar: {
-        welcome: "مرحباً بكم في شركة أراشي v3.0",
+        welcome: "مرحباً بكم في شركة أراشي v4.0",
         home: "🏠 الرئيسية",
         dashboard: "📊 لوحة التحكم",
         realestate: "🏡 العقارات",
@@ -61,7 +61,7 @@ const translations = {
         topography: "المسح الطبوغرافي"
     },
     zh: {
-        welcome: "欢迎来到 ARASHI 企业平台 v3.0",
+        welcome: "欢迎来到 ARASHI 企业平台 v4.0",
         home: "🏠 首页",
         dashboard: "📊 仪表板",
         realestate: "🏡 房地产",
@@ -75,7 +75,7 @@ const translations = {
         topography: "地形测量"
     },
     en: {
-        welcome: "Welcome to ARASHI Enterprise v3.0",
+        welcome: "Welcome to ARASHI Enterprise v4.0",
         home: "🏠 Home",
         dashboard: "📊 Dashboard",
         realestate: "🏡 Real Estate",
