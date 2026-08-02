@@ -1,140 +1,159 @@
 <!DOCTYPE html>
-<html lang="fr">
-
+<html lang="fr" data-theme="dark">
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ARASHI ERP - Ressources Humaines</title>
-
-<link rel="stylesheet" href="../css/style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion RH & Paie - ARASHI Enterprise v4.0</title>
+    
+    <!-- CSS Globaux & Thème -->
+    <link rel="stylesheet" href="../css/style.css">
+    
+    <!-- Font Awesome CDN pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SDK Pi Network -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
+<body class="bg-main text-main">
 
-<body>
+    <!-- BARRE DE NAVIGATION PRINCIPALE -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="brand-logo">
+                <i class="fa-solid fa-cube text-primary"></i> ARASHI <span class="badge-v4">v4.0</span>
+            </a>
+            
+            <nav class="nav-menu">
+                <a href="../index.html" class="nav-link" data-i18n="nav_home"><i class="fa-solid fa-house"></i> Accueil</a>
+                <a href="vendor.html" class="nav-link" data-i18n="nav_vendor"><i class="fa-solid fa-store"></i> Espace Vendeur</a>
+                <a href="hr.html" class="nav-link active" data-i18n="nav_hr"><i class="fa-solid fa-users"></i> Ressources Humaines</a>
+            </nav>
 
-<header class="topbar">
+            <div class="nav-actions">
+                <!-- Selecteur de Langue -->
+                <select id="langSelector" class="lang-select">
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="en">🇺🇸 EN</option>
+                </select>
 
-<h1>👥 Ressources Humaines</h1>
+                <!-- Zone Authentification Pi -->
+                <div id="authContainer">
+                    <button id="btnPiAuth" class="btn btn-primary">
+                        <i class="fa-solid fa-bolt"></i> Connexion Pi
+                    </button>
+                    <div id="userInfo" class="user-profile-chip hidden">
+                        <i class="fa-solid fa-user-circle"></i>
+                        <span id="userNameDisplay">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-<a href="erp.html" class="btn">
-⬅ Retour ERP
-</a>
+    <!-- CONTENU PRINCIPAL RH -->
+    <main class="container py-4">
+        
+        <!-- En-tête de la page -->
+        <section class="page-header d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 style="margin: 0; font-size: 1.8rem;">
+                    <i class="fa-solid fa-users-gear text-primary"></i> Module RH & Paie
+                </h1>
+                <p class="text-muted" style="margin-top: 5px;">
+                    Gérez les collaborateurs, le suivi des présences et le versement des salaires en Pi (π).
+                </p>
+            </div>
+            <button class="btn btn-success" id="btnAddEmployeeBtn">
+                <i class="fa-solid fa-user-plus"></i> Nouveau Collaborateur
+            </button>
+        </section>
 
-</header>
+        <!-- KPI / Statistiques RH -->
+        <section class="grid-4 mb-4">
+            <div class="card card-stat">
+                <div class="stat-icon bg-blue"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-details">
+                    <span class="text-muted">Total Effectif</span>
+                    <h3 id="statTotalEmployees">0</h3>
+                </div>
+            </div>
+            
+            <div class="card card-stat">
+                <div class="stat-icon bg-green"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="stat-details">
+                    <span class="text-muted">Présents Aujourd'hui</span>
+                    <h3 id="statPresentToday">0</h3>
+                </div>
+            </div>
 
-<section class="hero">
+            <div class="card card-stat">
+                <div class="stat-icon bg-warning"><i class="fa-solid fa-coins"></i></div>
+                <div class="stat-details">
+                    <span class="text-muted">Masse Salariale</span>
+                    <h3 id="statTotalPayroll">0.00 π</h3>
+                </div>
+            </div>
 
-<h2>Gestion des Employés</h2>
+            <div class="card card-stat">
+                <div class="stat-icon bg-purple"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <div class="stat-details">
+                    <span class="text-muted">Congés en Attente</span>
+                    <h3 id="statPendingLeaves">0</h3>
+                </div>
+            </div>
+        </section>
 
-<p>
-Administration complète des ressources humaines.
-</p>
+        <!-- Grille du contenu principal RH -->
+        <section class="grid-2">
+            
+            <!-- Tableau des Employés -->
+            <div class="card" style="grid-column: span 2;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3><i class="fa-solid fa-address-book"></i> Registre des Employés</h3>
+                    <div class="search-box">
+                        <input type="text" id="hrSearchInput" class="form-input" placeholder="Rechercher un employé...">
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom / Pseudonyme</th>
+                                <th>Poste</th>
+                                <th>Département</th>
+                                <th>Salaire (π)</th>
+                                <th>Statut</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hrEmployeeTable">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 20px;" class="text-muted">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Chargement de la liste des employés...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-</section>
+        </section>
+    </main>
 
-<section class="dashboard-grid">
+    <!-- FOOTER GLOBALE -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>&copy; 2026 ARASHI Enterprise v4.0. Droits réservés. Intégré avec le réseau Pi Network.</p>
+        </div>
+    </footer>
 
-<div class="card">
-
-<h3>👥 Employés</h3>
-
-<p id="totalEmployees">0</p>
-
-</div>
-
-<div class="card">
-
-<h3>🟢 Présents</h3>
-
-<p id="presentEmployees">0</p>
-
-</div>
-
-<div class="card">
-
-<h3>🏖️ Congés</h3>
-
-<p id="leaveEmployees">0</p>
-
-</div>
-
-<div class="card">
-
-<h3>💰 Masse salariale</h3>
-
-<p id="salaryTotal">0 π</p>
-
-</div>
-
-</section>
-
-<section class="form-container">
-
-<h2>Nouvel employé</h2>
-
-<input type="text" id="employeeName" placeholder="Nom complet">
-
-<input type="text" id="employeePosition" placeholder="Poste">
-
-<input type="email" id="employeeEmail" placeholder="Email">
-
-<input type="tel" id="employeePhone" placeholder="Téléphone">
-
-<input type="number" id="employeeSalary" placeholder="Salaire">
-
-<button id="saveEmployee">
-Enregistrer
-</button>
-
-</section>
-
-<section>
-
-<h2>Liste des employés</h2>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Nom</th>
-
-<th>Poste</th>
-
-<th>Email</th>
-
-<th>Téléphone</th>
-
-<th>Salaire</th>
-
-</tr>
-
-</thead>
-
-<tbody id="employeesTable">
-
-<tr>
-
-<td colspan="5">
-
-Aucun employé enregistré.
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</section>
-
-<script type="module" src="../js/hr.js"></script>
-
+    <!-- MODULES JS ES6 -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/pi-payments.js"></script>
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/hr.js"></script>
 </body>
-
 </html>
