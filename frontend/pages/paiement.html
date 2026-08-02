@@ -1,139 +1,176 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
+    <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paiement & Commandes | Entreprise ARASHI v3.0</title>
-    <!-- Feuille de style globale -->
+    <title>Paiement Pi Network | Entreprise ARASHI v4.0</title>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Unifié -->
     <link rel="stylesheet" href="../css/style.css">
-    <!-- SDK Pi Network requis pour l'authentification et les paiements -->
+    
+    <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 
-    <!-- Bouton Toggle Menu pour Mobile -->
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-    <!-- Sidebar : Navigation v3.0 -->
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
-            <p>Paiement & Commandes</p>
+            <p>Paiement Pi</p>
         </div>
+
+        <!-- Sélecteur de Langue -->
+        <div class="lang-selector" style="padding: 15px 20px 5px;">
+            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                <option value="fr">Français (FR)</option>
+                <option value="ha">Hausa (HA)</option>
+                <option value="dje">Zarma (DJE)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+
         <nav>
-            <a href="../index.html">🏠 Accueil</a>
-            <a href="dashboard.html">📊 Dashboard</a>
-            <a href="immobilier.html">🏡 Immobilier</a>
-            <a href="parcelles.html">📍 Parcelles</a>
-            <a href="topographie.html">📐 Topographie</a>
-            <a href="construction.html">🏗️ Construction</a>
-            <a href="marketplace.html">🛒 Marketplace</a>
-            <a href="vendor.html">🛍️ Vendor Center</a>
-            <a href="paiement.html" class="active">💳 Paiement Pi</a>
-            <a href="admin.html">👑 Admin</a>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
+            <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
+            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
+            <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
+            <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
+            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
+            <a href="paiement.html" class="active"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
         </nav>
     </aside>
 
-    <!-- Contenu Principal -->
+    <!-- MAIN CONTENT -->
     <div class="content">
         <header class="topbar">
-            <h1>💳 Module de Paiement Pi Network</h1>
-            <div class="auth-area">
-                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
-                <span id="userStatus" style="margin-left:15px; font-weight:bold;">Non connecté</span>
+            <h1>💳 Module de Paiement Direct Pi Network</h1>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
+                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
+                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
             </div>
         </header>
 
-        <!-- Banner Hero -->
-        <section class="hero" style="background: linear-gradient(135deg, #F4B400 0%, #0B3D91 100%);">
-            <h2>Règlement Sécurisé en Pi (π)</h2>
-            <p>Effectuez vos paiements instantanés pour vos achats de parcelles, matériaux et prestations BTP.</p>
+        <!-- HERO BANNER -->
+        <section class="hero" style="background: linear-gradient(135deg, #8e44ad 0%, #0B3D91 100%);">
+            <h2>Paiement Sécurisé sur la Blockchain Pi</h2>
+            <p>Réglez vos factures de prestations (Immobilier, Topographie, BTP) ou vos commandes d'articles instantanément.</p>
         </section>
 
-        <!-- Zone de Formulaire de Paiement Direct -->
-        <section class="quick-actions" style="background: var(--bg-card, #fff); padding: 25px; border-radius: 8px; margin-top: 25px; max-width: 600px;">
-            <h2>🪙 Effectuer un Paiement Direct</h2>
-            <form id="directPayForm" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
-                <div>
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Motif du paiement / Produit :</label>
-                    <input type="text" id="payMemo" placeholder="Ex: Achat Parcelle Niamey 2000, Ciment..." required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
-                </div>
-                <div>
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Montant en Pi (π) :</label>
-                    <input type="number" step="0.0001" id="payAmount" placeholder="Ex: 15.5" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
-                </div>
-                <button type="submit" class="hero-btn" style="cursor:pointer; background:#0B3D91; color:white;">
-                    ⚡ Payer maintenant avec mon Wallet Pi
-                </button>
-            </form>
-            <p id="payStatusMsg" style="margin-top:15px; font-weight:bold;"></p>
-        </section>
+        <!-- FORMULAIRE DE PAIEMENT RATIONNEL -->
+        <div class="payment-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-top: 30px;">
+            
+            <!-- Formulaire d'envoi / Achat direct -->
+            <div class="card" style="background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border);">
+                <h2 style="margin-bottom: 20px; font-size: 1.2rem;"><i class="fa-solid fa-paper-plane"></i> Effectuer un paiement direct</h2>
+                
+                <form id="directPaymentForm" onsubmit="event.preventDefault(); triggerCustomPayment();">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Motif / Intitulé du Service</label>
+                        <input type="text" id="paymentMemo" placeholder="Ex: Achat parcelle Niamey / Prestation Topo" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
+                    </div>
 
-        <!-- Historique des Paiements / Commandes -->
-        <section class="stats" style="margin-top: 30px;">
-            <h2>📜 Historique des Transactions</h2>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Référence / ID Produit (Optionnel)</label>
+                        <input type="text" id="paymentProductId" placeholder="Ex: PROP-2026-001" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Montant en Pi (π)</label>
+                        <input type="number" step="0.0001" min="0.0001" id="paymentAmount" placeholder="0.00" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
+                    </div>
+
+                    <button type="submit" class="btn btn-warning" style="width: 100%; padding: 14px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer;">
+                        ⚡ Payer maintenant avec Pi
+                    </button>
+                </form>
+            </div>
+
+            <!-- Guide & Statut Sécurité -->
+            <div class="card" style="background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border);">
+                <h2 style="margin-bottom: 20px; font-size: 1.2rem;"><i class="fa-solid fa-shield-halved"></i> Sécurité & Mainnet Pi</h2>
+                
+                <ul style="line-height: 1.8; color: var(--text-muted); list-style-type: none; padding-left: 0;">
+                    <li style="margin-bottom: 12px;"><i class="fa-solid fa-circle-check" style="color: #2ecc71;"></i> <strong>Authentification native :</strong> Assurée directement via Pi Browser / Pi SDK.</li>
+                    <li style="margin-bottom: 12px;"><i class="fa-solid fa-circle-check" style="color: #2ecc71;"></i> <strong>Approbation Serveur :</strong> La transaction est vérifiée côté serveur via notre API avant validation.</li>
+                    <li style="margin-bottom: 12px;"><i class="fa-solid fa-circle-check" style="color: #2ecc71;"></i> <strong>Completions Blockchain :</strong> Vos transactions sont inscrites durablement dans l'écosystème ARASHI v4.0.</li>
+                </ul>
+
+                <div style="margin-top: 25px; padding: 15px; border-radius: 8px; background: rgba(243, 156, 18, 0.1); border: 1px solid #f39c12;">
+                    <p style="font-size: 0.85rem; color: #f39c12; margin: 0;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Assurez-vous d'ouvrir cette page depuis le <strong>Pi Browser</strong> pour permettre l'interaction avec le SDK Pi Network.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TABLEAU DES DERNIERS PAIEMENT PI -->
+        <section class="recent-transactions" style="margin-top: 40px; background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border);">
+            <h2 style="margin-bottom: 20px; font-size: 1.2rem;"><i class="fa-solid fa-clock-rotate-left"></i> Historique de vos transactions Pi</h2>
+            
             <div style="overflow-x: auto;">
-                <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
                     <thead>
-                        <tr style="background:#f5f5f5; text-align:left;">
-                            <th style="padding:10px; border-bottom:2px solid #ddd;">ID Paiement</th>
-                            <th style="padding:10px; border-bottom:2px solid #ddd;">Description</th>
-                            <th style="padding:10px; border-bottom:2px solid #ddd;">Montant (π)</th>
-                            <th style="padding:10px; border-bottom:2px solid #ddd;">Statut</th>
-                            <th style="padding:10px; border-bottom:2px solid #ddd;">Date</th>
+                        <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted);">
+                            <th style="padding: 12px 10px;">Horodatage</th>
+                            <th style="padding: 12px 10px;">Motif</th>
+                            <th style="padding: 12px 10px;">Montant</th>
+                            <th style="padding: 12px 10px;">Statut</th>
                         </tr>
                     </thead>
-                    <tbody id="paymentsTableBody">
+                    <tbody id="recentPayments">
                         <tr>
-                            <td colspan="5" style="text-align:center; padding:15px;">Chargement de vos transactions...</td>
+                            <td colspan="4" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                                Chargement des paiements...
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer>
-            <p>© 2026 Entreprise ARASHI • Service de Paiement Pi</p>
+        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
+            <p>© 2026 Entreprise ARASHI • Passerelle de Paiement Pi Network</p>
         </footer>
     </div>
 
-    <!-- Script de gestion du paiement direct -->
-    <script type="module">
-        import { createPiPayment } from '../js/pi-payments.js';
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById("directPayForm");
-            if (form) {
-                form.addEventListener("submit", async (e) => {
-                    e.preventDefault();
-                    const memo = document.getElementById("payMemo").value;
-                    const amount = document.getElementById("payAmount").value;
-                    const msg = document.getElementById("payStatusMsg");
-
-                    msg.style.color = "#0B3D91";
-                    msg.innerText = "⏳ Lancement de la transaction Pi Browser...";
-
-                    try {
-                        const productId = "direct-" + Date.now();
-                        await createPiPayment(Number(amount), memo, productId);
-                    } catch (err) {
-                        console.error("Erreur lancement paiement :", err);
-                        msg.style.color = "red";
-                        msg.innerText = "❌ Échec de la tentative de paiement.";
-                    }
-                });
-            }
-        });
-    </script>
-
-    <!-- ==========================================
-    MODULES JAVASCRIPT ARASHI (Bas de page)
-    ========================================== -->
-    <script type="module" src="../js/app.js"></script>
+    <!-- MODULES JS ES6 (Bas de page) -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/auth.js"></script>
     <script type="module" src="../js/pi-payments.js"></script>
+    <script type="module" src="../js/app.js"></script>
     <script type="module" src="../js/dashboard.js"></script>
-    <script type="module" src="../js/cart.js"></script>
 
+    <script>
+        async function triggerCustomPayment() {
+            const amount = document.getElementById("paymentAmount").value;
+            const memo = document.getElementById("paymentMemo").value;
+            const productId = document.getElementById("paymentProductId").value || "custom-payment";
+
+            if (!amount || amount <= 0) {
+                alert("Veuillez saisir un montant valide en Pi.");
+                return;
+            }
+
+            if (typeof window.createPiPayment === "function") {
+                await window.createPiPayment(Number(amount), memo, productId);
+            } else {
+                alert("Le SDK Pi Network n'est pas encore initialisé. Veuillez ouvrir cette application dans le Pi Browser.");
+            }
+        }
+    </script>
 </body>
 </html>
