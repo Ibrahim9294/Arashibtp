@@ -1,183 +1,213 @@
-<!DOCTYPE html>
-<html lang="fr" dir="ltr">
-<head>
-    <meta name="referrer" content="no-referrer">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP Dashboard | Entreprise ARASHI v4.0</title>
+/* ==========================================
+   Entreprise ARASHI v4.0 - ERP Dashboard
+   Fichier : js/erp.js
+========================================== */
 
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+import { supabase } from './supabase.js';
+
+/**
+ * Initialise le tableau de bord ERP
+ */
+export async function loadErpDashboard() {
+    initNavigationRouting();
+    await Promise.all([
+        loadStocksAndLogistics(),
+        loadConstructionProjects(),
+        loadCrmData()
+    ]);
+}
+
+/**
+ * Prévient les erreurs 404 en vérifiant l'existence des routes de l'ERP
+ */
+function initNavigationRouting() {
+    const navLinks = document.querySelectorAll("aside.sidebar nav a");
     
-    <!-- CSS Unifié -->
-    <link rel="stylesheet" href="../css/style.css">
-    
-    <!-- SDK Pi Network -->
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-</head>
-<body>
+    navLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+            const href = link.getAttribute("href");
+            if (!href || href === "#") {
+                e.preventDefault();
+                console.warn("Lien non défini ou en cours de développement.");
+            }
+        });
+    });
+}
 
-    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
+/**
+ * 📦 1. STOCKS & LOGISTIQUE
+ * Suivi du matériel BTP et alerte sur seuil critique
+ */
+async function loadStocksAndLogistics() {
+    const tableBody = document.getElementById("stocksTableBody");
+    const alertBadge = document.getElementById("stockAlertBadge");
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">
-            <h2>ARASHI</h2>
-            <p data-lang="dashboard">ERP Dashboard</p>
-        </div>
+    try {
+        const { data: inventory, error } = await supabase
+            .from("inventory_equipment")
+            .select("*")
+            .order("quantity", { ascending: true });
 
-        <!-- Sélecteur de Langue -->
-        <div class="lang-selector" style="padding: 15px 20px 5px;">
-            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
-                <option value="fr">Français (FR)</option>
-                <option value="ha">Hausa (HA)</option>
-                <option value="dje">Zarma (DJE)</option>
-                <option value="ar">العربية (AR)</option>
-                <option value="zh">中文 (ZH)</option>
-                <option value="en">English (EN)</option>
-            </select>
-        </div>
+        if (error) throw error;
 
-        <nav>
-            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
-            <a href="erp.html" class="active"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
-            <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
-            <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
-            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction BTP</span></a>
-            <a href="hr.html"><i class="fa-solid fa-users"></i> <span>Ressources Humaines</span></a>
-            <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
-            <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
-            <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
-            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
-            <a href="paiement.html"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
-        </nav>
-    </aside>
+        let lowStockCount = 0;
 
-    <!-- MAIN CONTENT -->
-    <div class="content">
-        <header class="topbar">
-            <h1>📊 Tableau de Bord ERP - Performance & Hub Général</h1>
-            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
-                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
-                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
-            </div>
-        </header>
+        if (tableBody) {
+            tableBody.innerHTML = "";
 
-        <!-- CARDS STATISTIQUES ERP GLOBALES -->
-        <section class="stats" style="margin-top: 25px;">
-            <h2><i class="fa-solid fa-chart-pie"></i> Vue d'ensemble de l'entreprise</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="color: var(--primary-color);">
-                        <i class="fa-solid fa-city"></i>
+            if (!inventory || inventory.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 15px; color: var(--text-muted);">
+                            Aucun équipement répertorié.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                inventory.forEach(item => {
+                    const isLowStock = item.quantity <= (item.min_threshold || 5);
+                    if (isLowStock) lowStockCount++;
+
+                    const row = document.createElement("tr");
+                    row.style.borderBottom = "1px solid var(--border)";
+                    row.innerHTML = `
+                        <td style="padding: 10px; font-weight: 600;">${item.name || 'Matériel'}</td>
+                        <td style="padding: 10px;">${item.category || 'BTP'}</td>
+                        <td style="padding: 10px; font-weight: bold; color: ${isLowStock ? '#e74c3c' : 'var(--text)'};">
+                            ${item.quantity} ${item.unit || 'unités'}
+                        </td>
+                        <td style="padding: 10px;">
+                            <span class="badge ${isLowStock ? 'badge-danger' : 'badge-success'}">
+                                ${isLowStock ? '⚠️ Seuil Critique' : 'OK'}
+                            </span>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        if (alertBadge) {
+            alertBadge.textContent = `${lowStockCount} alerte(s)`;
+            alertBadge.className = `badge ${lowStockCount > 0 ? 'badge-danger' : 'badge-success'}`;
+        }
+
+    } catch (err) {
+        console.error("Erreur chargement stocks BTP :", err);
+    }
+}
+
+/**
+ * 🏗️ 2. CHANTIERS & PROJETS
+ * Supervision des chantiers et taux d'avancement
+ */
+async function loadConstructionProjects() {
+    const projectsContainer = document.getElementById("projectsSupervisionGrid");
+
+    try {
+        const { data: projects, error } = await supabase
+            .from("construction_projects")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        if (projectsContainer) {
+            projectsContainer.innerHTML = "";
+
+            if (!projects || projects.length === 0) {
+                projectsContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-muted);">
+                        Aucun chantier en cours de supervision.
                     </div>
-                    <div>
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">Projets BTP & Topo</span>
-                        <h3 id="erpTotalProjects" style="font-size: 1.5rem; font-weight: 700;">12</h3>
-                    </div>
-                </div>
+                `;
+                return;
+            }
 
-                <div class="stat-card">
-                    <div class="stat-icon" style="color: #28a745;">
-                        <i class="fa-solid fa-coins"></i>
-                    </div>
-                    <div>
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">Volume Transactions (π)</span>
-                        <h3 id="erpVolumePi" style="font-size: 1.5rem; font-weight: 700;">450.50 π</h3>
-                    </div>
-                </div>
+            projects.forEach(project => {
+                const progress = project.progress_percent || 0;
+                const card = document.createElement("div");
+                card.className = "card";
+                card.style.cssText = "padding: 15px; border-left: 4px solid var(--primary-color);";
 
-                <div class="stat-card">
-                    <div class="stat-icon" style="color: #ffc107;">
-                        <i class="fa-solid fa-users"></i>
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin: 0;">${project.project_type || 'Chantier BTP'}</h4>
+                        <span class="badge badge-info">${project.status || 'En cours'}</span>
                     </div>
-                    <div>
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">Effectif Personnel</span>
-                        <h3 id="erpTotalStaff" style="font-size: 1.5rem; font-weight: 700;">28</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+                        📍 ${project.location || 'Site non spécifié'}
+                    </p>
+                    <div style="margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+                            <span>Avancement</span>
+                            <span><strong>${progress}%</strong></span>
+                        </div>
+                        <div style="width: 100%; background: var(--border); height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="width: ${progress}%; background: #28a745; height: 100%;"></div>
+                        </div>
                     </div>
-                </div>
+                `;
+                projectsContainer.appendChild(card);
+            });
+        }
 
-                <div class="stat-card">
-                    <div class="stat-icon" style="color: #17a2b8;">
-                        <i class="fa-solid fa-boxes-stacked"></i>
-                    </div>
-                    <div>
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">Offres en Catalogue</span>
-                        <h3 id="erpTotalProducts" style="font-size: 1.5rem; font-weight: 700;">--</h3>
-                    </div>
-                </div>
-            </div>
-        </section>
+    } catch (err) {
+        console.error("Erreur chargement suivi des chantiers :", err);
+    }
+}
 
-        <!-- ACCÈS RAPIDE AUX MODULES ERP -->
-        <section class="quick-actions">
-            <h2><i class="fa-solid fa-cubes-stacked"></i> Modules de gestion ARASHI Enterprise</h2>
-            <div class="actions-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-                <a href="immobilier.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
-                    <i class="fa-solid fa-building-user" style="font-size: 2rem; color: var(--primary-color);"></i>
-                    <span>Gestion Immobilière</span>
-                </a>
-                <a href="topographie.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
-                    <i class="fa-solid fa-compass-drafting" style="font-size: 2rem; color: #17a2b8;"></i>
-                    <span>Topographie & Foncier</span>
-                </a>
-                <a href="construction.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
-                    <i class="fa-solid fa-helmet-safety" style="font-size: 2rem; color: #ffc107;"></i>
-                    <span>Chantiers & BTP</span>
-                </a>
-                <a href="hr.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
-                    <i class="fa-solid fa-users-gear" style="font-size: 2rem; color: #28a745;"></i>
-                    <span>RH & Paie Pi</span>
-                </a>
-                <a href="vendor.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
-                    <i class="fa-solid fa-shop" style="font-size: 2rem; color: #e83e8c;"></i>
-                    <span>Vendor Center</span>
-                </a>
-                <a href="admin.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
-                    <i class="fa-solid fa-user-shield" style="font-size: 2rem; color: #dc3545;"></i>
-                    <span>Administration ERP</span>
-                </a>
-            </div>
-        </section>
+/**
+ * 🤝 3. RELATION CLIENT (CRM)
+ * Opportunités et devis d'affaires
+ */
+async function loadCrmData() {
+    const crmTable = document.getElementById("crmOpportunitiesTable");
 
-        <!-- TABLEAU DERNIÈRES TRANSACTIONS & ACTIVITÉS -->
-        <section class="main-services" style="margin-bottom: 30px;">
-            <h2><i class="fa-solid fa-receipt"></i> Activité récente & Flux Financiers (π)</h2>
-            <div class="card">
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted);">
-                                <th style="padding: 12px 10px;">ID Trans.</th>
-                                <th style="padding: 12px 10px;">Pioneer / Client</th>
-                                <th style="padding: 12px 10px;">Module / Service</th>
-                                <th style="padding: 12px 10px;">Montant (π)</th>
-                                <th style="padding: 12px 10px;">Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody id="erpRecentActivityTable">
-                            <tr>
-                                <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Chargement des données ERP...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
+    try {
+        const { data: leads, error } = await supabase
+            .from("crm_opportunities")
+            .select("*")
+            .order("created_at", { ascending: false });
 
-        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
-            <p>© 2026 Entreprise ARASHI • Dashboard ERP Central v4.0</p>
-        </footer>
-    </div>
+        if (error) throw error;
 
-    <!-- MODULES JS ES6 -->
-    <script type="module" src="../js/supabase.js"></script>
-    <script type="module" src="../js/lang.js"></script>
-    <script type="module" src="../js/auth.js"></script>
-    <script type="module" src="../js/pi-payments.js"></script>
-    <script type="module" src="../js/app.js"></script>
-    <script type="module" src="../js/erp.js"></script>
-</body>
-</html>
+        if (crmTable) {
+            crmTable.innerHTML = "";
+
+            if (!leads || leads.length === 0) {
+                crmTable.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 15px; color: var(--text-muted);">
+                            Aucune opportunité CRM enregistrée.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            leads.forEach(lead => {
+                const row = document.createElement("tr");
+                row.style.borderBottom = "1px solid var(--border)";
+                row.innerHTML = `
+                    <td style="padding: 10px; font-weight: 600;">${lead.client_name || 'Client Inconnu'}</td>
+                    <td style="padding: 10px;">${lead.subject || 'Devis BTP'}</td>
+                    <td style="padding: 10px; color: #f39c12; font-weight: bold;">${lead.estimated_value_pi || 0} π</td>
+                    <td style="padding: 10px;">
+                        <span class="badge ${lead.status === 'gagne' ? 'badge-success' : 'badge-warning'}">
+                            ${lead.status || 'En négociation'}
+                        </span>
+                    </td>
+                `;
+                crmTable.appendChild(row);
+            });
+        }
+
+    } catch (err) {
+        console.error("Erreur chargement CRM :", err);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadErpDashboard();
+});
