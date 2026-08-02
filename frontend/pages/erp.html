@@ -1,162 +1,183 @@
 <!DOCTYPE html>
-<html lang="fr">
-
+<html lang="fr" dir="ltr">
 <head>
+    <meta name="referrer" content="no-referrer">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Dashboard | Entreprise ARASHI v4.0</title>
 
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ARASHI ERP</title>
-
-<link rel="stylesheet" href="../css/style.css">
-
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Unifié -->
+    <link rel="stylesheet" href="../css/style.css">
+    
+    <!-- SDK Pi Network -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
-
 <body>
 
-<header class="topbar">
+    <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-<h1>🏢 ARASHI ERP</h1>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>ARASHI</h2>
+            <p data-lang="dashboard">ERP Dashboard</p>
+        </div>
 
-<a href="../index.html" class="btn">
-⬅ Retour
-</a>
+        <!-- Sélecteur de Langue -->
+        <div class="lang-selector" style="padding: 15px 20px 5px;">
+            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                <option value="fr">Français (FR)</option>
+                <option value="ha">Hausa (HA)</option>
+                <option value="dje">Zarma (DJE)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
 
-</header>
+        <nav>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
+            <a href="erp.html" class="active"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
+            <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
+            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction BTP</span></a>
+            <a href="hr.html"><i class="fa-solid fa-users"></i> <span>Ressources Humaines</span></a>
+            <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
+            <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
+            <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
+            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
+            <a href="paiement.html"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
+        </nav>
+    </aside>
 
-<section class="hero">
+    <!-- MAIN CONTENT -->
+    <div class="content">
+        <header class="topbar">
+            <h1>📊 Tableau de Bord ERP - Performance & Hub Général</h1>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
+                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
+                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
+            </div>
+        </header>
 
-<h2>Entreprise Resource Planning</h2>
+        <!-- CARDS STATISTIQUES ERP GLOBALES -->
+        <section class="stats" style="margin-top: 25px;">
+            <h2><i class="fa-solid fa-chart-pie"></i> Vue d'ensemble de l'entreprise</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: var(--primary-color);">
+                        <i class="fa-solid fa-city"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Projets BTP & Topo</span>
+                        <h3 id="erpTotalProjects" style="font-size: 1.5rem; font-weight: 700;">12</h3>
+                    </div>
+                </div>
 
-<p>
-Gestion complète de votre entreprise.
-</p>
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #28a745;">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Volume Transactions (π)</span>
+                        <h3 id="erpVolumePi" style="font-size: 1.5rem; font-weight: 700;">450.50 π</h3>
+                    </div>
+                </div>
 
-</section>
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #ffc107;">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Effectif Personnel</span>
+                        <h3 id="erpTotalStaff" style="font-size: 1.5rem; font-weight: 700;">28</h3>
+                    </div>
+                </div>
 
-<section class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #17a2b8;">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Offres en Catalogue</span>
+                        <h3 id="erpTotalProducts" style="font-size: 1.5rem; font-weight: 700;">--</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-<div class="card">
+        <!-- ACCÈS RAPIDE AUX MODULES ERP -->
+        <section class="quick-actions">
+            <h2><i class="fa-solid fa-cubes-stacked"></i> Modules de gestion ARASHI Enterprise</h2>
+            <div class="actions-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+                <a href="immobilier.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
+                    <i class="fa-solid fa-building-user" style="font-size: 2rem; color: var(--primary-color);"></i>
+                    <span>Gestion Immobilière</span>
+                </a>
+                <a href="topographie.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
+                    <i class="fa-solid fa-compass-drafting" style="font-size: 2rem; color: #17a2b8;"></i>
+                    <span>Topographie & Foncier</span>
+                </a>
+                <a href="construction.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
+                    <i class="fa-solid fa-helmet-safety" style="font-size: 2rem; color: #ffc107;"></i>
+                    <span>Chantiers & BTP</span>
+                </a>
+                <a href="hr.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
+                    <i class="fa-solid fa-users-gear" style="font-size: 2rem; color: #28a745;"></i>
+                    <span>RH & Paie Pi</span>
+                </a>
+                <a href="vendor.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
+                    <i class="fa-solid fa-shop" style="font-size: 2rem; color: #e83e8c;"></i>
+                    <span>Vendor Center</span>
+                </a>
+                <a href="admin.html" class="action-btn" style="display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 10px;">
+                    <i class="fa-solid fa-user-shield" style="font-size: 2rem; color: #dc3545;"></i>
+                    <span>Administration ERP</span>
+                </a>
+            </div>
+        </section>
 
-<h3>📦 Stock</h3>
+        <!-- TABLEAU DERNIÈRES TRANSACTIONS & ACTIVITÉS -->
+        <section class="main-services" style="margin-bottom: 30px;">
+            <h2><i class="fa-solid fa-receipt"></i> Activité récente & Flux Financiers (π)</h2>
+            <div class="card">
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted);">
+                                <th style="padding: 12px 10px;">ID Trans.</th>
+                                <th style="padding: 12px 10px;">Pioneer / Client</th>
+                                <th style="padding: 12px 10px;">Module / Service</th>
+                                <th style="padding: 12px 10px;">Montant (π)</th>
+                                <th style="padding: 12px 10px;">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody id="erpRecentActivityTable">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Chargement des données ERP...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
-<p id="erpStock">
-0
-</p>
+        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
+            <p>© 2026 Entreprise ARASHI • Dashboard ERP Central v4.0</p>
+        </footer>
+    </div>
 
-<a href="inventory.html">
-Ouvrir
-</a>
-
-</div>
-
-<div class="card">
-
-<h3>👥 Employés</h3>
-
-<p id="erpEmployees">
-0
-</p>
-
-<a href="hr.html">
-Ouvrir
-</a>
-
-</div>
-
-<div class="card">
-
-<h3>🏗️ Chantiers</h3>
-
-<p id="erpSites">
-0
-</p>
-
-<a href="sites.html">
-Ouvrir
-</a>
-
-</div>
-
-<div class="card">
-
-<h3>🏡 Immobilier</h3>
-
-<p id="erpProperties">
-0
-</p>
-
-<a href="immobilier.html">
-Ouvrir
-</a>
-
-</div>
-
-<div class="card">
-
-<h3>📐 Topographie</h3>
-
-<p id="erpSurvey">
-0
-</p>
-
-<a href="surveypro.html">
-Ouvrir
-</a>
-
-</div>
-
-<div class="card">
-
-<h3>💰 Comptabilité</h3>
-
-<p id="erpAccounting">
-0 π
-</p>
-
-<a href="reports.html">
-Ouvrir
-</a>
-
-</div>
-
-<div class="card">
-
-<h3>🚚 Logistique</h3>
-
-<p id="erpLogistics">
-0
-</p>
-
-<a href="logistics.html">
-Ouvrir
-</a>
-
-</div>
-
-<div class="card">
-
-<h3>📈 Analytics</h3>
-
-<p>
-
-Rapports
-
-</p>
-
-<a href="analytics.html">
-
-Ouvrir
-
-</a>
-
-</div>
-
-</section>
-
-<script type="module" src="../js/erp.js"></script>
-
+    <!-- MODULES JS ES6 -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/pi-payments.js"></script>
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/erp.js"></script>
 </body>
-
 </html>
