@@ -1,82 +1,278 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
+    <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Immobilier | Entreprise ARASHI v3.0</title>
+    <title>Vendor Center | Entreprise ARASHI v4.0</title>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Unifié -->
     <link rel="stylesheet" href="../css/style.css">
+    
+    <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
-            <p>Immobilier</p>
+            <p data-lang="vendor">Vendor Center</p>
         </div>
-        <nav>
-            <a href="../index.html">🏠 Accueil</a>
-            <a href="dashboard.html">📊 Dashboard</a>
-            <a href="immobilier.html" class="active">🏡 Immobilier</a>
-            <a href="topographie.html">📐 Topographie</a>
-            <a href="construction.html">🏗️ Construction</a>
-            <a href="marketplace.html">🛒 Marketplace</a>
-            <a href="vendor.html">🛍️ Vendor Center</a>
-            <a href="orders.html">📦 Mes Commandes</a>
-            <a href="admin.html">👑 Admin</a>
-<a href="paiement.html">💳 Paiement Pi</a>
 
+        <!-- Sélecteur de Langue -->
+        <div class="lang-selector" style="padding: 15px 20px 5px;">
+            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                <option value="fr">Français (FR)</option>
+                <option value="ha">Hausa (HA)</option>
+                <option value="dje">Zarma (DJE)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+
+        <nav>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
+            <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
+            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
+            <a href="vendor.html" class="active"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
+            <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
+            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
+            <a href="paiement.html"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
         </nav>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <div class="content">
         <header class="topbar">
-            <h1>🏡 Offres Immobilières Pi Network</h1>
-            <div class="auth-area">
-                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
-                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+            <h1>🏪 Espace Vendeur & Partenaires ARASHI</h1>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
+                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
+                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
+                <button id="logoutBtn" class="btn btn-danger" onclick="logout()" style="display: none;">Déconnexion</button>
             </div>
         </header>
 
-        <section class="hero" style="background: linear-gradient(135deg, #2e7d32 0%, #0B3D91 100%);">
-            <h2>Terrains, Parcels & Maisons</h2>
-            <p>Découvrez nos opportunités foncières certifiées payables directement en Pi au Niger.</p>
-        </section>
-
-        <section class="popular-products" style="margin-top: 20px;">
-            <div class="section-header">
-                <h2>🏡 Catalogue des biens immobiliers</h2>
+        <!-- CARDS RESUME STATS VENDEUR -->
+        <section class="dashboard-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin: 25px 0;">
+            <div class="stat-card" style="background: var(--surface); padding: 20px; border-radius: 10px; border: 1px solid var(--border); text-align: center;">
+                <i class="fa-solid fa-box-archive" style="font-size: 2rem; color: #3498db; margin-bottom: 10px;"></i>
+                <h3 style="font-size: 0.9rem; color: var(--text-muted);">Mes Offres En Ligne</h3>
+                <p id="vendorItemsCount" style="font-size: 1.8rem; font-weight: bold; margin-top: 5px;">0</p>
             </div>
 
-            <div class="products-grid" id="fullProductsGrid">
-                <div class="product-card-placeholder">
-                    <p>⏳ Chargement des biens immobiliers...</p>
+            <div class="stat-card" style="background: var(--surface); padding: 20px; border-radius: 10px; border: 1px solid var(--border); text-align: center;">
+                <i class="fa-solid fa-sack-dollar" style="font-size: 2rem; color: #2ecc71; margin-bottom: 10px;"></i>
+                <h3 style="font-size: 0.9rem; color: var(--text-muted);">Revenus Estimés (π)</h3>
+                <p id="vendorTotalEarnings" style="font-size: 1.8rem; font-weight: bold; margin-top: 5px;">0.00 π</p>
+            </div>
+
+            <div class="stat-card" style="background: var(--surface); padding: 20px; border-radius: 10px; border: 1px solid var(--border); text-align: center;">
+                <i class="fa-solid fa-truck-ramp-box" style="font-size: 2rem; color: #f39c12; margin-bottom: 10px;"></i>
+                <h3 style="font-size: 0.9rem; color: var(--text-muted);">Commandes à Traiter</h3>
+                <p id="vendorPendingOrders" style="font-size: 1.8rem; font-weight: bold; margin-top: 5px;">0</p>
+            </div>
+        </section>
+
+        <!-- FORMULAIRE D'AJOUT PRODUIT / BIEN -->
+        <section class="vendor-publish-section" style="background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 30px;">
+            <h2 style="margin-bottom: 20px; font-size: 1.2rem;"><i class="fa-solid fa-cart-plus"></i> Publier une nouvelle offre (Matériaux, Biens, Prestations)</h2>
+            
+            <form id="vendorPublishForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Titre de l'Article ou Prestation</label>
+                    <input type="text" id="vendorItemTitle" placeholder="Ex: Ciment CPJ 45 (Sac de 50kg)" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
                 </div>
+
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Prix en Pi (π)</label>
+                    <input type="number" step="0.0001" id="vendorItemPrice" placeholder="Ex: 12.5" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
+                </div>
+
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Lien de la photo / Image</label>
+                    <input type="text" id="vendorItemImage" placeholder="https://... ou assets/..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Description complète</label>
+                    <textarea id="vendorItemDescription" rows="3" placeholder="Donnez des détails sur votre produit, spécifications techniques, conditions de livraison..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text);"></textarea>
+                </div>
+
+                <div style="grid-column: 1 / -1; text-align: right;">
+                    <button type="submit" class="btn btn-warning" style="padding: 12px 25px; font-weight: bold; border-radius: 6px; cursor: pointer;">
+                        🚀 Mettre en vente sur la Marketplace
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- TABLEAU MES ARTICLES EN VENTE -->
+        <section class="vendor-inventory" style="background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 1.2rem;"><i class="fa-solid fa-list"></i> Mon Inventaire d'Offres</h2>
+                <button class="btn btn-secondary" onclick="loadVendorData()"><i class="fa-solid fa-rotate"></i> Actualiser</button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted);">
+                            <th style="padding: 12px 10px;">ID</th>
+                            <th style="padding: 12px 10px;">Article</th>
+                            <th style="padding: 12px 10px;">Prix (π)</th>
+                            <th style="padding: 12px 10px;">Date d'ajout</th>
+                            <th style="padding: 12px 10px; text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vendorInventoryTable">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                                Connectez-vous avec Pi Network pour afficher votre inventaire.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
-        <footer>
-            <p>© 2026 Entreprise ARASHI • Immobilier & Foncier</p>
+        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
+            <p>© 2026 Entreprise ARASHI • Centre Vendeur & Partenaires</p>
         </footer>
     </div>
 
-    <!-- MODULES JS (Bas de page) -->
+    <!-- MODULES JS ES6 (Bas de page) -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/pi-payments.js"></script>
     <script type="module" src="../js/app.js"></script>
-    <script type="module" src="../js/marketplace.js"></script>
-    <script type="module" src="../js/cart.js"></script>
 
-    <script>
-        window.buy = async function(title, price) {
-            if (typeof window.addToCart === "function") {
-                window.addToCart(title, price);
-            } else if (typeof window.createPiPayment === "function") {
-                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
-            } else {
-                alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
+    <script type="module">
+        import { supabase } from "../js/supabase.js";
+
+        async function loadVendorData() {
+            const tbody = document.getElementById("vendorInventoryTable");
+            const user = typeof window.getCurrentUser === "function" ? window.getCurrentUser() : null;
+
+            if (!user || !user.uid) {
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                                Veuillez vous connecter pour gérer vos produits.
+                            </td>
+                        </tr>
+                    `;
+                }
+                return;
+            }
+
+            try {
+                const { data: items, error } = await supabase
+                    .from("properties")
+                    .select("*")
+                    .eq("username", user.username || user.uid)
+                    .order("created_at", { ascending: false });
+
+                if (error) throw error;
+
+                if (tbody) {
+                    tbody.innerHTML = "";
+                    if (!items || items.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                                    Vous n'avez encore publié aucun article.
+                                </td>
+                            </tr>
+                        `;
+                    } else {
+                        items.forEach(item => {
+                            const row = document.createElement("tr");
+                            row.style.borderBottom = "1px solid var(--border)";
+                            row.innerHTML = `
+                                <td style="padding: 12px 10px; font-family: monospace; font-size: 0.85rem;">${item.id}</td>
+                                <td style="padding: 12px 10px; font-weight: bold;">${item.title}</td>
+                                <td style="padding: 12px 10px; color: #f39c12; font-weight: bold;">${item.price_pi || item.price || 0} π</td>
+                                <td style="padding: 12px 10px; color: var(--text-muted);">${item.created_at ? new Date(item.created_at).toLocaleDateString() : '-'}</td>
+                                <td style="padding: 12px 10px; text-align: right;">
+                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="deleteVendorItem('${item.id}')">
+                                        <i class="fa-solid fa-trash"></i> Retirer
+                                    </button>
+                                </td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    }
+                }
+
+                const countEl = document.getElementById("vendorItemsCount");
+                if (countEl) countEl.textContent = items ? items.length : 0;
+
+            } catch (err) {
+                console.error("Erreur inventaire vendeur :", err);
+            }
+        }
+
+        window.deleteVendorItem = async function(id) {
+            if (confirm("Voulez-vous retirer cet article de la vente ?")) {
+                const { error } = await supabase.from("properties").delete().eq("id", id);
+                if (!error) {
+                    alert("Article retiré.");
+                    loadVendorData();
+                } else {
+                    alert("Erreur lors de la suppression : " + error.message);
+                }
             }
         };
+
+        document.getElementById("vendorPublishForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const user = typeof window.getCurrentUser === "function" ? window.getCurrentUser() : null;
+
+            if (!user) {
+                alert("Veuillez d'abord vous connecter avec Pi Network.");
+                return;
+            }
+
+            const title = document.getElementById("vendorItemTitle").value;
+            const price = parseFloat(document.getElementById("vendorItemPrice").value);
+            const image = document.getElementById("vendorItemImage").value;
+            const description = document.getElementById("vendorItemDescription").value;
+
+            try {
+                const { error } = await supabase.from("properties").insert([{
+                    title: title,
+                    price_pi: price,
+                    image_url: image || "https://via.placeholder.com/300x200?text=Produit+Vendeur",
+                    description: description,
+                    username: user.username || user.uid,
+                    created_at: new Date().toISOString()
+                }]);
+
+                if (error) throw error;
+
+                alert("🎉 Article mis en ligne avec succès !");
+                e.target.reset();
+                loadVendorData();
+            } catch (err) {
+                alert("Erreur de publication : " + err.message);
+            }
+        });
+
+        window.loadVendorData = loadVendorData;
+        document.addEventListener("DOMContentLoaded", loadVendorData);
     </script>
 </body>
 </html>
