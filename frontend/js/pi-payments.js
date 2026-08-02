@@ -1,59 +1,132 @@
 /* ==========================================
-   Entreprise ARASHI v4.0 - Paiements Pi Network
-   Fichier : js/pi-payments.js
+   Entreprise ARASHI v4.0
+   js/pi-payments.js
 ========================================== */
 
-import { supabase } from './supabase.js';
+import { supabase } from "./supabase.js";
+
+const BACKEND_URL = "https://entreprise-arashi.onrender.com";
 
 export async function createPiPayment(amount, memo, metadata = {}) {
+
     if (typeof Pi === "undefined") {
-        alert("Le SDK Pi Network n'est pas chargé. Ouvrez l'application dans Pi Browser.");
+        alert("Ouvrez cette application dans Pi Browser.");
         return;
     }
 
-    const paymentData = {
-        amount: parseFloat(amount),
-        memo: memo,
-        metadata: metadata
-    };
-
-    const paymentCallbacks = {
-        onReadyForServerApproval: async (paymentId) => {
-            console.log("Paiement prêt pour approbation :", paymentId);
-            // Insertion du suivi temporaire dans Supabase
-            const user = window.currentUser || {};
-            await supabase.from("orders").insert([{
-                payment_id: paymentId,
-                username: user.username || "Inconnu",
-                amount: amount,
-                memo: memo,
-                status: "pending"
-            }]);
-        },
-        onReadyForServerCompletion: async (paymentId, txid) => {
-            console.log("Paiement prêt pour validation finale :", paymentId, txid);
-            await supabase.from("orders").update({
-                status: "completed",
-                txid: txid
-            }).eq("payment_id", paymentId);
-
-            alert("Achat effectué avec succès !");
-            if (typeof window.loadUserOrders === "function") window.loadUserOrders();
-        },
-        onCancel: (paymentId) => {
-            console.log("Paiement annulé par l'utilisateur :", paymentId);
-        },
-        onError: (error, payment) => {
-            console.error("Erreur de paiement Pi :", error, payment);
-            alert("Une erreur est survenue lors du paiement.");
-        }
-    };
-
     try {
-        await Pi.createPayment(paymentData, paymentCallbacks);
-    } catch (err) {
-        console.error("Erreur d'initialisation du paiement :", err);
+
+        await Pi.createPayment(
+
+            {
+                amount: Number(amount),
+                memo: memo,
+                metadata: metadata
+            },
+
+            {
+
+                onReadyForServerApproval: async (paymentId) => {
+
+                    console.log("Approval :", paymentId);
+
+                    await supabase
+                    .from("orders")
+                    .insert([{
+                        payment_id: paymentId,
+                        amount: amount,
+                        memo: memo,
+                        status: "pending"
+                    }]);
+
+                    const response = await fetch(
+                        `${BACKEND_URL}/approve`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":"application/json"
+                            },
+                            body: JSON.stringify({
+                                paymentId
+                            })
+                        }
+                    );
+
+                    const result = await response.json();
+
+                    console.log(result);
+
+                    if (!response.ok) {
+                        throw new Error("Approval impossible");
+                    }
+
+                },
+
+                onReadyForServerCompletion: async (paymentId, txid) => {
+
+                    console.log("Completion :", paymentId);
+
+                    await fetch(
+                        `${BACKEND_URL}/complete`,
+                        {
+                            method:"POST",
+                            headers:{
+                                "Content-Type":"application/json"
+                            },
+                            body:JSON.stringify({
+                                paymentId,
+                                txid
+                            })
+                        }
+                    );
+
+                    await supabase
+                    .from("orders")
+                    .update({
+                        status:"completed",
+                        txid:txid
+                    })
+                    .eq("payment_id",paymentId);
+
+                    alert("Paiement effectué avec succès.");
+
+                    if(window.loadUserOrders){
+                        window.loadUserOrders();
+                    }
+
+                },
+
+                onCancel:(paymentId)=>{
+
+                    console.log("Paiement annulé",paymentId);
+
+                    supabase
+                    .from("orders")
+                    .update({
+                        status:"cancelled"
+                    })
+                    .eq("payment_id",paymentId);
+
+                },
+
+                onError:(error,payment)=>{
+
+                    console.error(error);
+
+                    alert("Erreur pendant le paiement.");
+
+                }
+
+            }
+
+        );
+
+    } catch(err){
+
+        console.error(err);
+
     }
+
 }
 
-window.createPiPayment = createPiPayment;
+window.createPiPayment=createPiPayment;
