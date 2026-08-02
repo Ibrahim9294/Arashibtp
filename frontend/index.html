@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARASHI Enterprise v4.0 | Suite ERP & Blockchain Pi</title>
+    <title>ARASHI Enterprise v4.0 | ERP Suite & Blockchain Pi</title>
+    <meta name="description" content="Plateforme ERP ARASHI - BTP, Immobilier, Topographie & Écosystème de Paiement Pi Network">
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,116 +13,223 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- ARASHI Base Kit -->
+    <!-- ARASHI Base Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- Supabase SDK -->
+    <!-- SDK Officiel Pi Network -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+    <!-- Supabase SDK v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
 
-<header class="topbar">
-    <div style="display: flex; align-items: center; gap: 12px;">
-        <i class="fa-solid fa-layer-group" style="font-size: 1.5rem; color: var(--primary-color, #3b82f6);"></i>
-        <h1 style="font-size: 1.25rem; font-weight: 700;">ARASHI Enterprise <small style="font-size: 0.75rem; opacity: 0.7;">v4.0</small></h1>
-    </div>
+    <!-- Bouton Toggle Menu Mobile -->
+    <button id="menuToggle" class="menu-toggle">
+        <i class="fa-solid fa-bars"></i>
+    </button>
 
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <!-- Sélecteur de Langue -->
-        <div class="lang-selector">
-            <i class="fa-solid fa-globe lang-icon"></i>
-            <select id="languageSelect" onchange="changeLanguage(this.value)" class="lang-dropdown">
-                <option value="fr" selected>🇫🇷 FR</option>
-                <option value="en">🇬🇧 EN</option>
-                <option value="es">🇪🇸 ES</option>
-            </select>
+    <!-- SIDEBAR DE NAVIGATION ERP & MARKETPLACE -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo" style="padding: 20px 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <h2><i class="fa-solid fa-layer-group"></i> ARASHI</h2>
+            <p style="font-size: 0.75rem; opacity: 0.8;">v4.0 Enterprise & Pi Network</p>
         </div>
 
-        <a href="pages/portal.html" class="btn btn-secondary"><i class="fa-solid fa-user"></i> Espace Employé</a>
-        <a href="pages/erp.html" class="btn btn-primary"><i class="fa-solid fa-chart-line"></i> Accès ERP</a>
-    </div>
-</header>
-
-<section class="hero" style="text-align: center; padding: 60px 20px;">
-    <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 15px;">Système de Gestion Intégré & Paiements Pi ($\pi$)</h2>
-    <p style="max-width: 700px; margin: 0 auto 30px auto; opacity: 0.85; font-size: 1.1rem; line-height: 1.6;">
-        Centralisez la gestion de vos ressources humaines, vos chantiers BTP, votre comptabilité, votre CRM et votre inventaire au sein d'une plateforme sécurisée.
-    </p>
-
-    <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-        <a href="pages/erp.html" class="btn btn-primary" style="padding: 12px 24px; font-size: 1rem;"><i class="fa-solid fa-rocket"></i> Tableau de Bord ERP</a>
-        <a href="#loginSection" class="btn btn-secondary" style="padding: 12px 24px; font-size: 1rem;"><i class="fa-solid fa-right-to-bracket"></i> Se Connecter</a>
-    </div>
-</section>
-
-<main class="container" style="max-width: 1100px; margin: 0 auto; padding: 20px;">
-
-    <!-- MODULES ACCÈS RAPIDE -->
-    <section class="dashboard-grid" style="margin-bottom: 40px;">
-        <div class="card" onclick="location.href='pages/hr.html'" style="cursor: pointer; transition: transform 0.2s;">
-            <h3>👥 Ressources Humaines</h3>
-            <p style="margin-top: 10px; opacity: 0.8;">Gestion des employés, contrats et paie en Pi.</p>
-        </div>
-        <div class="card" onclick="location.href='pages/inventory.html'" style="cursor: pointer; transition: transform 0.2s;">
-            <h3>📦 Stocks & Logistique</h3>
-            <p style="margin-top: 10px; opacity: 0.8;">Suivi des articles, seuils d'alerte et mouvements.</p>
-        </div>
-        <div class="card" onclick="location.href='pages/sites.html'" style="cursor: pointer; transition: transform 0.2s;">
-            <h3>🏗️ Chantiers & Projets</h3>
-            <p style="margin-top: 10px; opacity: 0.8;">Supervision du BTP, avancement et budgets.</p>
-        </div>
-        <div class="card" onclick="location.href='pages/crm.html'" style="cursor: pointer; transition: transform 0.2s;">
-            <h3>🤝 Relation Client (CRM)</h3>
-            <p style="margin-top: 10px; opacity: 0.8;">Gestion des leads, devis et opportunités.</p>
-        </div>
-    </section>
-
-    <!-- FORMULAIRE DE CONNEXION / AUTHENTIFICATION -->
-    <section id="loginSection" class="card" style="max-width: 450px; margin: 0 auto 50px auto; padding: 30px;">
-        <h3 style="text-align: center; margin-bottom: 20px;"><i class="fa-solid fa-lock"></i> Connexion Connexion Administrateur</h3>
-        
-        <form id="loginForm" style="display: flex; flex-direction: column; gap: 15px;">
-            <div>
-                <label for="loginEmail" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email professionnel</label>
-                <input type="email" id="loginEmail" placeholder="admin@arashi-erp.com" required class="input-field" style="width: 100%;">
+        <nav class="sidebar-nav" style="padding: 15px; background: #0f172a; color: white;">
+            <!-- Liens de Navigation -->
+            <a href="index.html" data-lang="home" style="display: block; padding: 10px; color: white; text-decoration: none;"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="pages/erp.html" data-lang="dashboard" style="display: block; padding: 10px; color: white; text-decoration: none;"><i class="fa-solid fa-chart-line"></i> ERP Dashboard</a>
+            <a href="pages/hr.html" style="display: block; padding: 10px; color: white; text-decoration: none;"><i class="fa-solid fa-users"></i> Ressources Humaines</a>
+            <a href="pages/sites.html" style="display: block; padding: 10px; color: white; text-decoration: none;"><i class="fa-solid fa-helmet-safety"></i> Chantiers BTP</a>
+            <a href="pages/immobilier.html" data-lang="realestate" style="display: block; padding: 10px; color: white; text-decoration: none;"><i class="fa-solid fa-building"></i> Immobilier</a>
+            <a href="pages/marketplace.html" data-lang="marketplace" style="display: block; padding: 10px; color: white; text-decoration: none;"><i class="fa-solid fa-cart-shopping"></i> Marketplace Pi</a>
+            <a href="pages/vendor.html" data-lang="vendor" style="display: block; padding: 10px; color: white; text-decoration: none;"><i class="fa-solid fa-store"></i> Vendor Center</a>
+            <a href="pages/admin.html" data-lang="admin" style="display: block; padding: 10px; color: white; text-decoration: none;"><i class="fa-solid fa-user-shield"></i> Admin</a>
+            
+            <!-- Sélecteur de Langue Complète (Sidebar) -->
+            <div class="lang-selector" style="padding: 12px 10px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.15); background: #1e293b; border-radius: 6px;">
+                <label for="sidebarLanguageSelect" style="font-size: 0.85em; color: #94a3b8; display: block; margin-bottom: 6px;">🌐 Langue / Language</label>
+                <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 8px; border-radius: 5px; background: #0f172a; color: white; border: 1px solid #334e68; cursor: pointer; font-size: 0.9em;">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="ha">🇳🇪 Hausa</option>
+                    <option value="dje">🇳🇪 Zarma</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                    <option value="zh">🇨🇳 中文</option>
+                    <option value="en">🇬🇧 English</option>
+                </select>
             </div>
-            <div>
-                <label for="loginPassword" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Mot de passe</label>
-                <input type="password" id="loginPassword" placeholder="••••••••" required class="input-field" style="width: 100%;">
+        </nav>
+    </aside>
+
+    <!-- CONTENU PRINCIPAL -->
+    <div class="content">
+
+        <!-- TOPBAR HEADER -->
+        <header class="topbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <h1>🏗️ ARASHI Enterprise <small style="font-size: 0.8rem; opacity: 0.7;">v4.0</small></h1>
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">
-                Se connecter
-            </button>
-        </form>
-    </section>
 
-</main>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 10px;">
+                <button id="piLogin" onclick="loginWithPi()" class="btn btn-primary">
+                    <i class="fa-solid fa-coins"></i> Connexion Pi
+                </button>
 
-<footer style="text-align: center; padding: 20px; opacity: 0.6; font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.1);">
-    &copy; 2026 ARASHI Enterprise v4.0. Tous droits réservés. Intégration Écosystème Pi Network ($\pi$).
-</footer>
+                <span id="userStatus" style="font-weight:bold; font-size: 0.9rem;">
+                    Non connecté
+                </span>
 
-<script>
-    function changeLanguage(lang) {
-        localStorage.setItem('arashi_lang', lang);
-        console.log(`Langue modifiée : ${lang}`);
-    }
+                <a href="pages/portal.html" class="btn btn-secondary"><i class="fa-solid fa-user"></i> Espace Employé</a>
+            </div>
+        </header>
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedLang = localStorage.getItem('arashi_lang') || 'fr';
-        const select = document.getElementById('languageSelect');
-        if (select) select.value = savedLang;
+        <!-- HERO SECTION ERP & BLOCKCHAIN -->
+        <section class="hero" style="text-align: center; padding: 50px 20px;">
+            <h2 data-lang="welcome" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 15px;">
+                Plateforme de Gestion ERP & Écosystème Pi Network
+            </h2>
+            <p style="max-width: 750px; margin: 0 auto 25px auto; opacity: 0.9; font-size: 1.05rem; line-height: 1.6;">
+                Construction • Immobilier • Topographie • Ressources Humaines • Paiements sécurisés en Pi Browser
+            </p>
 
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                // Redirection vers le tableau de bord ERP principal
-                window.location.href = 'pages/erp.html';
-            });
-        }
-    });
-</script>
+            <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                <a href="pages/erp.html" class="btn btn-primary"><i class="fa-solid fa-rocket"></i> Tableau de Bord ERP</a>
+                <button class="hero-btn" onclick="location.href='pages/marketplace.html'"><i class="fa-solid fa-cart-shopping"></i> Explorer le Marketplace</button>
+            </div>
+        </section>
+
+        <!-- MODULES ERP ACCÈS RAPIDE -->
+        <section class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; padding: 20px;">
+            <div class="card" onclick="location.href='pages/hr.html'" style="cursor: pointer;">
+                <h3>👥 Ressources Humaines</h3>
+                <p style="margin-top: 8px; opacity: 0.8; font-size: 0.9rem;">Gestion des employés, contrats & paie en Pi.</p>
+            </div>
+            <div class="card" onclick="location.href='pages/inventory.html'" style="cursor: pointer;">
+                <h3>📦 Stocks & Logistique</h3>
+                <p style="margin-top: 8px; opacity: 0.8; font-size: 0.9rem;">Suivi du matériel BTP et seuils d'alerte.</p>
+            </div>
+            <div class="card" onclick="location.href='pages/sites.html'" style="cursor: pointer;">
+                <h3>🏗️ Chantiers & Projets</h3>
+                <p style="margin-top: 8px; opacity: 0.8; font-size: 0.9rem;">Supervision des chantiers et avancements.</p>
+            </div>
+            <div class="card" onclick="location.href='pages/crm.html'" style="cursor: pointer;">
+                <h3>🤝 Relation Client (CRM)</h3>
+                <p style="margin-top: 8px; opacity: 0.8; font-size: 0.9rem;">Gestion des devis et opportunités.</p>
+            </div>
+        </section>
+
+        <!-- RECHERCHE GLOBAL -->
+        <section class="search-container" style="padding: 0 20px 20px 20px;">
+            <div class="search-box">
+                <input type="search" id="globalSearch" placeholder="🔎 Rechercher des villas, récepteurs GNSS, ciment, chantiers...">
+            </div>
+        </section>
+
+        <!-- VITRINE SERVICES & IMMEUBLES BTP -->
+        <section class="main-services" style="padding: 20px;">
+            <h2>💼 Offres & Matériels Disponibles</h2>
+
+            <!-- Immobilier -->
+            <section id="immobilier" style="margin-top: 20px;">
+                <h3>🏡 Immobilier ARASHI</h3>
+                <div class="products-grid">
+                    <div class="service-card">
+                        <img src="assets/villas/villa-moderne.jpg" class="product-image" alt="Villa Moderne">
+                        <h3>Villa Moderne Niamey</h3>
+                        <p>5 chambres • Piscine • Jardin</p>
+                        <h2>2 π</h2>
+                        <button class="hero-btn" onclick="buy('Villa Moderne Niamey', 2)" data-lang="buy_btn">Acheter avec Pi</button>
+                    </div>
+
+                    <div class="service-card">
+                        <img src="assets/terrains/terrain.jpg" class="product-image" alt="Terrain">
+                        <h3>Terrain Résidentiel</h3>
+                        <p>Lot résidentiel sécurisé</p>
+                        <h2>0.5 π</h2>
+                        <button class="hero-btn" onclick="buy('Terrain Résidentiel', 0.5)" data-lang="buy_btn">Acheter avec Pi</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topographie -->
+            <section id="topographie" style="margin-top: 30px;">
+                <h3>📐 Équipements Topographie</h3>
+                <div class="products-grid">
+                    <div class="service-card">
+                        <img src="assets/topographie/gnss-rtk.jpg" class="product-image" alt="GNSS">
+                        <h3>GNSS RTK Professionnel</h3>
+                        <p>GPS • GLONASS • BeiDou</p>
+                        <h2>0.1 π</h2>
+                        <button class="hero-btn" onclick="buy('GNSS RTK Professionnel', 0.1)" data-lang="buy_btn">Acheter avec Pi</button>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- MARKETPLACE DYNAMIQUE (SUPABASE) -->
+        <section class="popular-products" style="padding: 20px;">
+            <h2>🛒 Marketplace Pi (Articles en ligne)</h2>
+            <div class="products-grid" id="marketplaceContainer">
+                <div class="product-card-placeholder">
+                    <p>Chargement des produits Supabase...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOGIN ADMIN / EMPLOYE SUPABASE -->
+        <section id="loginSection" class="card" style="max-width: 450px; margin: 40px auto; padding: 25px;">
+            <h3 style="text-align: center; margin-bottom: 15px;"><i class="fa-solid fa-lock"></i> Accès Administration & ERP</h3>
+            <form id="loginForm" style="display: flex; flex-direction: column; gap: 12px;">
+                <div>
+                    <label for="loginEmail" style="font-size: 0.85rem;">Email professionnel</label>
+                    <input type="email" id="loginEmail" placeholder="admin@arashi-erp.com" required class="input-field" style="width: 100%; padding: 8px;">
+                </div>
+                <div>
+                    <label for="loginPassword" style="font-size: 0.85rem;">Mot de passe</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required class="input-field" style="width: 100%; padding: 8px;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px; margin-top: 10px;">
+                    Se connecter à l'ERP
+                </button>
+            </form>
+        </section>
+
+        <!-- FOOTER UNIFIÉ -->
+        <footer style="padding: 25px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 40px;">
+            <div class="lang-selector" style="max-width: 200px; margin: 0 auto 15px auto;">
+                <select id="footerLanguageSelect" onchange="changeLanguage(this.value)" style="width: 100%; padding: 6px; border-radius: 5px; background: #1a2a3a; color: white; border: 1px solid #334e68; cursor: pointer;">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="ha">🇳🇪 Hausa</option>
+                    <option value="dje">🇳🇪 Zarma</option>
+                    <option value="ar">🇸🇦 العربية</option>
+                    <option value="zh">🇨🇳 中文</option>
+                    <option value="en">🇬🇧 English</option>
+                </select>
+            </div>
+            <p>&copy; 2026 ARASHI Enterprise v4.0. Tous droits réservés.</p>
+            <p style="font-size: 0.8em; opacity: 0.6; margin-top: 5px;">Powered by Pi Network • Supabase • Render</p>
+        </footer>
+
+    </div>
+
+    <!-- SCRIPTS MODULES JS -->
+    <script type="module" src="js/pi-payments.js"></script>
+    <script type="module" src="js/lang.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/marketplace.js"></script>
+
+    <!-- DECLARATION DU BOUTON ACHAT DIRECT -->
+    <script>
+        window.buy = async function(title, price) {
+            if (typeof window.createPiPayment === "function") {
+                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
+            } else {
+                alert("Initialisation du système de paiement Pi... Ouvrez la page dans le Pi Browser.");
+            }
+        };
+    </script>
 
 </body>
 </html>
