@@ -40,10 +40,11 @@
 
         <nav>
             <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
-            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="erp.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
             <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
             <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
             <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="hr.html"><i class="fa-solid fa-users"></i> <span>Ressources Humaines</span></a>
             <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
             <a href="vendor.html" class="active"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
             <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
@@ -121,7 +122,7 @@
         <section class="vendor-inventory" style="background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="font-size: 1.2rem;"><i class="fa-solid fa-list"></i> Mon Inventaire d'Offres</h2>
-                <button class="btn btn-secondary" onclick="loadVendorData()"><i class="fa-solid fa-rotate"></i> Actualiser</button>
+                <button class="btn btn-secondary" id="btnRefreshVendor"><i class="fa-solid fa-rotate"></i> Actualiser</button>
             </div>
 
             <div style="overflow-x: auto;">
@@ -157,122 +158,6 @@
     <script type="module" src="../js/auth.js"></script>
     <script type="module" src="../js/pi-payments.js"></script>
     <script type="module" src="../js/app.js"></script>
-
-    <script type="module">
-        import { supabase } from "../js/supabase.js";
-
-        async function loadVendorData() {
-            const tbody = document.getElementById("vendorInventoryTable");
-            const user = typeof window.getCurrentUser === "function" ? window.getCurrentUser() : null;
-
-            if (!user || !user.uid) {
-                if (tbody) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
-                                Veuillez vous connecter pour gérer vos produits.
-                            </td>
-                        </tr>
-                    `;
-                }
-                return;
-            }
-
-            try {
-                const { data: items, error } = await supabase
-                    .from("properties")
-                    .select("*")
-                    .eq("username", user.username || user.uid)
-                    .order("created_at", { ascending: false });
-
-                if (error) throw error;
-
-                if (tbody) {
-                    tbody.innerHTML = "";
-                    if (!items || items.length === 0) {
-                        tbody.innerHTML = `
-                            <tr>
-                                <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
-                                    Vous n'avez encore publié aucun article.
-                                </td>
-                            </tr>
-                        `;
-                    } else {
-                        items.forEach(item => {
-                            const row = document.createElement("tr");
-                            row.style.borderBottom = "1px solid var(--border)";
-                            row.innerHTML = `
-                                <td style="padding: 12px 10px; font-family: monospace; font-size: 0.85rem;">${item.id}</td>
-                                <td style="padding: 12px 10px; font-weight: bold;">${item.title}</td>
-                                <td style="padding: 12px 10px; color: #f39c12; font-weight: bold;">${item.price_pi || item.price || 0} π</td>
-                                <td style="padding: 12px 10px; color: var(--text-muted);">${item.created_at ? new Date(item.created_at).toLocaleDateString() : '-'}</td>
-                                <td style="padding: 12px 10px; text-align: right;">
-                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="deleteVendorItem('${item.id}')">
-                                        <i class="fa-solid fa-trash"></i> Retirer
-                                    </button>
-                                </td>
-                            `;
-                            tbody.appendChild(row);
-                        });
-                    }
-                }
-
-                const countEl = document.getElementById("vendorItemsCount");
-                if (countEl) countEl.textContent = items ? items.length : 0;
-
-            } catch (err) {
-                console.error("Erreur inventaire vendeur :", err);
-            }
-        }
-
-        window.deleteVendorItem = async function(id) {
-            if (confirm("Voulez-vous retirer cet article de la vente ?")) {
-                const { error } = await supabase.from("properties").delete().eq("id", id);
-                if (!error) {
-                    alert("Article retiré.");
-                    loadVendorData();
-                } else {
-                    alert("Erreur lors de la suppression : " + error.message);
-                }
-            }
-        };
-
-        document.getElementById("vendorPublishForm")?.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const user = typeof window.getCurrentUser === "function" ? window.getCurrentUser() : null;
-
-            if (!user) {
-                alert("Veuillez d'abord vous connecter avec Pi Network.");
-                return;
-            }
-
-            const title = document.getElementById("vendorItemTitle").value;
-            const price = parseFloat(document.getElementById("vendorItemPrice").value);
-            const image = document.getElementById("vendorItemImage").value;
-            const description = document.getElementById("vendorItemDescription").value;
-
-            try {
-                const { error } = await supabase.from("properties").insert([{
-                    title: title,
-                    price_pi: price,
-                    image_url: image || "https://via.placeholder.com/300x200?text=Produit+Vendeur",
-                    description: description,
-                    username: user.username || user.uid,
-                    created_at: new Date().toISOString()
-                }]);
-
-                if (error) throw error;
-
-                alert("🎉 Article mis en ligne avec succès !");
-                e.target.reset();
-                loadVendorData();
-            } catch (err) {
-                alert("Erreur de publication : " + err.message);
-            }
-        });
-
-        window.loadVendorData = loadVendorData;
-        document.addEventListener("DOMContentLoaded", loadVendorData);
-    </script>
+    <script type="module" src="../js/vendor.js"></script>
 </body>
 </html>
