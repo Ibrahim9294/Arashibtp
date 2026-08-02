@@ -1,100 +1,114 @@
 /* ==========================================
-   ARASHI v3.0 - Marketplace & Supabase Fetch
+   ARASHI Enterprise v4.0 - Dynamic Marketplace
+   Fichier : js/marketplace.js
 ========================================== */
 
-// Configuration Supabase Client
-const SUPABASE_URL = "https://TON_PROJET.supabase.co"; 
-const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
+import { supabase, STORAGE_BUCKET } from './supabase.js';
+import { PiPaymentManager } from './pi-payments.js';
 
-const supabase = (window.supabase) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-
-// Données de secours (Fallback HD)
-const fallbackListings = [
-    {
-        id: 1,
-        title: "Villa Moderne ARASHI",
-        price: "2.5 π",
-        category: "Immobilier",
-        image_url: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80"
-    },
-    {
-        id: 2,
-        title: "Station GPS / GNSS RTK",
-        price: "0.18 π",
-        category: "Topographie",
-        image_url: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80"
-    },
-    {
-        id: 3,
-        title: "Lot Matériaux BTP & Béton",
-        price: "0.09 π",
-        category: "Matériaux",
-        image_url: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=800&q=80"
-    }
-];
-
-// Chargement dynamique des annonces
-export async function loadMarketplaceListings(containerId = "popularProductsGrid") {
-    const container = document.getElementById(containerId);
+/**
+ * Charger et afficher les produits dynamiquement depuis Supabase
+ * @param {string} categoryFilter - Filtre optionnel par catégorie
+ * @param {string} searchQuery - Recherche optionnelle par texte
+ */
+export async function loadMarketplaceProducts(categoryFilter = null, searchQuery = '') {
+    const container = document.getElementById('marketplaceContainer');
     if (!container) return;
 
-    let listings = fallbackListings;
+    try {
+        let query = supabase.from('products').select('*');
 
-    // Tentative de récupération depuis Supabase si initialisé
-    if (supabase) {
-        try {
-            const { data, error } = await supabase.from('listings').select('*').limit(6);
-            if (!error && data && data.length > 0) {
-                listings = data;
-            }
-        } catch (err) {
-            console.warn("Utilisation des données locales de secours (Supabase non relié).");
+        // Filtrage par catégorie
+        if (categoryFilter && categoryFilter !== 'all') {
+            query = query.eq('category', categoryFilter);
         }
-    }
 
-    container.innerHTML = listings.map(item => `
-        <article class="product-card">
-            <img src="${item.image_url}" alt="${item.title}">
-            <span class="badge badge-warning">${item.category}</span>
-            <h3>${item.title}</h3>
-            <strong>${item.price}</strong>
-            <button class="btn btn-warning" onclick="executePiPayment('${item.title}', '${item.price}')">
-                Acheter avec Pi
-            </button>
-        </article>
-    `).join('');
+        // Filtrage par mot-clé de recherche
+        if (searchQuery.trim() !== '') {
+            query = query.ilike('name', `%${searchQuery.trim()}%`);
+        }
+
+        const { data: products, error } = await query;
+
+        if (error) {
+            console.error("❌ Erreur lors du chargement des produits :", error.message);
+            container.innerHTML = `
+                <div class="product-card-placeholder">
+                    <p style="color: var(--danger);">Impossible de charger les produits. Veuillez vérifier votre connexion.</p>
+                </div>
+            `;
+            return;
+        }
+
+        if (!products || products.length === 0) {
+            container.innerHTML = `
+                <div class="product-card-placeholder">
+                    <p>Aucun article disponible pour le moment.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Génération dynamique des cartes de produits
+        container.innerHTML = products.map(product => {
+            // Construction de l'URL publique de l'image Supabase Storage
+            let imageUrl = product.image_url;
+            if (!imageUrl && product.image_path) {
+                const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(product.image_path);
+                imageUrl = data.publicUrl;
+            }
+            if (!imageUrl) imageUrl = 'assets/placeholder.jpg';
+
+            return `
+                <div class="product-card">
+                    <img src="${imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='assets/placeholder.jpg'">
+                    <h3>${product.name}</h3>
+                    <p>${product.description || 'Équipement & Service qualifié ARASHI'}</p>
+                    <strong>${product.price_pi} π</strong>
+                    <button class="btn btn-warning hero-btn" onclick="buyMarketplaceItem('${product.id}', '${product.name.replace(/'/g, "\\'")}', ${product.price_pi})">
+                        <i class="fa-solid fa-cart-shopping"></i> Acheter avec Pi
+                    </button>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error("❌ Erreur inattendue :", err);
+    }
 }
 
-// Déclencheur du paiement Pi SDK
-window.executePiPayment = function(title, amount) {
-    if (typeof Pi === 'undefined') {
-        alert(`Commande simulée pour : ${title} au prix de ${amount}. Ouvrez dans Pi Browser pour finaliser avec la crypto Pi.`);
-        return;
+/**
+ * Déclenche le processus d'achat Pi Network pour un produit Supabase
+ */
+window.buyMarketplaceItem = async function(productId, productName, pricePi) {
+    if (typeof window.createPiPayment === "function") {
+        await window.createPiPayment(Number(pricePi), productName, productId);
+    } else {
+        await PiPaymentManager.createPayment({
+            amount: Number(pricePi),
+            memo: `Achat ARASHI: ${productName}`,
+            metadata: { productId, productName }
+        });
     }
-
-    const numericAmount = parseFloat(amount.replace('π', '').trim()) || 1.0;
-
-    Pi.createPayment({
-        amount: numericAmount,
-        memo: `Achat ARASHI: ${title}`,
-        metadata: { item: title }
-    }, {
-        onReadyForServerApproval: (paymentId) => {
-            console.log("Paiement prêt pour approbation serveur ID:", paymentId);
-        },
-        onReadyForServerCompletion: (paymentId, txid) => {
-            console.log("Paiement complété avec succès TXID:", txid);
-            alert("Achat réussi ! Merci de votre confiance en Entreprise ARASHI.");
-        },
-        onCancel: (paymentId) => {
-            console.log("Paiement annulé:", paymentId);
-        },
-        onError: (error, payment) => {
-            console.error("Erreur de paiement Pi:", error);
-        }
-    });
 };
 
+// ==========================================
+// ÉCOUTEURS D'ÉVÉNEMENTS & INITIALISATION
+// ==========================================
+
 document.addEventListener('DOMContentLoaded', () => {
-    loadMarketplaceListings();
+    // Premier chargement
+    loadMarketplaceProducts();
+
+    // Écouteur sur la barre de recherche globale
+    const globalSearch = document.getElementById('globalSearch');
+    if (globalSearch) {
+        let searchTimeout;
+        globalSearch.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadMarketplaceProducts(null, e.target.value);
+            }, 300);
+        });
+    }
 });
