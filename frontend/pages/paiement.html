@@ -40,10 +40,11 @@
 
         <nav>
             <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
-            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="erp.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
             <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
             <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
             <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="hr.html"><i class="fa-solid fa-users"></i> <span>Ressources Humaines</span></a>
             <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
             <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
             <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
@@ -75,7 +76,7 @@
             <div class="card" style="background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border);">
                 <h2 style="margin-bottom: 20px; font-size: 1.2rem;"><i class="fa-solid fa-paper-plane"></i> Effectuer un paiement direct</h2>
                 
-                <form id="directPaymentForm" onsubmit="event.preventDefault(); triggerCustomPayment();">
+                <form id="directPaymentForm">
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; font-weight: bold;">Motif / Intitulé du Service</label>
                         <input type="text" id="paymentMemo" placeholder="Ex: Achat parcelle Niamey / Prestation Topo" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
@@ -125,7 +126,7 @@
                     <thead>
                         <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted);">
                             <th style="padding: 12px 10px;">Horodatage</th>
-                            <th style="padding: 12px 10px;">Motif</th>
+                            <th style="padding: 12px 10px;">Motif / Transaction</th>
                             <th style="padding: 12px 10px;">Montant</th>
                             <th style="padding: 12px 10px;">Statut</th>
                         </tr>
@@ -152,25 +153,5 @@
     <script type="module" src="../js/auth.js"></script>
     <script type="module" src="../js/pi-payments.js"></script>
     <script type="module" src="../js/app.js"></script>
-    <script type="module" src="../js/dashboard.js"></script>
-
-    <script>
-        async function triggerCustomPayment() {
-            const amount = document.getElementById("paymentAmount").value;
-            const memo = document.getElementById("paymentMemo").value;
-            const productId = document.getElementById("paymentProductId").value || "custom-payment";
-
-            if (!amount || amount <= 0) {
-                alert("Veuillez saisir un montant valide en Pi.");
-                return;
-            }
-
-            if (typeof window.createPiPayment === "function") {
-                await window.createPiPayment(Number(amount), memo, productId);
-            } else {
-                alert("Le SDK Pi Network n'est pas encore initialisé. Veuillez ouvrir cette application dans le Pi Browser.");
-            }
-        }
-    </script>
 </body>
 </html>
