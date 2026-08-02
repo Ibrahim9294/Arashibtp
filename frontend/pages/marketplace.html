@@ -40,10 +40,11 @@
 
         <nav>
             <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
-            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="erp.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
             <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
             <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
             <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="hr.html"><i class="fa-solid fa-users"></i> <span>Ressources Humaines</span></a>
             <a href="marketplace.html" class="active"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
             <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
             <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
@@ -63,10 +64,10 @@
         </header>
 
         <!-- HERO BANNER -->
-        <section class="hero" style="background: linear-gradient(135deg, #f39c12 0%, #0B3D91 100%);">
-            <h2>Achetez & Vendez en Pi (π)</h2>
-            <p data-lang="welcome">Matériaux BTP, équipements géodésiques, prestations de génie civil et biens immobiliers certifiés au Niger.</p>
-            <button class="hero-btn" onclick="document.getElementById('fullProductsGrid').scrollIntoView({behavior: 'smooth'});">
+        <section class="hero" style="background: linear-gradient(135deg, #f39c12 0%, #0B3D91 100%); border-radius: 12px; padding: 30px; margin-bottom: 25px; color: #ffffff;">
+            <h2 style="font-size: 1.8rem; margin-bottom: 10px;">Achetez & Vendez en Pi (π)</h2>
+            <p data-lang="welcome" style="margin-bottom: 15px;">Matériaux BTP, équipements géodésiques, prestations de génie civil et biens immobiliers certifiés au Niger.</p>
+            <button class="btn btn-warning" onclick="document.getElementById('fullProductsGrid').scrollIntoView({behavior: 'smooth'});">
                 Parcourir le catalogue
             </button>
         </section>
@@ -74,18 +75,17 @@
         <!-- BARRE DE RECHERCHE DYNAMIQUE -->
         <div class="search-container" style="margin: 25px 0;">
             <div class="search-box">
-                <input type="text" id="globalSearch" placeholder="🔎 Rechercher des récepteurs GNSS, ciment, parcelles, projets BTP...">
+                <input type="text" id="globalSearch" placeholder="🔎 Rechercher des récepteurs GNSS, ciment, parcelles, projets BTP..." style="width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
             </div>
         </div>
 
-        <!-- CATALOGUE MULTI-PAGES -->
+        <!-- CATALOGUE PRODUITS -->
         <section class="popular-products">
             <div class="section-header" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                 <h2>🛒 Tous les articles & opportunités</h2>
             </div>
 
-            <!-- Conteneur unifié compatible avec 'fullProductsGrid', 'marketplaceContainer', etc. -->
-            <div class="products-grid" id="fullProductsGrid">
+            <div class="products-grid" id="fullProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;">
                 <div class="product-card-placeholder" style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
                     <p><i class="fa-solid fa-spinner fa-spin"></i> Chargement des articles du marché...</p>
                 </div>
@@ -100,19 +100,9 @@
     <!-- MODULES JS ES6 (Bas de page) -->
     <script type="module" src="../js/supabase.js"></script>
     <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/auth.js"></script>
     <script type="module" src="../js/pi-payments.js"></script>
     <script type="module" src="../js/app.js"></script>
     <script type="module" src="../js/marketplace.js"></script>
-
-    <script>
-        // Fallback paiement rapide
-        window.buy = async function(title, price) {
-            if (typeof window.createPiPayment === "function") {
-                await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
-            } else {
-                alert("Initialisation du SDK Pi Network... Veuillez réessayer dans un instant.");
-            }
-        };
-    </script>
 </body>
 </html>
