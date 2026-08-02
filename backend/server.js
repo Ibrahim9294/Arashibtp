@@ -1,5 +1,5 @@
 // =====================================
-// ARASHI v3.0
+// ARASHI v4.0
 // server.js (Version Corrigée Pi Network)
 // =====================================
 
@@ -42,7 +42,7 @@ const PORT = process.env.PORT || 3000;
 app.get("/", (req, res) => {
     res.json({
         status: "ARASHI Backend Online",
-        version: "3.0",
+        version: "4.0",
         supabase: "Connected"
     });
 });
@@ -175,19 +175,6 @@ app.post("/api/pi/verify", async (req, res) => {
 
     } catch (err) {
         console.error("Erreur /api/pi/verify :", err);
-        return res.status(500).json({ error: err.message });
-    }
-});
-
-// ==============================
-// WEBHOOK PI (/api/pi/webhook)
-// ==============================
-app.post("/api/pi/webhook", async (req, res) => {
-    try {
-        console.log("🔔 Webhook Pi reçu :", req.body);
-        return res.status(200).json({ success: true });
-    } catch (err) {
-        console.error("Erreur Webhook :", err);
         return res.status(500).json({ error: err.message });
     }
 });
