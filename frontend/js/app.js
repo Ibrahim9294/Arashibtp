@@ -1,9 +1,23 @@
 /* ==========================================
-   ARASHI Enterprise v4.0 - Global App Controller
+   Entreprise ARASHI v4.0 - Module Principal & UI
    Fichier : js/app.js
 ========================================== */
 
 import { supabase } from './supabase.js';
+import { createPiPayment, loginWithPi, initPiSdk } from './pi-payments.js';
+
+/**
+ * Mise à jour de l'affichage du statut Pi Network dans l'en-tête
+ */
+export function updateUIWithUser(user) {
+    const userStatusEl = document.getElementById("userStatus");
+    if (userStatusEl && user) {
+        const username = user.username || user.uid || "Utilisateur";
+        userStatusEl.innerText = `@${username}`;
+        userStatusEl.style.color = "#28a745";
+        userStatusEl.style.fontWeight = "bold";
+    }
+}
 
 /**
  * Contrôleur Global de l'Application ARASHI
@@ -14,65 +28,104 @@ export const App = {
      * Initialisation au chargement de la page
      */
     init: async function() {
+        // 1. Initialisation SDK Pi
+        if (typeof initPiSdk === 'function') {
+            initPiSdk();
+        }
+
+        // 2. Gestion Menu & Écouteurs UI
         this.setupMobileMenu();
         this.setupAuthListeners();
-        await this.checkUserSession();
+
+        // 3. Vérification des sessions enregistrées (Pi + Supabase)
+        this.restorePiSession();
+        await this.checkSupabaseSession();
     },
 
     /**
-     * Gestion du menu latéral Toggle sur Mobile
+     * Gestion Ouverture / Fermeture du Menu Sidebar
      */
     setupMobileMenu: function() {
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebar = document.getElementById("sidebar");
 
         if (menuToggle && sidebar) {
-            menuToggle.addEventListener('click', (e) => {
+            menuToggle.addEventListener("click", (e) => {
                 e.stopPropagation();
-                sidebar.classList.toggle('active');
+                sidebar.classList.toggle("open");
+                sidebar.classList.toggle("active");
             });
 
-            // Fermer la sidebar lors d'un clic à l'extérieur
-            document.addEventListener('click', (e) => {
-                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                    sidebar.classList.remove('active');
+            document.addEventListener("click", (e) => {
+                if (sidebar.classList.contains("open") || sidebar.classList.contains("active")) {
+                    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                        sidebar.classList.remove("open", "active");
+                    }
                 }
             });
         }
     },
 
     /**
-     * Vérifie la session Supabase courante au démarrage
+     * Restauration de la session Pi Network
      */
-    checkUserSession: async function() {
-        try {
-            const { data: { session }, error } = await supabase.auth.getSession();
-
-            if (error) {
-                console.error("Erreur de récupération de la session :", error.message);
-                return;
+    restorePiSession: function() {
+        const savedUser = localStorage.getItem("pi_user");
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser);
+                updateUIWithUser(user);
+            } catch (e) {
+                console.error("Erreur lecture session Pi :", e);
             }
-
-            if (session) {
-                this.updateUIForUser(session.user);
-            } else {
-                this.updateUIForGuest();
-            }
-        } catch (err) {
-            console.error("Erreur d'authentification :", err);
         }
     },
 
     /**
-     * Écouteurs pour le formulaire de connexion Admin / ERP
+     * Vérification de la session Supabase
+     */
+    checkSupabaseSession: async function() {
+        try {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error) {
+                console.error("Erreur session Supabase :", error.message);
+                return;
+            }
+            if (session) {
+                this.updateUIForSupabaseUser(session.user);
+            }
+        } catch (err) {
+            console.error("Erreur d'authentification Supabase :", err);
+        }
+    },
+
+    /**
+     * Écouteurs de formulaires et boutons d'action
      */
     setupAuthListeners: function() {
-        const loginForm = document.getElementById('loginForm');
+        // Bouton Connexion Pi Network
+        const piLoginBtn = document.getElementById("piLogin");
+        if (piLoginBtn) {
+            piLoginBtn.addEventListener("click", async () => {
+                try {
+                    const user = await loginWithPi();
+                    if (user) {
+                        updateUIWithUser(user);
+                        alert(`Bienvenue @${user.username || 'Pioneer'} !`);
+                    }
+                } catch (err) {
+                    console.error("Détail de l'erreur Pi :", err);
+                    const detail = err?.message || (typeof err === "object" ? JSON.stringify(err) : String(err));
+                    alert("Échec de la connexion Pi : " + detail);
+                }
+            });
+        }
 
+        // Formulaire Login Supabase (Admin / ERP)
+        const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-
                 const email = document.getElementById('loginEmail')?.value;
                 const password = document.getElementById('loginPassword')?.value;
 
@@ -87,25 +140,18 @@ export const App = {
                 submitBtn.disabled = true;
 
                 try {
-                    const { data, error } = await supabase.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-
+                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                     if (error) {
                         alert(`Erreur de connexion : ${error.message}`);
                     } else {
-                        console.log("Connexion réussie :", data.user);
-                        this.updateUIForUser(data.user);
+                        this.updateUIForSupabaseUser(data.user);
                         alert("Connexion réussie à l'espace ERP ARASHI !");
-                        
-                        // Redirection si sur la page d'accueil ou de login
                         if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
                             window.location.href = 'pages/erp.html';
                         }
                     }
                 } catch (err) {
-                    console.error("Erreur lors de la tentative de connexion :", err);
+                    console.error("Erreur connexion Supabase :", err);
                 } finally {
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
@@ -113,36 +159,27 @@ export const App = {
             });
         }
 
-        // Écouter les changements d'état d'authentification Supabase
+        // Écouteur Supabase Auth State
         supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' && session) {
-                this.updateUIForUser(session.user);
-            } else if (event === 'SIGNED_OUT') {
-                this.updateUIForGuest();
+                this.updateUIForSupabaseUser(session.user);
             }
         });
     },
 
     /**
-     * Met à jour l'interface lorsqu'un utilisateur est connecté
+     * Mise à jour de l'UI pour un administrateur Supabase connecté
      */
-    updateUIForUser: function(user) {
-        const userStatus = document.getElementById('userStatus');
+    updateUIForSupabaseUser: function(user) {
         const loginSection = document.getElementById('loginSection');
-
-        if (userStatus) {
-            userStatus.innerHTML = `<span class="badge badge-success"><i class="fa-solid fa-user-check"></i> ${user.email}</span>`;
-        }
-
-        // Masquer le formulaire de connexion si déjà connecté
         if (loginSection) {
             loginSection.innerHTML = `
                 <div style="text-align: center; padding: 10px;">
-                    <h3><i class="fa-solid fa-circle-check" style="color: var(--success);"></i> Connecté en tant que Admin/ERP</h3>
+                    <h3><i class="fa-solid fa-circle-check" style="color: var(--success);"></i> Connecté à l'ERP</h3>
                     <p style="margin: 10px 0; font-size: 0.9rem; opacity: 0.8;">${user.email}</p>
                     <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
                         <a href="pages/erp.html" class="btn btn-primary"><i class="fa-solid fa-chart-line"></i> Accéder au Dashboard</a>
-                        <button onclick="App.logout()" class="btn btn-danger"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
+                        <button onclick="App.logoutSupabase()" class="btn btn-danger"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
                     </div>
                 </div>
             `;
@@ -150,33 +187,19 @@ export const App = {
     },
 
     /**
-     * Met à jour l'interface en mode visiteur
+     * Déconnexion Supabase
      */
-    updateUIForGuest: function() {
-        const userStatus = document.getElementById('userStatus');
-        if (userStatus) {
-            userStatus.innerHTML = `<span class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>`;
-        }
-    },
-
-    /**
-     * Déconnexion de l'utilisateur
-     */
-    logout: async function() {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-            console.error("Erreur lors de la déconnexion :", error.message);
-        } else {
-            alert("Vous avez été déconnecté.");
-            window.location.reload();
-        }
+    logoutSupabase: async function() {
+        await supabase.auth.signOut();
+        alert("Déconnecté du compte ERP.");
+        window.location.reload();
     }
 };
 
-// Rendre la méthode logout globale pour l'attribut onclick HTML
+// Exposition globale pour les appels dans le DOM
 window.App = App;
 
-// Démarrage de l'application
-document.addEventListener('DOMContentLoaded', () => {
+// Démarrage au chargement du DOM
+document.addEventListener("DOMContentLoaded", () => {
     App.init();
 });
