@@ -7,6 +7,19 @@ import { supabase } from './supabase.js';
 import { createPiPayment, loginWithPi, initPiSdk } from './pi-payments.js';
 
 /**
+ * Gestionnaire d'erreurs global et événements réseau
+ */
+window.addEventListener('error', function (e) {
+    if (e.message && e.message.includes('Pi')) {
+        console.warn('⚠️ Avertissement SDK Pi Network :', e.message);
+    }
+}, true);
+
+window.addEventListener('offline', () => {
+    alert("⚠️ Connexion Internet perdue. Certaines fonctionnalités Supabase peuvent être indisponibles.");
+});
+
+/**
  * Mise à jour de l'affichage du statut Pi Network dans l'en-tête
  */
 export function updateUIWithUser(user) {
