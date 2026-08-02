@@ -9,7 +9,7 @@
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CSS Unifié -->
+    <!-- Style Global -->
     <link rel="stylesheet" href="../css/style.css">
     
     <!-- SDK Pi Network -->
@@ -40,7 +40,7 @@
 
         <nav>
             <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
-            <a href="erp.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
             <a href="immobilier.html" class="active"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
             <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
             <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
@@ -52,7 +52,7 @@
         </nav>
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <!-- CONTENT AREA -->
     <div class="content">
         <header class="topbar">
             <h1 data-lang="realestate">🏡 Offres Immobilières Pi Network</h1>
@@ -66,12 +66,12 @@
         <section class="hero" style="background: linear-gradient(135deg, #2e7d32 0%, #0B3D91 100%);">
             <h2>Terrains, Parcels & Maisons</h2>
             <p data-lang="welcome">Découvrez nos opportunités foncières certifiées payables directement en Pi au Niger.</p>
-            <button class="hero-btn" onclick="document.getElementById('marketplaceContainer').scrollIntoView({behavior: 'smooth'});">
-                Explorer le catalogue
+            <button class="hero-btn" onclick="document.getElementById('fullProductsGrid').scrollIntoView({behavior: 'smooth'});">
+                Explorer les opportunités
             </button>
         </section>
 
-        <!-- BARRE DE RECHERCHE -->
+        <!-- BARRE DE RECHERCHE DYNAMIQUE -->
         <div class="search-container">
             <div class="search-box">
                 <input type="text" id="globalSearch" placeholder="🔎 Rechercher des villas, parcelles, terrains certifiés...">
@@ -84,8 +84,8 @@
                 <h2>🏡 Catalogue des biens immobiliers</h2>
             </div>
 
-            <!-- Grille Dynamique connectée à Supabase (js/marketplace.js) -->
-            <div class="products-grid" id="marketplaceContainer">
+            <!-- Conteneur unifié multi-pages (Supporte 'fullProductsGrid' et 'marketplaceContainer') -->
+            <div class="products-grid" id="fullProductsGrid">
                 <div class="product-card-placeholder">
                     <p><i class="fa-solid fa-spinner fa-spin"></i> Chargement des biens immobiliers...</p>
                 </div>
@@ -105,14 +105,14 @@
     <script type="module" src="../js/marketplace.js"></script>
 
     <script>
-        // Callback global fallback pour les boutons d'achat direct
+        // Fonction Fallback d'Achat Direct
         window.buy = async function(title, price) {
             if (typeof window.createPiPayment === "function") {
                 await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
             } else if (typeof window.addToCart === "function") {
                 window.addToCart(title, price);
             } else {
-                alert("Initialisation du SDK Pi Network... Veuillez réessayer dans un instant.");
+                alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
             }
         };
     </script>
