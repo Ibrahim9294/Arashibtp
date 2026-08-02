@@ -1,144 +1,119 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
+    <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entreprise ARASHI | Construction & BTP</title>
-    <!-- Lien vers le fichier CSS global -->
+    <title>Construction & BTP | Entreprise ARASHI v4.0</title>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Unifié -->
     <link rel="stylesheet" href="../css/style.css">
-    <!-- SDK Pi Network requis pour les transactions -->
+    
+    <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 
-    <!-- Menu Toggle pour mobile -->
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-    <!-- Sidebar : Architecture v3.0 -->
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
             <p>Construction & BTP</p>
         </div>
-        <nav>
-            <a href="../index.html">🏠 Accueil</a>
-            <a href="dashboard.html">📊 Dashboard</a>
-            <a href="immobilier.html">🏡 Immobilier</a>
-            <a href="topographie.html">📐 Topographie</a>
-            <a href="construction.html" class="active">🏗️ Construction</a>
-            <a href="marketplace.html">🛒 Marketplace</a>
-            <a href="vendor.html">🛍️ Vendor Center</a>
-            <a href="orders.html">📦 Mes Commandes</a>
-            <a href="admin.html">👑 Admin</a>
-<a href="paiement.html">💳 Paiement Pi</a>
 
+        <!-- Sélecteur de Langue -->
+        <div class="lang-selector" style="padding: 15px 20px 5px;">
+            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                <option value="fr">Français (FR)</option>
+                <option value="ha">Hausa (HA)</option>
+                <option value="dje">Zarma (DJE)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+
+        <nav>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
+            <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
+            <a href="construction.html" class="active"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
+            <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
+            <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
+            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
+            <a href="paiement.html"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
         </nav>
     </aside>
 
-    <!-- Contenu Principal -->
+    <!-- MAIN CONTENT -->
     <div class="content">
         <header class="topbar">
-            <h1>🏗️ Services de Construction & Génie Civil</h1>
-            <div class="auth-area">
-                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
-                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+            <h1>🏗️ Travaux de Construction, Pavage & Matériaux BTP</h1>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
+                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
+                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
             </div>
         </header>
 
-        <!-- Section Hero -->
-        <section class="hero" style="background: linear-gradient(135deg, #0B3D91 0%, #d97706 100%);">
-            <h2>Construisez votre Avenir avec Pi Network</h2>
-            <p>De la conception de plans à la remise des clés : nous réalisons vos projets de bâtiments, villas et ouvrages BTP au Niger.</p>
+        <!-- HERO BANNER -->
+        <section class="hero" style="background: linear-gradient(135deg, #d35400 0%, #0B3D91 100%);">
+            <h2>Génie Civil, Pavage Routier & Matériaux de Chantier</h2>
+            <p>Commandez vos travaux de terrassement, pavage, ciment et armature métallique directement en Pi Network (π).</p>
+            <button class="hero-btn" onclick="document.getElementById('fullProductsGrid').scrollIntoView({behavior: 'smooth'});">
+                Explorer les offres BTP
+            </button>
         </section>
 
-        <!-- Formulaire de demande de projet / Devis -->
-        <section class="quick-actions" style="background: var(--bg-card, #fff); padding: 20px; border-radius: 8px; margin-top: 25px;">
-            <h2>📋 Demande de Devis BTP / Construction</h2>
-            <form id="constructionForm" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin-top: 15px;">
-                <div>
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Type de Projet :</label>
-                    <select id="projectType" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
-                        <option value="Construction de Villa / Maison">Construction de Villa / Maison</option>
-                        <option value="Rénovation / Extension">Rénovation / Extension</option>
-                        <option value="Gros Œuvre & Structure">Gros Œuvre & Structure</option>
-                        <option value="Plan Architecturale & Structurale">Plan Architecturale & Structurale</option>
-                        <option value="Clôture et Aménagement">Clôture et Aménagement</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Localisation des Travaux :</label>
-                    <input type="text" id="projectLocation" placeholder="Ex: Niamey, Dosso, Maradi..." required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
-                </div>
-                <div>
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Budget Approximatif (en Pi ou FCFA) :</label>
-                    <input type="text" id="projectBudget" placeholder="Ex: 500 π ou 5 000 000 FCFA" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
-                </div>
-                <div>
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Description du projet :</label>
-                    <textarea id="projectDetails" rows="4" placeholder="Nombre de pièces, surface, contraintes particulières..." style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;"></textarea>
-                </div>
-                <button type="submit" class="hero-btn" style="cursor:pointer;">🚀 Soumettre ma demande de devis</button>
-            </form>
-            <p id="constructionMsg" style="margin-top:15px; font-weight:bold;"></p>
-        </section>
+        <!-- BARRE DE RECHERCHE -->
+        <div class="search-container" style="margin: 25px 0;">
+            <div class="search-box">
+                <input type="text" id="globalSearch" placeholder="🔎 Rechercher du pavage de route, ciment CPJ 45, fer à béton, gros œuvre...">
+            </div>
+        </div>
 
-        <!-- Grille des Offres & Forfaits BTP -->
-        <section class="popular-products" style="margin-top: 30px;">
-            <div class="section-header">
-                <h2>🏗️ Nos Forfaits & Services Standards</h2>
+        <!-- CATALOGUE CONSTRUCTION -->
+        <section class="popular-products">
+            <div class="section-header" style="margin-bottom: 20px;">
+                <h2>🏗️ Catalogues des prestations BTP & Matériaux</h2>
             </div>
 
+            <!-- Grille dynamique connectée à Supabase via js/marketplace.js -->
             <div class="products-grid" id="fullProductsGrid">
-                <div class="product-card-placeholder">
-                    <p>⏳ Chargement des forfaits de construction...</p>
+                <div class="product-card-placeholder" style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
+                    <p><i class="fa-solid fa-spinner fa-spin"></i> Chargement des offres de construction...</p>
                 </div>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer>
-            <p>© 2026 Entreprise ARASHI • BTP & Construction</p>
+        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
+            <p>© 2026 Entreprise ARASHI • Génie Civil, Construction & BTP</p>
         </footer>
     </div>
 
-    <!-- Script du formulaire de demande -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById("constructionForm");
-            if (form) {
-                form.addEventListener("submit", (e) => {
-                    e.preventDefault();
-                    const type = document.getElementById("projectType").value;
-                    const location = document.getElementById("projectLocation").value;
-                    const msg = document.getElementById("constructionMsg");
-
-                    msg.style.color = "green";
-                    msg.innerText = `✅ Demande enregistrée avec succès pour "${type}" à "${location}". Notre équipe BTP prendra contact avec vous rapidement.`;
-                    form.reset();
-                });
-            }
-        });
-    </script>
-
-    <!-- ==========================================
-    MODULES JAVASCRIPT ARASHI (Placement tout en bas)
-    ========================================== -->
+    <!-- MODULES JS ES6 (Bas de page) -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/pi-payments.js"></script>
     <script type="module" src="../js/app.js"></script>
     <script type="module" src="../js/marketplace.js"></script>
-    <script type="module" src="../js/cart.js"></script>
 
-    <!-- Gestion du bouton d'achat direct -->
     <script>
+        // Callback global fallback pour paiements
         window.buy = async function(title, price) {
-            if (typeof window.addToCart === "function") {
-                window.addToCart(title, price);
-            } else if (typeof window.createPiPayment === "function") {
+            if (typeof window.createPiPayment === "function") {
                 await window.createPiPayment(Number(price), title, title.toLowerCase().replace(/\s+/g, "-"));
             } else {
-                alert("Initialisation de Pi Network... Veuillez réessayer dans un instant.");
+                alert("Initialisation du SDK Pi Network... Veuillez réessayer dans un instant.");
             }
         };
     </script>
 </body>
 </html>
-
