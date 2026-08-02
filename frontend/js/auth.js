@@ -87,4 +87,4 @@ document.addEventListener("DOMContentLoaded", () => {
     if (loginBtn) {
         loginBtn.addEventListener("click", loginWithPi);
     }
-});
+}); 
