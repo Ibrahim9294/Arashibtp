@@ -1,9 +1,10 @@
 /* ==========================================
    Entreprise ARASHI v4.0 - Script Global Application
-   Fichier : js/app.js
+   Fichier : js/app.js (Corrigé et unifié)
 ========================================== */
 
 import { supabase } from './supabase.js';
+import { PiPaymentManager } from './pi-payments.js';
 
 // --- 1. GESTION DU MENU MOBILE (TOGGLE SIDEBAR) ---
 function initMobileMenu() {
@@ -25,54 +26,8 @@ function initMobileMenu() {
     }
 }
 
-// --- 2. FONCTION DE CONNEXION PI (GLOBAL FALLBACK) ---
-export async function handlePiLogin() {
-    const userStatus = document.getElementById('userStatus');
-    const loginBtn = document.getElementById('piLogin');
-
-    if (typeof Pi === "undefined") {
-        alert("Le SDK Pi Network n'a pas pu être chargé. Assurez-vous d'utiliser le navigateur Pi Browser.");
-        return;
-    }
-
-    try {
-        const scopes = ['username', 'payments'];
-        const auth = await Pi.authenticate(scopes, (payment) => {
-            console.log("Paiement incomplet détecté :", payment);
-        });
-
-        if (auth && auth.user) {
-            window.currentUser = auth.user;
-            
-            // Mémorisation du profil dans Supabase
-            await supabase.from("users").upsert({
-                uid: auth.user.uid,
-                username: auth.user.username,
-                last_login: new Date().toISOString()
-            }, { onConflict: 'uid' });
-
-            if (userStatus) {
-                userStatus.textContent = `@${auth.user.username}`;
-                userStatus.className = "badge badge-success";
-            }
-            if (loginBtn) {
-                loginBtn.style.display = "none";
-            }
-            alert(`Bienvenue @${auth.user.username} !`);
-            
-            // Rechargement des modules sensibles si présents
-            if (typeof window.loadUserOrders === "function") window.loadUserOrders();
-            if (typeof window.loadAdminData === "function") window.loadAdminData();
-        }
-    } catch (err) {
-        console.error("Erreur d'authentification Pi :", err);
-        alert("Échec de la connexion via Pi Network.");
-    }
-}
-
-// Assure l'accès global pour l'attribut onclick dans le HTML
-window.handlePiLogin = handlePiLogin;
-window.getCurrentUser = () => window.currentUser || null;
+// --- 2. FONCTION GLOBALE UTILISATEUR ---
+window.getCurrentUser = () => PiPaymentManager.user || window.currentUser || null;
 
 // --- 3. CHARGEMENT DES SECTIONS METIERS ERP (STOCKS, CHANTIERS, CRM) ---
 export async function loadERPModulesData() {
@@ -148,6 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loginBtn = document.getElementById('piLogin');
     if (loginBtn) {
-        loginBtn.addEventListener('click', handlePiLogin);
+        // Redirection propre vers le gestionnaire unifié de paiements et d'authentification Pi
+        loginBtn.addEventListener('click', () => {
+            PiPaymentManager.login();
+        });
     }
 });
