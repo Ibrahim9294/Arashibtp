@@ -1,6 +1,6 @@
 /* ==========================================
    ARASHI Enterprise v4.0 & v3.0 - Style Global
-   Fichier : css/style.css
+   Fichier : css/style.css (Corrigé Mobile & Sidebar)
 ========================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
@@ -44,44 +44,6 @@ body {
     overflow-x: hidden;
 }
 
-/* ==========================================
-   SUPPORT MULTILINGUE & RTL (ARABE)
-========================================== */
-
-/* Mode Arabe (Right To Left) */
-html[dir="rtl"] body {
-    direction: rtl;
-    text-align: right;
-}
-
-html[dir="rtl"] .sidebar {
-    left: auto;
-    right: 0;
-    border-right: none;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-html[dir="rtl"] .content {
-    margin-left: 0;
-    margin-right: 260px;
-}
-
-html[dir="rtl"] .main-services h2, 
-html[dir="rtl"] .popular-products h2, 
-html[dir="rtl"] .stats h2, 
-html[dir="rtl"] .quick-actions h2 {
-    padding-left: 0;
-    padding-right: 15px;
-}
-
-html[dir="rtl"] .main-services h2::before, 
-html[dir="rtl"] .popular-products h2::before, 
-html[dir="rtl"] .stats h2::before, 
-html[dir="rtl"] .quick-actions h2::before {
-    left: auto;
-    right: 0;
-}
-
 /* ================= SIDEBAR ================= */
 
 .sidebar {
@@ -93,7 +55,7 @@ html[dir="rtl"] .quick-actions h2::before {
     left: 0;
     top: 0;
     overflow-y: auto;
-    z-index: 100;
+    z-index: 1000;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     transition: var(--transition);
 }
@@ -142,18 +104,6 @@ html[dir="rtl"] .quick-actions h2::before {
     font-weight: 600;
 }
 
-/* Selecteur de langue dans la Sidebar */
-.lang-selector select {
-    background: #0f172a;
-    color: var(--white);
-    border: 1px solid #334e68;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    outline: none;
-    cursor: pointer;
-}
-
 /* ================= CONTENU & TOPBAR ================= */
 
 .content {
@@ -172,7 +122,7 @@ html[dir="rtl"] .quick-actions h2::before {
     box-shadow: var(--shadow);
     position: sticky;
     top: 0;
-    z-index: 90;
+    z-index: 900;
 }
 
 .topbar h1 {
@@ -224,16 +174,6 @@ html[dir="rtl"] .quick-actions h2::before {
     color: var(--primary-color);
 }
 
-.upper-item .icon {
-    font-size: 22px;
-    margin-bottom: 5px;
-}
-
-.upper-item .label {
-    font-size: 11px;
-    font-weight: 600;
-}
-
 .hero {
     background: linear-gradient(135deg, var(--primary-color) 0%, #154fae 100%);
     color: var(--white);
@@ -241,8 +181,6 @@ html[dir="rtl"] .quick-actions h2::before {
     border-radius: 16px;
     padding: 40px 30px;
     box-shadow: var(--shadow);
-    position: relative;
-    overflow: hidden;
 }
 
 .hero h2 {
@@ -270,14 +208,8 @@ html[dir="rtl"] .quick-actions h2::before {
     transition: var(--transition);
 }
 
-.hero-btn:hover {
-    transform: scale(1.04);
-}
-
-/* ================= RECHERCHE & SECTIONS ================= */
-
-.search-container {
-    margin: 20px 30px;
+.search-container, .main-services, .popular-products, .stats, .quick-actions {
+    margin: 35px 30px;
 }
 
 .search-box input {
@@ -288,50 +220,15 @@ html[dir="rtl"] .quick-actions h2::before {
     font-size: 14px;
     box-shadow: var(--shadow);
     outline: none;
-    transition: var(--transition);
     background: var(--white);
 }
 
-.search-box input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 20px rgba(11, 61, 145, 0.15);
-}
-
-.main-services, 
-.popular-products, 
-.stats, 
-.quick-actions {
-    margin: 35px 30px;
-}
-
-.main-services h2, 
-.popular-products h2, 
-.stats h2, 
-.quick-actions h2 {
+.main-services h2, .popular-products h2, .stats h2, .quick-actions h2 {
     color: var(--primary-color);
     font-size: 20px;
     margin-bottom: 18px;
-    position: relative;
-    padding-left: 15px;
     font-weight: 700;
 }
-
-.main-services h2::before, 
-.popular-products h2::before, 
-.stats h2::before, 
-.quick-actions h2::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 5px;
-    height: 18px;
-    background: var(--secondary-color);
-    border-radius: 3px;
-}
-
-/* ================= GRILLE PRODUITS & MARKETPLACE ================= */
 
 .products-grid {
     display: grid;
@@ -344,16 +241,10 @@ html[dir="rtl"] .quick-actions h2::before {
     padding: 20px;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    transition: var(--transition);
     border: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-}
-
-.service-card:hover, .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-hover);
 }
 
 .product-image {
@@ -364,85 +255,6 @@ html[dir="rtl"] .quick-actions h2::before {
     margin-bottom: 12px;
 }
 
-.product-card-placeholder {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 35px;
-    background: var(--white);
-    border-radius: var(--radius);
-    border: 1px dashed var(--border);
-    color: var(--text-muted);
-}
-
-/* ================= STATISTIQUES & ACTIONS ================= */
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-}
-
-.stat-card {
-    background: var(--white);
-    padding: 20px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.stat-icon {
-    font-size: 26px;
-    background: rgba(11, 61, 145, 0.08);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.actions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-}
-
-.action-btn {
-    background: var(--white);
-    color: var(--dark);
-    text-decoration: none;
-    padding: 14px;
-    border-radius: var(--radius);
-    text-align: center;
-    font-weight: 600;
-    font-size: 13px;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-    border: 1px solid var(--border);
-}
-
-.action-btn:hover {
-    transform: translateY(-3px);
-    border-color: var(--primary-color);
-}
-
-/* ================= CARDS, BUTTONS & FORMULAIRES ================= */
-
-.card {
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 22px;
-    transition: var(--transition);
-    border: 1px solid var(--border);
-}
-
-.card:hover {
-    transform: translateY(-4px);
-}
-
 .btn {
     padding: 10px 18px;
     border: none;
@@ -450,7 +262,6 @@ html[dir="rtl"] .quick-actions h2::before {
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
-    transition: var(--transition);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -459,39 +270,8 @@ html[dir="rtl"] .quick-actions h2::before {
 }
 
 .btn-primary { background: var(--primary-color); color: white; }
-.btn-primary:hover { background: var(--primary-dark); }
-.btn-secondary { background: #64748b; color: white; }
-.btn-secondary:hover { background: #475569; }
-.btn-success { background: var(--success); color: white; }
-.btn-danger { background: var(--danger); color: white; }
 
-input, textarea, select {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    outline: none;
-    transition: var(--transition);
-    background: var(--white);
-}
-
-input:focus, textarea:focus, select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.1);
-}
-
-/* Badges de Statut */
-.badge {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-}
-.badge-success { background: #d1fae5; color: #065f46; }
-.badge-warning { background: #fef3c7; color: #92400e; }
-.badge-danger { background: #fee2e2; color: #991b1b; }
-
-/* ================= RESPONSIVE MOBILE ================= */
+/* ================= BOUTON MENU MOBILE (BURGER) ================= */
 
 .menu-toggle {
     display: none;
@@ -499,66 +279,42 @@ input:focus, textarea:focus, select:focus {
 
 @media (max-width: 900px) {
     .menu-toggle {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         position: fixed;
         top: 15px;
         left: 15px;
-        z-index: 200;
+        z-index: 2000;
         background: var(--primary-color);
         color: var(--white);
         border: none;
-        padding: 10px 14px;
+        width: 42px;
+        height: 42px;
         border-radius: 8px;
         cursor: pointer;
+        font-size: 18px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
-    html[dir="rtl"] .menu-toggle {
-        left: auto;
-        right: 15px;
-    }
-
     .sidebar {
-        left: -260px;
-    }
-
-    html[dir="rtl"] .sidebar {
-        right: -260px;
-        left: auto;
+        transform: translateX(-100%);
     }
 
     .sidebar.active {
-        left: 0;
-    }
-
-    html[dir="rtl"] .sidebar.active {
-        right: 0;
-        left: auto;
+        transform: translateX(0);
     }
 
     .content {
         margin-left: 0 !important;
-        margin-right: 0 !important;
         width: 100%;
     }
 
     .topbar {
-        padding: 15px 15px 15px 65px;
-    }
-
-    html[dir="rtl"] .topbar {
-        padding: 15px 65px 15px 15px;
+        padding: 15px 15px 15px 70px;
     }
 
     .upper-dashboard, .hero, .search-container, .main-services, .popular-products, .stats, .quick-actions {
         margin: 15px;
-    }
-
-    .hero {
-        padding: 25px 18px;
-    }
-
-    .hero h2 {
-        font-size: 22px;
     }
 }
