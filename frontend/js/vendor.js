@@ -1,26 +1,24 @@
 /* ==========================================
-   Entreprise ARASHI v4.0 - Module Mes Commandes
-   Fichier : js/orders.js
+   Entreprise ARASHI v4.0 - Module Vendor Center
+   Fichier : js/vendor.js
 ========================================== */
 
-import { supabase } from './supabase.js';
+import { supabase, STORAGE_BUCKET } from './supabase.js';
 
 /**
- * Charge l'ensemble des commandes passées par l'utilisateur connecté
+ * Charge les produits du vendeur connecté
  */
-export async function loadUserOrders() {
-    const tbody = document.getElementById("userOrdersTable");
-    if (!tbody) return;
+export async function loadVendorProducts() {
+    const container = document.getElementById("vendorProductsList");
+    if (!container) return;
 
     const user = typeof window.getCurrentUser === "function" ? window.getCurrentUser() : null;
 
     if (!user || (!user.uid && !user.username)) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
-                    Veuillez vous connecter avec Pi Network pour consulter vos commandes.
-                </td>
-            </tr>
+        container.innerHTML = `
+            <div style="text-align: center; padding: 30px; color: var(--text-muted); grid-column: 1 / -1;">
+                Veuillez vous connecter avec Pi Network pour gérer vos produits et votre boutique.
+            </div>
         `;
         return;
     }
@@ -28,71 +26,154 @@ export async function loadUserOrders() {
     const username = user.username || user.uid;
 
     try {
-        const { data: orders, error } = await supabase
-            .from("orders")
+        container.innerHTML = `<div style="text-align: center; padding: 20px; grid-column: 1 / -1; color: var(--text-muted);">Chargement de vos produits...</div>`;
+
+        const { data: products, error } = await supabase
+            .from("products")
             .select("*")
-            .eq("username", username)
+            .eq("vendor_username", username)
             .order("created_at", { ascending: false });
 
         if (error) throw error;
 
-        tbody.innerHTML = "";
+        container.innerHTML = "";
 
-        if (!orders || orders.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
-                        Vous n'avez passé aucune commande pour le moment.
-                    </td>
-                </tr>
+        if (!products || products.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 30px; color: var(--text-muted); grid-column: 1 / -1;">
+                    Vous n'avez publié aucun produit pour le moment. Utilisez le formulaire ci-dessus pour en ajouter un.
+                </div>
             `;
             return;
         }
 
-        orders.forEach(order => {
-            const row = document.createElement("tr");
-            row.style.borderBottom = "1px solid var(--border)";
+        products.forEach(product => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.style.background = "var(--background)";
+            card.style.borderRadius = "10px";
+            card.style.border = "1px solid var(--border)";
+            card.style.padding = "16px";
+            card.style.display = "flex";
+            card.style.flexDirection = "column";
+            card.style.justifyContent = "space-between";
 
-            let badgeClass = "badge-warning";
-            let statusLabel = "En cours";
-
-            if (order.status === "completed") {
-                badgeClass = "badge-success";
-                statusLabel = "Validée";
-            } else if (order.status === "cancelled") {
-                badgeClass = "badge-danger";
-                statusLabel = "Annulée";
-            }
-
-            row.innerHTML = `
-                <td style="padding: 12px 10px; font-family: monospace; font-size: 0.85rem;">
-                    ${order.payment_id ? order.payment_id.substring(0, 10) + "..." : (order.id || "-")}
-                </td>
-                <td style="padding: 12px 10px; font-weight: bold;">${order.memo || "Commande d'article"}</td>
-                <td style="padding: 12px 10px; color: #f39c12; font-weight: bold;">${parseFloat(order.amount || 0).toFixed(2)} π</td>
-                <td style="padding: 12px 10px; color: var(--text-muted);">
-                    ${order.created_at ? new Date(order.created_at).toLocaleDateString() : "-"}
-                </td>
-                <td style="padding: 12px 10px;">
-                    <span class="badge ${badgeClass}">${statusLabel}</span>
-                </td>
+            card.innerHTML = `
+                <div>
+                    <div style="font-weight: bold; font-size: 1.1rem; margin-bottom: 6px; color: var(--text);">${product.name || 'Produit sans nom'}</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">${product.description || ''}</div>
+                </div>
+                <div>
+                    <div style="color: #f39c12; font-weight: bold; font-size: 1.1rem; margin-bottom: 12px;">⚡ ${parseFloat(product.price || 0).toFixed(2)} π</div>
+                    <button class="btn btn-danger delete-product-btn" data-id="${product.id}" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; width: 100%;">
+                        <i class="fa-solid fa-trash"></i> Supprimer
+                    </button>
+                </div>
             `;
-            tbody.appendChild(row);
+
+            card.querySelector(".delete-product-btn").addEventListener("click", async () => {
+                if (confirm("Voulez-vous vraiment supprimer ce produit ?")) {
+                    await deleteVendorProduct(product.id);
+                }
+            });
+
+            container.appendChild(card);
         });
 
     } catch (err) {
-        console.error("Erreur lors du chargement des commandes :", err);
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
-                    Erreur de récupération des données des commandes.
-                </td>
-            </tr>
+        console.error("Erreur chargement produits vendeur :", err);
+        container.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #e74c3c; grid-column: 1 / -1;">
+                Erreur lors du chargement de vos produits.
+            </div>
         `;
     }
 }
 
-// Initialisation automatique au chargement
+/**
+ * Ajout d'un nouveau produit par le vendeur
+ */
+export async function handleAddProductForm(event) {
+    if (event) event.preventDefault();
+
+    const user = typeof window.getCurrentUser === "function" ? window.getCurrentUser() : null;
+    if (!user || (!user.uid && !user.username)) {
+        alert("Veuillez vous connecter avec Pi Network.");
+        return;
+    }
+
+    const nameInput = document.getElementById("productName");
+    const descInput = document.getElementById("productDescription");
+    const priceInput = document.getElementById("productPrice");
+
+    if (!nameInput || !priceInput) return;
+
+    const name = nameInput.value.trim();
+    const description = descInput ? descInput.value.trim() : "";
+    const price = parseFloat(priceInput.value);
+
+    if (!name || isNaN(price) || price <= 0) {
+        alert("Veuillez remplir correctement le nom et le prix du produit.");
+        return;
+    }
+
+    const username = user.username || user.uid;
+
+    try {
+        const { error } = await supabase
+            .from("products")
+            .insert([{
+                vendor_username: username,
+                name: name,
+                description: description,
+                price: price,
+                created_at: new Date()
+            }]);
+
+        if (error) throw error;
+
+        alert("Produit ajouté avec succès !");
+        nameInput.value = "";
+        if (descInput) descInput.value = "";
+        priceInput.value = "";
+
+        loadVendorProducts();
+    } catch (err) {
+        console.error("Erreur lors de l'ajout du produit :", err);
+        alert("Erreur lors de l'enregistrement du produit.");
+    }
+}
+
+/**
+ * Suppression d'un produit vendeur
+ */
+async function deleteVendorProduct(productId) {
+    try {
+        const { error } = await supabase
+            .from("products")
+            .delete()
+            .eq("id", productId);
+
+        if (error) throw error;
+
+        alert("Produit supprimé.");
+        loadVendorProducts();
+    } catch (err) {
+        console.error("Erreur suppression :", err);
+        alert("Impossible de supprimer ce produit.");
+    }
+}
+
+// Initialisation automatique au chargement de la page vendor.html
 document.addEventListener("DOMContentLoaded", () => {
-    loadUserOrders();
+    loadVendorProducts();
+
+    const form = document.getElementById("addProductForm");
+    if (form) {
+        form.addEventListener("submit", handleAddProductForm);
+    }
 });
+
+// Exposition globale
+window.loadVendorProducts = loadVendorProducts;
+window.handleAddProductForm = handleAddProductForm;
