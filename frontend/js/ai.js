@@ -1,208 +1,59 @@
-// =====================================
-// ARASHI v3.0
-// ai.js
-// =====================================
+/**
+ * ARASHI AI Module - v4.0
+ * Gère l'interaction entre l'utilisateur et l'assistant IA
+ */
 
-import { supabase } from "./supabase.js";
+import { supabase } from './supabase.js';
 
-const chat = document.getElementById("chatMessages");
-const input = document.getElementById("aiInput");
-const send = document.getElementById("sendAI");
+document.addEventListener('DOMContentLoaded', () => {
+    const askButton = document.getElementById('askAI');
+    const promptInput = document.getElementById('aiPrompt');
+    const responseContainer = document.getElementById('aiResponse');
 
-function addMessage(type, text) {
+    if (askButton) {
+        askButton.addEventListener('click', async () => {
+            const userPrompt = promptInput.value.trim();
 
-    if (!chat) return;
+            if (!userPrompt) {
+                alert("Veuillez entrer une question.");
+                return;
+            }
 
-    chat.innerHTML += `
+            // État de chargement
+            responseContainer.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyse en cours...';
+            askButton.disabled = true;
 
-    <div class="${type}">
+            try {
+                // Simulation d'appel à une API IA (Remplacez par votre endpoint réel)
+                // Exemple avec une fonction edge Supabase :
+                /*
+                const { data, error } = await supabase.functions.invoke('chat-ai', {
+                    body: { prompt: userPrompt }
+                });
+                */
 
-        ${text}
+                // Simulation de réponse pour démonstration
+                await new Promise(resolve => setTimeout(resolve, 1500)); 
+                
+                const aiResponse = `<strong>Réponse ARASHI AI :</strong><br><br> 
+                Merci pour votre question sur le projet. En tant qu'assistant de l'Entreprise ARASHI, 
+                je traite votre demande concernant <em>"${userPrompt}"</em>. 
+                Veuillez contacter le support technique pour une validation précise par nos ingénieurs.`;
 
-    </div>
-
-    `;
-
-    chat.scrollTop = chat.scrollHeight;
-
-}
-
-async function askAI(question) {
-
-    addMessage("user", question);
-
-    const q = question.toLowerCase();
-
-    let answer = "";
-
-    if (q.includes("terrain")) {
-
-        answer =
-        "ARASHI AI conseille une étude topographique avant tout achat de terrain.";
-
+                responseContainer.innerHTML = aiResponse;
+            } catch (error) {
+                console.error("Erreur IA:", error);
+                responseContainer.innerHTML = "❌ Une erreur est survenue lors de la communication avec l'IA.";
+            } finally {
+                askButton.disabled = false;
+            }
+        });
     }
+});
 
-    else if (q.includes("construction")) {
-
-        answer =
-        "Le coût dépend du type de bâtiment, de la surface et des matériaux.";
-
-    }
-
-    else if (q.includes("villa")) {
-
-        answer =
-        "Nous proposons plusieurs villas disponibles dans le Marketplace.";
-
-    }
-
-    else if (q.includes("gnss")) {
-
-        answer =
-        "Nous vendons des récepteurs GNSS RTK, stations totales et drones.";
-
-    }
-
-    else if (q.includes("pi")) {
-
-        answer =
-        "Tous les paiements utilisent le SDK officiel Pi Network.";
-
-    }
-
-    else {
-
-        answer =
-        "Merci pour votre question. Une version IA avancée sera prochainement connectée.";
-
-    }
-
-    addMessage("assistant", answer);
-
-}
-
-if (send) {
-
-    send.onclick = () => {
-
-        if (!input.value) return;
-
-        askAI(input.value);
-
-        input.value = "";
-
-    };
-
-}
-
-if (input) {
-
-    input.addEventListener("keypress", e => {
-
-        if (e.key === "Enter") {
-
-            send.click();
-
-        }
-
-    });
-
-}
-
-// ===========================
-// Estimation terrain
-// ===========================
-
-window.estimateLand = function(
-
-    surface,
-
-    price
-
-){
-
-    const total =
-
-    Number(surface) *
-
-    Number(price);
-
-    return total;
-
+/**
+ * Fonction utilitaire pour nettoyer les messages (si nécessaire)
+ */
+export const clearAIResponse = () => {
+    document.getElementById('aiResponse').innerHTML = "Aucune réponse pour le moment.";
 };
-
-// ===========================
-// Estimation construction
-// ===========================
-
-window.estimateConstruction = function(
-
-    surface,
-
-    priceM2
-
-){
-
-    return
-
-    Number(surface)
-
-    *
-
-    Number(priceM2);
-
-};
-
-// ===========================
-// Génération devis
-// ===========================
-
-window.generateQuote = async function(
-
-    client,
-
-    project,
-
-    amount
-
-){
-
-    await supabase
-
-    .from("quotes")
-
-    .insert({
-
-        client,
-
-        project,
-
-        amount,
-
-        created_at:
-
-        new Date()
-
-    });
-
-    alert("Devis enregistré.");
-
-};
-
-document.addEventListener(
-
-    "DOMContentLoaded",
-
-    ()=>{
-
-        addMessage(
-
-            "assistant",
-
-            "Bienvenue sur ARASHI AI."
-
-        );
-
-    }
-
-);
