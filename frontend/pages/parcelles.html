@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
+    <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parcelles & Terrains | Entreprise ARASHI v3.0</title>
+    <title>Parcelles & Terrains | Entreprise ARASHI v4.0</title>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- CSS Global ARASHI -->
     <link rel="stylesheet" href="../css/style.css">
+
     <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
@@ -14,25 +20,37 @@
     <!-- Bouton Toggle Menu Mobile -->
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
-    <!-- Sidebar : Architecture v3.0 -->
+    <!-- Sidebar : Architecture v4.0 -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
             <p>Parcelles & Foncier</p>
         </div>
-        <nav>
-            <a href="../index.html">🏠 Accueil</a>
-            <a href="dashboard.html">📊 Dashboard</a>
-            <a href="immobilier.html">🏡 Immobilier</a>
-            <a href="parcelles.html" class="active">📍 Parcelles</a>
-            <a href="topographie.html">📐 Topographie</a>
-            <a href="construction.html">🏗️ Construction</a>
-            <a href="marketplace.html">🛒 Marketplace</a>
-            <a href="vendor.html">🛍️ Vendor Center</a>
-            <a href="orders.html">📦 Mes Commandes</a>
-            <a href="admin.html">👑 Admin</a>
-<a href="paiement.html">💳 Paiement Pi</a>
 
+        <!-- Sélecteur de Langue -->
+        <div class="lang-selector" style="padding: 15px 20px 5px;">
+            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                <option value="fr">Français (FR)</option>
+                <option value="ha">Hausa (HA)</option>
+                <option value="dje">Zarma (DJE)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+
+        <nav>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="immobilier.html"><i class="fa-solid fa-building-user"></i> <span data-lang="realestate">Immobilier</span></a>
+            <a href="parcelles.html" class="active"><i class="fa-solid fa-map-location-dot"></i> <span>Parcelles</span></a>
+            <a href="topographie.html"><i class="fa-solid fa-compass-drafting"></i> <span>Topographie</span></a>
+            <a href="construction.html"><i class="fa-solid fa-helmet-safety"></i> <span>Construction</span></a>
+            <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
+            <a href="vendor.html"><i class="fa-solid fa-shop"></i> <span data-lang="vendor">Vendor Center</span></a>
+            <a href="orders.html"><i class="fa-solid fa-boxes-packing"></i> <span>Mes Commandes</span></a>
+            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
+            <a href="paiement.html"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
         </nav>
     </aside>
 
@@ -40,67 +58,69 @@
     <div class="content">
         <header class="topbar">
             <h1>📍 Parcelles & Terrains Certifiés</h1>
-            <div class="auth-area">
-                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
-                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
+                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
+                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
+                <button id="logoutBtn" class="btn btn-danger" onclick="logout()" style="display: none;">Déconnexion</button>
             </div>
         </header>
 
         <!-- Banner Hero -->
-        <section class="hero" style="background: linear-gradient(135deg, #1e52a4 0%, #2e7d32 100%);">
+        <section class="hero" style="background: linear-gradient(135deg, #1e52a4 0%, #2e7d32 100%); padding: 30px; border-radius: 12px; color: white; margin-top: 20px;">
             <h2>Achetez votre parcelle en Pi Network</h2>
-            <p>Terrains viabilisés, titres fonciers sécurisés et actes de cession approuvés par l'Entreprise ARASHI au Niger.</p>
+            <p style="margin-top: 10px;">Terrains viabilisés, titres fonciers sécurisés et actes de cession approuvés par l'Entreprise ARASHI au Niger.</p>
         </section>
 
         <!-- Formulaire de Recherche / Demande de Parcelle -->
-        <section class="quick-actions" style="background: var(--bg-card, #fff); padding: 25px; border-radius: 8px; margin-top: 25px;">
-            <h2>🔍 Recherche ou Réservation de Parcelle</h2>
+        <section style="background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border); margin-top: 25px;">
+            <h2><i class="fa-solid fa-magnifying-glass-location"></i> Recherche ou Réservation de Parcelle</h2>
             <form id="parcelSearchForm" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin-top: 15px;">
                 <div>
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Ville / Quartier souhaité :</label>
-                    <input type="text" id="parcelLocation" placeholder="Ex: Niamey (Goudel, Niamey 2000, Gorou Banda...)" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                    <label style="display:block; font-weight:500; margin-bottom:5px;">Ville / Quartier souhaité :</label>
+                    <input type="text" id="parcelLocation" placeholder="Ex: Niamey (Goudel, Niamey 2000, Gorou Banda...)" required style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; background:var(--background); color:var(--text);">
                 </div>
                 <div>
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Superficie minimale (m²) :</label>
-                    <input type="number" id="parcelSize" placeholder="Ex: 300, 400, 500" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                    <label style="display:block; font-weight:500; margin-bottom:5px;">Superficie minimale (m²) :</label>
+                    <input type="number" id="parcelSize" placeholder="Ex: 300, 400, 500" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; background:var(--background); color:var(--text);">
                 </div>
                 <div>
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Type de Papier souhaité :</label>
-                    <select id="docType" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                    <label style="display:block; font-weight:500; margin-bottom:5px;">Type de Papier souhaité :</label>
+                    <select id="docType" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; background:var(--background); color:var(--text);">
                         <option value="Titre Foncier">Titre Foncier (TF)</option>
                         <option value="Acte de Cession">Acte de Cession Notarié</option>
                         <option value="Attestation Coutumière">Attestation Coutumière</option>
                     </select>
                 </div>
                 <div>
-                    <label style="display:block; font-weight:bold; margin-bottom:5px;">Budget maximal en Pi (π) :</label>
-                    <input type="number" step="0.01" id="maxBudgetPi" placeholder="Ex: 1500" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                    <label style="display:block; font-weight:500; margin-bottom:5px;">Budget maximal en Pi (π) :</label>
+                    <input type="number" step="0.01" id="maxBudgetPi" placeholder="Ex: 1500" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; background:var(--background); color:var(--text);">
                 </div>
-                <button type="submit" class="hero-btn" style="cursor:pointer;">🔎 Soumettre la recherche</button>
+                <button type="submit" class="btn btn-primary" style="cursor:pointer; padding: 12px;"><i class="fa-solid fa-paper-plane"></i> Soumettre la recherche</button>
             </form>
             <p id="parcelSearchMsg" style="margin-top:15px; font-weight:bold;"></p>
         </section>
 
         <!-- Catalogue des Parcelles Disponible -->
-        <section class="popular-products" style="margin-top: 30px;">
-            <div class="section-header">
-                <h2>📜 Parcelles Disponibles en Vente Directe</h2>
+        <section style="margin-top: 30px;">
+            <div style="margin-bottom: 20px;">
+                <h2><i class="fa-solid fa-scroll"></i> Parcelles Disponibles en Vente Directe</h2>
             </div>
 
-            <div class="products-grid" id="fullProductsGrid">
-                <div class="product-card-placeholder">
+            <div class="products-grid" id="fullProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                <div style="text-align: center; padding: 30px; color: var(--text-muted); grid-column: 1 / -1; background: var(--surface); border-radius: 12px; border: 1px solid var(--border);">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
                     <p>⏳ Chargement des parcelles certifiées...</p>
                 </div>
             </div>
         </section>
 
         <!-- Footer -->
-        <footer>
+        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
             <p>© 2026 Entreprise ARASHI • Foncier & Parcelles</p>
         </footer>
     </div>
 
-    <!-- Script Formulaire -->
+    <!-- Script Formulaire Local -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.getElementById("parcelSearchForm");
@@ -111,8 +131,8 @@
                     const doc = document.getElementById("docType").value;
                     const msg = document.getElementById("parcelSearchMsg");
 
-                    msg.style.color = "green";
-                    msg.innerText = `✅ Recherche enregistrée pour une parcelle à "${loc}" avec document "${doc}". Nos agents fonciers vous contacteront.`;
+                    msg.style.color = "#2ecc71";
+                    msg.innerHTML = `<i class="fa-solid fa-circle-check"></i> Recherche enregistrée pour une parcelle à "${loc}" avec document "${doc}". Nos agents fonciers vous contacteront.`;
                     form.reset();
                 });
             }
@@ -120,8 +140,12 @@
     </script>
 
     <!-- ==========================================
-    MODULES JAVASCRIPT ARASHI (Bas de page)
+    MODULES JAVASCRIPT ARASHI (Bas de page v4.0)
     ========================================== -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/pi-payments.js"></script>
     <script type="module" src="../js/app.js"></script>
     <script type="module" src="../js/marketplace.js"></script>
     <script type="module" src="../js/cart.js"></script>
