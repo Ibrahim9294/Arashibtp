@@ -1,101 +1,151 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
+    <meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Langues | Entreprise ARASHI v3.0</title>
+    <title>Langues | Entreprise ARASHI v4.0</title>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS Global ARASHI -->
     <link rel="stylesheet" href="../css/style.css">
+
+    <!-- SDK Pi Network -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 
     <button class="menu-toggle" id="menuToggle">☰ Menu</button>
 
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">
             <h2>ARASHI</h2>
             <p>Langue & Région</p>
         </div>
+
+        <!-- Sélecteur de Langue -->
+        <div class="lang-selector" style="padding: 15px 20px 5px;">
+            <select id="sidebarLanguageSelect" onchange="changeLanguage(this.value)">
+                <option value="fr">Français (FR)</option>
+                <option value="ha">Hausa (HA)</option>
+                <option value="dje">Zarma (DJE)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="en">English (EN)</option>
+            </select>
+        </div>
+
         <nav>
-            <a href="../index.html">🏠 Accueil</a>
-            <a href="dashboard.html">📊 Dashboard</a>
-            <a href="marketplace.html">🛒 Marketplace</a>
-            <a href="profile.html">👤 Profil</a>
-            <a href="settings.html">⚙️ Paramètres</a>
-            <a href="language.html" class="active">🌐 Langues</a>
-            <a href="partnership.html">🤝 Partnership</a>
-            <a href="admin.html">👑 Admin</a>
-<a href="paiement.html">💳 Paiement Pi</a>
-       </nav>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> <span data-lang="home">Accueil</span></a>
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> <span data-lang="dashboard">ERP Dashboard</span></a>
+            <a href="marketplace.html"><i class="fa-solid fa-store"></i> <span data-lang="marketplace">Marketplace Pi</span></a>
+            <a href="profile.html"><i class="fa-solid fa-user"></i> <span>Profil</span></a>
+            <a href="settings.html"><i class="fa-solid fa-gear"></i> <span>Paramètres</span></a>
+            <a href="language.html" class="active"><i class="fa-solid fa-globe"></i> <span>Langues</span></a>
+            <a href="partnership.html"><i class="fa-solid fa-handshake"></i> <span>Partnership</span></a>
+            <a href="admin.html"><i class="fa-solid fa-user-shield"></i> <span data-lang="admin">Admin</span></a>
+            <a href="paiement.html"><i class="fa-solid fa-wallet"></i> <span>Paiement Pi</span></a>
+        </nav>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <div class="content">
         <header class="topbar">
             <h1>🌐 Choix de la Langue</h1>
-            <div class="auth-area">
-                <button id="piLogin" class="btn btn-primary">🪙 Connexion Pi</button>
-                <span id="userStatus" style="margin-left:15px;font-weight:bold;">Non connecté</span>
+            <div class="auth-area" style="display: flex; align-items: center; gap: 15px;">
+                <button id="piLogin" class="btn btn-warning">⚡ Connexion Pi</button>
+                <span id="userStatus" class="badge badge-warning" data-lang="user_disconnected">Non connecté</span>
+                <button id="logoutBtn" class="btn btn-danger" onclick="logout()" style="display: none;">Déconnexion</button>
             </div>
         </header>
 
-        <section class="hero" style="background: linear-gradient(135deg, #0B3D91 0%, #1e52a4 100%);">
+        <!-- BANNER HERO -->
+        <section class="hero" style="background: linear-gradient(135deg, #0B3D91 0%, #1e52a4 100%); padding: 30px; border-radius: 12px; color: white; margin-top: 20px;">
             <h2>Préférences Linguistiques</h2>
-            <p>Sélectionnez la langue d'affichage de la plateforme ARASHI.</p>
+            <p style="margin-top: 10px;">Sélectionnez la langue d'affichage de la plateforme ARASHI.</p>
         </section>
 
-        <section class="quick-actions" style="background: var(--bg-card, #fff); padding: 25px; border-radius: 8px; margin-top: 25px; max-width: 600px;">
-            <h2>🗣️ Sélectionner une langue</h2>
+        <!-- SÉLECTION DE LA LANGUE -->
+        <section style="background: var(--surface); padding: 25px; border-radius: 12px; border: 1px solid var(--border); margin-top: 25px; max-width: 600px;">
+            <h2><i class="fa-solid fa-comments"></i> Sélectionner une langue</h2>
             <form id="langForm" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
                 <div>
-                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer;">
+                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer; color: var(--text);">
                         <input type="radio" name="appLang" value="fr" checked> 🇫🇷 Français (Par défaut)
                     </label>
                 </div>
                 <div>
-                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer;">
+                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer; color: var(--text);">
                         <input type="radio" name="appLang" value="en"> 🇬🇧 English
                     </label>
                 </div>
                 <div>
-                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer;">
+                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer; color: var(--text);">
                         <input type="radio" name="appLang" value="ha"> 🇳🇪 Hausa
                     </label>
                 </div>
                 <div>
-                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer;">
-                        <input type="radio" name="appLang" value="zarma"> 🇳🇪 Zarma
+                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer; color: var(--text);">
+                        <input type="radio" name="appLang" value="dje"> 🇳🇪 Zarma
                     </label>
                 </div>
-                <button type="submit" class="hero-btn" style="cursor:pointer; margin-top:10px;">💾 Enregistrer la préférence</button>
+                <div>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer; color: var(--text);">
+                        <input type="radio" name="appLang" value="ar"> 🇸🇦 العربية (Arabe)
+                    </label>
+                </div>
+                <div>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:16px; cursor:pointer; color: var(--text);">
+                        <input type="radio" name="appLang" value="zh"> 🇨🇳 中文 (Chinois)
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="cursor:pointer; margin-top:10px; padding: 12px;"><i class="fa-solid fa-floppy-disk"></i> Enregistrer la préférence</button>
             </form>
             <p id="langMsg" style="margin-top:15px; font-weight:bold;"></p>
         </section>
 
-        <footer>
-            <p>© 2026 Entreprise ARASHI • Paramètres Linguistiques</p>
+        <!-- FOOTER -->
+        <footer style="text-align: center; padding: 25px 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px;">
+            <p>© 2026 Entreprise ARASHI • Paramètres Linguistiques v4.0</p>
         </footer>
     </div>
 
-    <!-- MODULES JS (Bas de page) -->
-    <script type="module" src="../js/app.js"></script>
-    <script type="module" src="../js/cart.js"></script>
-
+    <!-- LOGIQUE DE GESTION DE LANGUE -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const currentLang = localStorage.getItem("arashi_lang") || "fr";
             const radio = document.querySelector(`input[name="appLang"][value="${currentLang}"]`);
             if (radio) radio.checked = true;
 
+            const sidebarSelect = document.getElementById("sidebarLanguageSelect");
+            if (sidebarSelect) sidebarSelect.value = currentLang;
+
             document.getElementById("langForm")?.addEventListener("submit", (e) => {
                 e.preventDefault();
                 const selected = document.querySelector('input[name="appLang"]:checked').value;
                 localStorage.setItem("arashi_lang", selected);
+                
+                if (typeof window.changeLanguage === "function") {
+                    window.changeLanguage(selected);
+                }
+
                 const msg = document.getElementById("langMsg");
-                msg.style.color = "green";
-                msg.innerText = "✅ Langue mise à jour avec succès !";
+                msg.style.color = "#2ecc71";
+                msg.innerHTML = `<i class="fa-solid fa-circle-check"></i> Langue mise à jour avec succès !`;
             });
         });
     </script>
+
+    <!-- MODULES JS ES6 (Bas de page) -->
+    <script type="module" src="../js/supabase.js"></script>
+    <script type="module" src="../js/lang.js"></script>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/pi-payments.js"></script>
+    <script type="module" src="../js/app.js"></script>
+    <script type="module" src="../js/cart.js"></script>
+
 </body>
 </html>
-
